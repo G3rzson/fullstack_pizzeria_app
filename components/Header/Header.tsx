@@ -5,7 +5,7 @@ import Navigation from "./Navigation";
 
 export default function Header() {
   return (
-    <header className="dark:bg-zinc-800 dark:text-zinc-200 bg-zinc-200 text-zinc-800 w-full">
+    <header className="dark:bg-zinc-800 dark:text-zinc-200 bg-zinc-200 text-zinc-800 w-full border-b border-zinc-500">
       <div className="relative mx-auto w-full sm:w-4/5">
         {/* Logo */}
         <Link

@@ -20,7 +20,11 @@ export default function Navigation() {
       <HamburgerMenuBtn isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
 
       {/* Navigation Links */}
-      <NavLinks isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} />
+      <NavLinks
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+        pathname={pathname}
+      />
     </>
   );
 }
