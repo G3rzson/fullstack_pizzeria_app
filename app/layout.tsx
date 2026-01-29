@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
+import ToastProvider from "@/components/ReactHotToast/ReactHotToast";
 
 export const metadata: Metadata = {
   title: "Pizzeria App",
@@ -24,6 +25,8 @@ export default function RootLayout({
         </main>
 
         <Footer />
+
+        <ToastProvider />
       </body>
     </html>
   );
