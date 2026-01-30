@@ -2,8 +2,8 @@ import PizzaForm from "@/components/Forms/PizzaForm";
 
 export default function Page() {
   return (
-    <div className="px-4">
-      <h1 className="text-center text-3xl my-8">Új pizza létrehozása</h1>
+    <div className="flex flex-col grow items-center justify-center gap-8">
+      <h1 className="text-center text-3xl">Új pizza létrehozása</h1>
       <PizzaForm />
     </div>
   );

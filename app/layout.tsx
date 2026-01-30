@@ -20,7 +20,7 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <Header />
 
-        <main className="flex grow flex-col dark:bg-zinc-700 bg-zinc-100 dark:text-zinc-200 text-zinc-800">
+        <main className="flex grow flex-col dark:bg-zinc-700 bg-zinc-100 dark:text-zinc-200 text-zinc-800 p-4">
           {children}
         </main>
 
