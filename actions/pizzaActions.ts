@@ -1,6 +1,12 @@
 "use server";
 
-import { createPizzaDal, deletePizzaDal, getAllPizzaDal } from "@/dal/pizzaDal";
+import {
+  createPizzaDal,
+  deletePizzaDal,
+  getAllPizzaDal,
+  getOnePizzaByIdDal,
+  updatePizzaDal,
+} from "@/dal/pizzaDal";
 import { idValidator, pizzaFormSchema } from "@/validation/pizzaFormValidator";
 import { revalidatePath } from "next/cache";
 
@@ -52,6 +58,57 @@ export async function deletePizzaAction(pizzaId: unknown) {
     revalidatePath("/pizzas");
     return { success: true, message: "Pizza deleted successfully" };
   } catch (error) {
+    console.error("Error deleting pizza:", error);
+    return { success: false, message: "Database error" };
+  }
+}
+
+// get one pizza by id
+export async function getOnePizzaByIdAction(pizzaId: unknown) {
+  const validIdObj = idValidator.safeParse({ id: pizzaId });
+  if (!validIdObj.success) {
+    return { success: false, message: "Invalid pizza ID" };
+  }
+
+  try {
+    const pizzaObj = await getOnePizzaByIdDal(validIdObj.data.id);
+
+    if (!pizzaObj) {
+      return { success: false, message: "Pizza not found" };
+    }
+
+    return { success: true, data: pizzaObj };
+  } catch (error) {
+    console.error("Error fetching pizza by ID:", error);
+    return { success: false, message: "Database error" };
+  }
+}
+
+// update pizza
+export async function updatePizzaAction(pizzaId: unknown, data: unknown) {
+  const validIdObj = idValidator.safeParse({ id: pizzaId });
+  if (!validIdObj.success) {
+    return { success: false, message: "Invalid pizza ID" };
+  }
+  const validatedDataObj = pizzaFormSchema.safeParse(data);
+  if (!validatedDataObj.success) {
+    return { success: false, message: "Validation failed" };
+  }
+
+  // create pizza object
+  const newPizzaObj = {
+    pizzaName: validatedDataObj.data.pizzaName,
+    pizzaPrice32: Number(validatedDataObj.data.pizzaPrice32),
+    pizzaPrice45: Number(validatedDataObj.data.pizzaPrice45),
+    pizzaDescription: validatedDataObj.data.pizzaDescription,
+  };
+
+  try {
+    await updatePizzaDal(validIdObj.data.id, newPizzaObj);
+
+    return { success: true, message: "Pizza updated successfully" };
+  } catch (error) {
+    console.error("Error updating pizza:", error);
     return { success: false, message: "Database error" };
   }
 }

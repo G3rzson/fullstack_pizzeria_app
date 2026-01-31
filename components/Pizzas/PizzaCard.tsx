@@ -3,18 +3,11 @@
 import { Pizza } from "lucide-react";
 import { useState } from "react";
 import PizzaDeleteBtn from "./PizzaDeleteBtn";
+import PizzaUpdateBtn from "./PizzaUpdateBtn";
+import { PizzaType } from "@/types/types";
+import PizzaCartBtn from "./PizzaCartBtn";
 
-type Props = {
-  pizza: {
-    id: string;
-    pizzaName: string;
-    pizzaPrice32: number;
-    pizzaPrice45: number;
-    pizzaDescription: string;
-  };
-};
-
-export default function PizzaCard({ pizza }: Props) {
+export default function PizzaCard({ pizza }: { pizza: PizzaType }) {
   const [pizzaSize, setPizzaSize] = useState<32 | 45>(32);
   return (
     <>
@@ -47,14 +40,10 @@ export default function PizzaCard({ pizza }: Props) {
           Ár: {pizzaSize === 32 ? pizza.pizzaPrice32 : pizza.pizzaPrice45} Ft
         </p>
 
-        <div className="flex flex-col absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div className="flex flex-col gap-3 absolute bottom-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
           <PizzaDeleteBtn pizzaId={pizza.id} />
-          <button className="w-full bg-amber-700 p-2 hover:bg-amber-800 duration-300">
-            szerkesztés
-          </button>
-          <button className="w-full bg-amber-700 p-2 hover:bg-amber-800 duration-300">
-            Kosárba
-          </button>
+          <PizzaUpdateBtn pizzaId={pizza.id} />
+          <PizzaCartBtn pizzaId={pizza.id} />
         </div>
       </li>
     </>

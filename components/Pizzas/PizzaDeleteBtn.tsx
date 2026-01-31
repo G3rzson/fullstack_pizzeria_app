@@ -17,7 +17,7 @@ export default function PizzaDeleteBtn({ pizzaId }: { pizzaId: string }) {
     <button
       type="button"
       onClick={() => handleDelete(pizzaId)}
-      className="w-full cursor-pointer flex justify-end"
+      className="cursor-pointer"
     >
       <Trash2
         size={24}

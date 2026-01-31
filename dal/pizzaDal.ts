@@ -16,22 +16,53 @@ export async function createPizzaDal(pizzaData: {
 
 // get all pizza from database
 export async function getAllPizzaDal() {
-  const pizzaArray = await prisma.pizza.findMany();
+  const pizzaArray = await prisma.pizza.findMany({
+    select: {
+      id: true,
+      pizzaName: true,
+      pizzaPrice32: true,
+      pizzaPrice45: true,
+      pizzaDescription: true,
+    },
+  });
 
-  // pizzaArray DTO
-  const pizzaArrayDto = pizzaArray.map((pizza) => ({
-    id: pizza.id,
-    pizzaName: pizza.pizzaName,
-    pizzaPrice32: pizza.pizzaPrice32,
-    pizzaPrice45: pizza.pizzaPrice45,
-    pizzaDescription: pizza.pizzaDescription,
-  }));
-  return pizzaArrayDto;
+  return pizzaArray;
 }
 
 // delete pizza by id
 export async function deletePizzaDal(pizzaId: string) {
   await prisma.pizza.delete({
     where: { id: pizzaId },
+  });
+}
+
+// get one pizza by id
+export async function getOnePizzaByIdDal(pizzaId: string) {
+  const pizzaObj = await prisma.pizza.findUnique({
+    where: { id: pizzaId },
+    select: {
+      id: true,
+      pizzaName: true,
+      pizzaPrice32: true,
+      pizzaPrice45: true,
+      pizzaDescription: true,
+    },
+  });
+  return pizzaObj;
+}
+
+// update pizza by id
+export async function updatePizzaDal(
+  pizzaId: string,
+  pizzaData: {
+    pizzaName: string;
+    pizzaPrice32: number;
+    pizzaPrice45: number;
+    pizzaDescription: string;
+  },
+) {
+  await prisma.pizza.update({
+    where: { id: pizzaId },
+    data: pizzaData,
   });
 }

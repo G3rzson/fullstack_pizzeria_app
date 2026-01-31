@@ -1,6 +1,12 @@
 import { getAllPizzaAction } from "@/actions/pizzaActions";
 import PizzaCard from "./PizzaCard";
 
+/*--------------------------------------------------------
+  TODO: töréspont hozzáadása, ha sok pizza van
+  loading state hozzáadása
+  error state hozzáadása          
+  --------------------------------------------------------*/
+
 export default async function PizzaArray() {
   const response = await getAllPizzaAction();
   if (!response.success) {
@@ -11,7 +17,7 @@ export default async function PizzaArray() {
     );
   }
 
-  const pizzaArray = response.data || [];
+  const pizzaArray = response.data ?? [];
 
   if (pizzaArray.length === 0) {
     return (

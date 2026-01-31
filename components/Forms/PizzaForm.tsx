@@ -8,9 +8,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import FormInput from "../Elements/FormInput";
 import FormSubmitBtn from "../Elements/FormSubmitBtn";
-import { createPizzaAction } from "@/actions/pizzaActions";
+import { createPizzaAction, updatePizzaAction } from "@/actions/pizzaActions";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 /*--------------------------------------------------------
   TODO: Pizza name uniqueness validation   
@@ -18,7 +19,17 @@ import { useRouter } from "next/navigation";
   ADD: Image field to db            
   --------------------------------------------------------*/
 
-export default function PizzaForm() {
+type Props = {
+  pizzaObj?: {
+    id: string;
+    pizzaName: string;
+    pizzaPrice32: string;
+    pizzaPrice45: string;
+    pizzaDescription: string;
+  };
+};
+
+export default function PizzaForm({ pizzaObj }: Props) {
   const {
     register,
     handleSubmit,
@@ -26,19 +37,42 @@ export default function PizzaForm() {
     reset,
   } = useForm<PizzaFormSchemaType>({
     resolver: zodResolver(pizzaFormSchema),
+    defaultValues: pizzaObj
+      ? {
+          pizzaName: pizzaObj.pizzaName,
+          pizzaPrice32: pizzaObj.pizzaPrice32,
+          pizzaPrice45: pizzaObj.pizzaPrice45,
+          pizzaDescription: pizzaObj.pizzaDescription,
+        }
+      : undefined,
   });
   const router = useRouter();
 
   async function onSubmit(data: PizzaFormSchemaType) {
-    const response = await createPizzaAction(data);
+    if (pizzaObj) {
+      // update existing pizza
+      const response = await updatePizzaAction(pizzaObj.id, data);
 
-    if (!response.success) {
-      toast.error(response.message || "Error during pizza creation!");
+      if (!response.success) {
+        toast.error(response.message || "Error during pizza update!");
+        return;
+      }
+      toast.success(response.message || "Pizza updated successfully!");
+      reset();
+      router.push("/pizzas");
       return;
+    } else {
+      // create new pizza
+      const response = await createPizzaAction(data);
+
+      if (!response.success) {
+        toast.error(response.message || "Error during pizza creation!");
+        return;
+      }
+      toast.success(response.message || "Pizza created successfully!");
+      reset();
+      router.push("/pizzas");
     }
-    toast.success("Pizza created successfully!");
-    reset();
-    router.push("/pizzas");
   }
 
   return (
@@ -79,7 +113,7 @@ export default function PizzaForm() {
       />
 
       <FormSubmitBtn isSubmitting={isSubmitting}>
-        Pizza hozzáadása
+        {pizzaObj ? "Pizza frissítése" : "Pizza hozzáadása"}
       </FormSubmitBtn>
     </form>
   );
