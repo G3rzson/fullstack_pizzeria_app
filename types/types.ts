@@ -5,3 +5,11 @@ export type PizzaType = {
   pizzaPrice45: number;
   pizzaDescription: string;
 };
+
+export type UserType = {
+  id: string;
+  username: string;
+  email: string;
+  password: string;
+  role: "USER" | "ADMIN";
+};

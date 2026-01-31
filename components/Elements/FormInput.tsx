@@ -10,7 +10,7 @@ import {
 type Props<T extends FieldValues> = {
   register: UseFormRegister<T>;
   registername: Path<T>;
-  type: "text" | "textarea";
+  type: "text" | "textarea" | "email" | "password";
   placeholder: string;
   errors?: FieldErrors<T>;
 };
