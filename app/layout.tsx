@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Footer from "@/components/Footer/Footer";
 import Header from "@/components/Header/Header";
+import ToastProvider from "@/components/ReactHotToast/ReactHotToast";
 
 export const metadata: Metadata = {
   title: "Pizzeria App",
@@ -19,11 +20,13 @@ export default function RootLayout({
       <body className="flex min-h-screen flex-col">
         <Header />
 
-        <main className="flex grow flex-col dark:bg-zinc-700 bg-zinc-100 dark:text-zinc-200 text-zinc-800">
+        <main className="flex grow flex-col dark:bg-zinc-700 bg-zinc-100 dark:text-zinc-200 text-zinc-800 p-4">
           {children}
         </main>
 
         <Footer />
+
+        <ToastProvider />
       </body>
     </html>
   );
