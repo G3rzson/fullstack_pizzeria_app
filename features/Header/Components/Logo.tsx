@@ -6,7 +6,7 @@ export default function Logo() {
   return (
     <Link href="/">
       <Image
-        loading="eager"
+        priority
         src={LOGO_DATA.src}
         alt={LOGO_DATA.alt}
         width={LOGO_DATA.width}

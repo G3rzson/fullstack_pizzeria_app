@@ -10,13 +10,14 @@ import {
   DrawerTitle,
   DrawerTrigger,
 } from "@/components/ui/drawer";
-import { Menu, Settings, X } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { NAV_LINKS } from "../Constants/Constants";
 import Link from "next/link";
 import Logo from "./Logo";
+import SettingsMenu from "@/features/SettingsMenu/SettingsMenu";
 
-export default function MobilNav() {
+export default function MobileNav() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   return (
@@ -39,7 +40,7 @@ export default function MobilNav() {
         </DrawerTrigger>
 
         <DrawerContent
-          className="w-60 max-w-[65vw]"
+          className="w-80 max-w-[85vw]"
           onOpenAutoFocus={(event) => {
             event.preventDefault();
             closeButtonRef.current?.focus();
@@ -66,26 +67,23 @@ export default function MobilNav() {
           <nav className="flex grow w-full">
             <ul className="flex flex-col w-full">
               {NAV_LINKS.map((link) => (
-                <DrawerClose key={link.href} asChild>
-                  <li>
+                <li key={link.href}>
+                  <DrawerClose asChild>
                     <Link
                       className="px-3 py-3 hover:bg-muted block"
                       href={link.href}
                     >
                       {link.label}
                     </Link>
-                  </li>
-                </DrawerClose>
+                  </DrawerClose>
+                </li>
               ))}
             </ul>
           </nav>
 
           <div className="border-t">
             <DrawerFooter>
-              <Button variant="outline" className="w-full">
-                <Settings />
-                Beállítások
-              </Button>
+              <SettingsMenu type="mobile" />
             </DrawerFooter>
           </div>
         </DrawerContent>

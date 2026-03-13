@@ -1,5 +1,5 @@
 import DesktopNav from "./DesktopNav";
-import MobilNav from "./MobilNav";
+import MobileNav from "./MobileNav";
 import Logo from "./Logo";
 
 export default function Header() {
@@ -10,7 +10,7 @@ export default function Header() {
 
         <DesktopNav />
 
-        <MobilNav />
+        <MobileNav />
       </div>
     </header>
   );
