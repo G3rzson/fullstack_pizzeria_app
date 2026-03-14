@@ -26,7 +26,7 @@ export default function RootLayout({
       <body className="flex flex-col min-h-screen">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
-          <main>{children}</main>
+          <main className="flex flex-col grow">{children}</main>
         </ThemeProvider>
       </body>
     </html>
