@@ -38,6 +38,10 @@
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
   --link: oklch(0.62 0.22 259);
+  --text-h1: 2.5rem;
+  --text-h2: 2rem;
+  --text-h3: 1.75rem;
+  --text-h4: 1.5rem;
 }
 
 .dark {
@@ -72,7 +76,6 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
-
   --link: oklch(0.7 0.2 259);
 }
 
@@ -117,6 +120,10 @@
   --radius-3xl: calc(var(--radius) * 2.2);
   --radius-4xl: calc(var(--radius) * 2.6);
   --color-link: var(--link);
+  --text-h1: var(--text-h1);
+  --text-h2: var(--text-h2);
+  --text-h3: var(--text-h3);
+  --text-h4: var(--text-h4);
 }
 
 @layer base {
@@ -128,5 +135,9 @@
   }
   html {
     @apply font-sans;
+  }
+
+  .page-title {
+    @apply text-h1 text-center font-bold;
   }
 }
