@@ -4,6 +4,7 @@ import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import Header from "@/features/Header/Components/Header";
 import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -27,6 +28,7 @@ export default function RootLayout({
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <Header />
           <main className="flex flex-col grow gap-4 p-4">{children}</main>
+          <Toaster />
         </ThemeProvider>
       </body>
     </html>
