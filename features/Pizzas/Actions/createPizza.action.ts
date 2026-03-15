@@ -1,63 +1,51 @@
 "use server";
 
 import { createPizzaDal, PizzaCreateType } from "../Dal/pizza.dal";
-import { saveImageToServer } from "../fs/saveImageToServer";
-import { removeFile } from "../lib/serverUtils";
-import { pizzaSchema, PizzaFormInputType } from "../Validation/pizzaSchema";
-import {
-  okResult,
-  serverErrorResult,
-  validationErrorResult,
-  type ActionResult,
-} from "@/lib/actionResult";
+import { pizzaSchema } from "../Validation/pizzaSchema";
+import { uploadImageToCloudinary } from "./Cloudinary/uploadImageToCloudinary";
+import { deleteCloudinaryImage } from "./Cloudinary/deleteCloudinaryImage";
 
-export async function createPizzaAction(
-  data: unknown,
-): Promise<ActionResult<PizzaFormInputType>> {
+export async function createPizzaAction(data: unknown) {
+  let savedPublicId: string | undefined = undefined;
   const validatedData = await pizzaSchema.safeParseAsync(data);
-  let savedFilePath: string | null = null;
 
   if (!validatedData.success) {
-    return validationErrorResult(validatedData.error);
+    return {
+      success: false,
+      message: "Érvénytelen adatok!",
+    };
   }
 
   try {
     const { pizzaImage, ...pizzaData } = validatedData.data;
     let newPizza: PizzaCreateType = {
       ...pizzaData,
+      createdBy: "admin",
     };
-    if (pizzaImage) {
-      const { storedName, fsPath, publicPath } =
-        await saveImageToServer(pizzaImage);
 
-      savedFilePath = fsPath;
+    if (pizzaImage) {
+      const uploadResult = await uploadImageToCloudinary(pizzaImage);
+
+      savedPublicId = uploadResult.public_id;
 
       newPizza = {
         ...newPizza,
+        publicId: uploadResult.public_id,
         originalName: pizzaImage.name,
-        storedName: storedName,
-        mimeType: pizzaImage.type,
-        size: pizzaImage.size,
-        path: publicPath,
-        createdBy: "admin",
+        publicUrl: uploadResult.secure_url,
       };
     }
 
     await createPizzaDal(newPizza);
 
-    return okResult("Pizza sikeresen létrehozva!");
+    return { success: true, message: "Pizza sikeresen létrehozva!" };
   } catch (error) {
-    if (savedFilePath) {
-      try {
-        await removeFile(savedFilePath);
-      } catch (cleanupError) {
-        console.error("Error deleting orphaned file:", cleanupError);
-      }
-    }
+    if (savedPublicId) await deleteCloudinaryImage(savedPublicId);
 
     console.error("Error creating pizza:", error);
-    return serverErrorResult(
-      "Hiba történt a pizza létrehozásakor. Próbáld újra később!",
-    );
+    return {
+      success: false,
+      message: "Hiba történt a pizza létrehozása során.",
+    };
   }
 }

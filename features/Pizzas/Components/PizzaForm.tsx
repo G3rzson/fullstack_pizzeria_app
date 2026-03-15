@@ -44,6 +44,9 @@ export default function PizzaForm() {
 
   async function onSubmit(data: PizzaFormOutputType) {
     const response = await createPizzaAction(data);
+
+    console.log("Create Pizza Response:", response);
+    /*
     if (!response.success) {
       if (response.fieldErrors) {
         (
@@ -58,9 +61,9 @@ export default function PizzaForm() {
       return toast.error(response.message);
     }
 
-    toast.success(response.message);
-    reset();
-    router.push("/pizzas");
+    toast.success(response.message);*/
+    //reset();
+    //router.push("/pizzas");
   }
 
   return (

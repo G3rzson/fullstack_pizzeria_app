@@ -13,10 +13,6 @@
 # testing
 /coverage
 
-# uploads
-/public/uploads/*
-!/public/uploads/.gitkeep
-
 # next.js
 /.next/
 /out/

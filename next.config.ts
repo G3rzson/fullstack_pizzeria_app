@@ -9,6 +9,18 @@ const nextConfig: NextConfig = {
       bodySizeLimit: "5mb",
     },
   },
+
+  // Configure allowed image domains for Next.js Image component
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "res.cloudinary.com",
+        port: "",
+        pathname: "/dtxwborwl/**", // ** = minden alútvonal
+      },
+    ],
+  },
 };
 
 export default nextConfig;
