@@ -15,10 +15,14 @@ export default function PizzaCard({ pizza, isAdmin }: Props) {
   return (
     <li key={pizza.id}>
       <Card className="relative h-100 w-full">
-        {pizza.isAvailableOnMenu ? (
-          <div className="absolute top-0 left-0 w-full h-full bg-green-600/30 z-10"></div>
-        ) : (
-          <div className="absolute top-0 left-0 w-full h-full bg-red-600/30 z-10"></div>
+        {isAdmin && (
+          <>
+            {pizza.isAvailableOnMenu ? (
+              <div className="absolute top-0 left-0 w-full h-full bg-green-600/30 z-10"></div>
+            ) : (
+              <div className="absolute top-0 left-0 w-full h-full bg-red-600/30 z-10"></div>
+            )}
+          </>
         )}
         <PizzaImage
           publicUrl={pizza.publicUrl}

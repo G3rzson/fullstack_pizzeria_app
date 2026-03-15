@@ -3,7 +3,7 @@ import { getAllAvailablePizzaAction } from "../Actions/getAllAvailablePizza.acti
 import PizzaCard from "./PizzaCard";
 
 export default async function PizzaList() {
-  const isAdmin = true;
+  const isAdmin = false;
 
   const response = isAdmin
     ? await getAllPizzaAction()
