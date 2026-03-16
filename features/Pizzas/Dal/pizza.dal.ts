@@ -1,44 +1,18 @@
 "use server";
 
 import prisma from "@/prisma/prisma";
+import { BackendPizzaType, FrontendPizzaType } from "../Types/types";
 
-export type PizzaCreateType = {
-  pizzaName: string;
-  pizzaPrice32: number;
-  pizzaPrice45: number;
-  pizzaDescription: string;
-  isAvailableOnMenu: boolean;
-  publicId?: string;
-  originalName?: string;
-  publicUrl?: string;
-  createdBy?: string;
-};
-
-export type PizzaGetType = {
-  id: string;
-  pizzaName: string;
-  pizzaPrice32: number;
-  pizzaPrice45: number;
-  pizzaDescription: string;
-  isAvailableOnMenu: boolean;
-  publicId: string | null;
-  originalName: string | null;
-  publicUrl: string | null;
-  createdBy: string | null;
-  createdAt: Date;
-  updatedAt: Date;
-};
-
-export async function createPizzaDal(data: PizzaCreateType) {
+export async function createPizzaDal(data: FrontendPizzaType) {
   await prisma.pizza.create({ data });
 }
 
-export async function getAllPizzaDal(): Promise<PizzaGetType[]> {
+export async function getAllPizzaDal(): Promise<BackendPizzaType[]> {
   const pizzasArray = await prisma.pizza.findMany();
   return pizzasArray;
 }
 
-export async function getAllAvailablePizzaDal(): Promise<PizzaGetType[]> {
+export async function getAllAvailablePizzaDal(): Promise<BackendPizzaType[]> {
   const pizzasArray = await prisma.pizza.findMany({
     where: {
       isAvailableOnMenu: true,

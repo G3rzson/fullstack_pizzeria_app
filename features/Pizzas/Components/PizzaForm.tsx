@@ -21,13 +21,16 @@ import {
 import CustomInput from "@/components/ui/CustomInput";
 import { createPizzaAction } from "../Actions/createPizza.action";
 import { useRouter } from "next/navigation";
+import { CustomLoader } from "@/components/ui/CustomLoader";
+import { useEffect } from "react";
+import { getPizzaByIdAction } from "@/features/Admin/Actions/getPizzaByIdAction";
+import { updatePizzaAction } from "@/features/Admin/Actions/updatePizzaAction";
 
-export default function PizzaForm() {
+export default function PizzaForm({ id }: { id?: string }) {
   const {
     handleSubmit,
     control,
     reset,
-    setError,
     formState: { isSubmitting },
   } = useForm<PizzaFormInputType, unknown, PizzaFormOutputType>({
     resolver: zodResolver(pizzaSchema),
@@ -38,38 +41,79 @@ export default function PizzaForm() {
       pizzaDescription: "",
       isAvailableOnMenu: false,
       pizzaImage: null,
+      publicId: undefined,
+      originalName: undefined,
+      publicUrl: undefined,
     },
   });
   const router = useRouter();
 
-  async function onSubmit(data: PizzaFormOutputType) {
-    const response = await createPizzaAction(data);
+  useEffect(() => {
+    const fetchPizza = async () => {
+      if (id) {
+        const editingData = await getPizzaByIdAction(id);
 
-    console.log("Create Pizza Response:", response);
-    /*
-    if (!response.success) {
-      if (response.fieldErrors) {
-        (
-          Object.entries(response.fieldErrors) as [
-            keyof PizzaFormInputType,
-            string[] | undefined,
-          ][]
-        ).forEach(([field, messages]) => {
-          setError(field, { message: messages?.[0] });
-        });
+        if (!editingData.success || !editingData.data) {
+          return;
+        }
+
+        if (editingData.success) {
+          reset({
+            pizzaName: editingData.data.pizzaName,
+            pizzaPrice32: editingData.data.pizzaPrice32,
+            pizzaPrice45: editingData.data.pizzaPrice45,
+            pizzaDescription: editingData.data.pizzaDescription,
+            isAvailableOnMenu: editingData.data.isAvailableOnMenu,
+            pizzaImage: editingData.data.publicUrl
+              ? {
+                  name: editingData.data.originalName || "pizza-image",
+                  url: editingData.data.publicUrl,
+                }
+              : null,
+            publicId: editingData.data.publicId || undefined,
+            originalName: editingData.data.originalName || undefined,
+            publicUrl: editingData.data.publicUrl || undefined,
+          });
+        }
       }
-      return toast.error(response.message);
-    }
+    };
 
-    toast.success(response.message);*/
-    //reset();
-    //router.push("/pizzas");
+    fetchPizza();
+  }, [id, reset]);
+
+  async function onSubmit(data: PizzaFormOutputType) {
+    if (id) {
+      const response = await updatePizzaAction(id, data);
+
+      if (!response.success) {
+        toast.error(response.error || "Hiba történt a pizza frissítése során!");
+        return;
+      }
+
+      toast.success(response.message || "Pizza sikeresen frissítve!");
+
+      reset();
+      router.push("/pizzas");
+    } else {
+      const response = await createPizzaAction(data);
+
+      if (!response.success) {
+        toast.error(
+          response.message || "Szerverhiba történt! Próbáld újra később.",
+        );
+        return;
+      }
+
+      toast.success(response.message || "Pizza sikeresen létrehozva!");
+      reset();
+      router.push("/admin");
+    }
   }
 
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Új pizza</CardTitle>
+        <CardTitle>{id ? "Pizza szerkesztése" : "Új pizza"}</CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
@@ -127,11 +171,17 @@ export default function PizzaForm() {
       <CardFooter>
         <Button
           type="submit"
-          className="w-full"
+          className="w-full cursor-pointer"
           form="pizza-form"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Mentés..." : "Pizza létrehozása"}
+          {isSubmitting ? (
+            <CustomLoader />
+          ) : id ? (
+            "Pizza szerkesztése"
+          ) : (
+            "Pizza létrehozása"
+          )}
         </Button>
       </CardFooter>
     </Card>

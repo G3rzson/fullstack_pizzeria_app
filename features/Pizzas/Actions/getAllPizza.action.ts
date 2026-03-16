@@ -1,11 +1,12 @@
 "use server";
 
-import { getAllPizzaDal, PizzaGetType } from "../Dal/pizza.dal";
+import { getAllPizzaDal } from "../Dal/pizza.dal";
+import { BackendPizzaType } from "../Types/types";
 
 type ResponseType =
   | {
       success: true;
-      data: PizzaGetType[];
+      data: BackendPizzaType[];
     }
   | {
       success: false;
@@ -13,7 +14,6 @@ type ResponseType =
     };
 
 export async function getAllPizzaAction(): Promise<ResponseType> {
-  //await new Promise((resolve) => setTimeout(resolve, 5000));
   try {
     const pizzasArray = await getAllPizzaDal();
     return {

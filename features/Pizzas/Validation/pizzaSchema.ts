@@ -5,6 +5,7 @@ export const pizzaSchema = z.object({
   pizzaName: z
     .string()
     .trim()
+    .toLowerCase()
     .transform((str) => str.replace(/\s+/g, " "))
     .pipe(
       z
@@ -33,6 +34,12 @@ export const pizzaSchema = z.object({
     ),
 
   isAvailableOnMenu: z.boolean(),
+
+  publicId: z.string().optional(),
+
+  originalName: z.string().optional(),
+
+  publicUrl: z.string().optional(),
 
   pizzaImage: z
     .unknown()

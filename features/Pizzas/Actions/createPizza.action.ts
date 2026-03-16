@@ -1,9 +1,10 @@
 "use server";
 
-import { createPizzaDal, PizzaCreateType } from "../Dal/pizza.dal";
+import { createPizzaDal } from "../Dal/pizza.dal";
 import { pizzaSchema } from "../Validation/pizzaSchema";
 import { uploadImageToCloudinary } from "./Cloudinary/uploadImageToCloudinary";
 import { deleteCloudinaryImage } from "./Cloudinary/deleteCloudinaryImage";
+import { FrontendPizzaType } from "../Types/types";
 
 export async function createPizzaAction(data: unknown) {
   let savedPublicId: string | undefined = undefined;
@@ -18,7 +19,7 @@ export async function createPizzaAction(data: unknown) {
 
   try {
     const { pizzaImage, ...pizzaData } = validatedData.data;
-    let newPizza: PizzaCreateType = {
+    let newPizza: FrontendPizzaType = {
       ...pizzaData,
       createdBy: "admin",
     };
