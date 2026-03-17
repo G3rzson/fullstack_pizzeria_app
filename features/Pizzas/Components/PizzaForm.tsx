@@ -86,14 +86,16 @@ export default function PizzaForm({ id }: { id?: string }) {
       const response = await updatePizzaAction(id, data);
 
       if (!response.success) {
-        toast.error(response.error || "Hiba történt a pizza frissítése során!");
+        toast.error(
+          response.message || "Hiba történt a pizza frissítése során!",
+        );
         return;
       }
 
       toast.success(response.message || "Pizza sikeresen frissítve!");
 
       reset();
-      router.push("/pizzas");
+      router.push("/admin");
     } else {
       const response = await createPizzaAction(data);
 

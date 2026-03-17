@@ -10,6 +10,11 @@ type Props = {
   invalid: boolean;
 };
 
+type ExistingImageValue = {
+  name: string;
+  url: string;
+};
+
 export default function PizzaImageDropzone({
   value,
   onChange,
@@ -17,19 +22,21 @@ export default function PizzaImageDropzone({
   invalid,
 }: Props) {
   const selectedFile = useMemo(() => toSingleFile(value), [value]);
+  const existingImage = useMemo(() => toExistingImage(value), [value]);
 
   const previewUrl = useMemo(() => {
+    if (existingImage) return existingImage.url;
     if (!selectedFile) return null;
     return URL.createObjectURL(selectedFile);
-  }, [selectedFile]);
+  }, [existingImage, selectedFile]);
 
   useEffect(() => {
     return () => {
-      if (previewUrl) {
+      if (previewUrl && selectedFile) {
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [previewUrl]);
+  }, [previewUrl, selectedFile]);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -108,6 +115,29 @@ export default function PizzaImageDropzone({
           </div>
         </div>
       )}
+
+      {!selectedFile && existingImage && previewUrl && (
+        <div className="space-y-2">
+          <div className="overflow-hidden rounded-lg border border-input">
+            <img
+              src={previewUrl}
+              alt="Pizza előnézet"
+              className="h-48 w-full object-cover"
+            />
+          </div>
+          <div className="flex items-center justify-between gap-2 text-xs text-muted-foreground">
+            <span className="truncate">{existingImage.name}</span>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => onChange(null)}
+            >
+              Törlés
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -124,4 +154,20 @@ function toSingleFile(value: unknown): File | null {
   }
 
   return null;
+}
+
+function toExistingImage(value: unknown): ExistingImageValue | null {
+  if (!value || typeof value !== "object") return null;
+
+  const candidate = value as Partial<ExistingImageValue>;
+  if (typeof candidate.name !== "string" || typeof candidate.url !== "string") {
+    return null;
+  }
+
+  if (!candidate.url.trim()) return null;
+
+  return {
+    name: candidate.name.trim() || "pizza-image",
+    url: candidate.url,
+  };
 }

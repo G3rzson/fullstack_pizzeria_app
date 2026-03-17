@@ -1,5 +1,7 @@
 "use server";
 import { updateImageToCloudinary } from "@/features/Pizzas/Actions/Cloudinary/updateImageToCloudinary";
+import { deleteCloudinaryImage } from "@/features/Pizzas/Actions/Cloudinary/deleteCloudinaryImage";
+import { FrontendPizzaType } from "@/features/Pizzas/Types/types";
 import { pizzaSchema } from "@/features/Pizzas/Validation/pizzaSchema";
 import { updatePizzaDal } from "../Dal/pizza.dal";
 
@@ -15,7 +17,7 @@ export async function updatePizzaAction(pizzaId: string, data: unknown) {
   }
   try {
     const { pizzaImage, ...pizzaData } = validatedData.data;
-    let newPizza: any = {
+    let newPizza: FrontendPizzaType = {
       ...pizzaData,
       createdBy: "admin",
     };
@@ -40,10 +42,14 @@ export async function updatePizzaAction(pizzaId: string, data: unknown) {
 
     return { success: true, message: "Pizza sikeresen frissítve!" };
   } catch (error) {
+    if (savedPublicId && savedPublicId !== validatedData.data.publicId) {
+      await deleteCloudinaryImage(savedPublicId);
+    }
+
     console.error("Error updating pizza:", error);
     return {
       success: false,
-      error: "Hiba történt a pizza frissítése során.",
+      message: "Hiba történt a pizza frissítése során.",
     };
   }
 }

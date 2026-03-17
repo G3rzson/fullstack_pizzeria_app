@@ -1,4 +1,4 @@
-import { Card } from "@/components/ui/card";
+import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import CustomEmptyList from "@/components/ui/CustomEmptyList";
 import CustomError from "@/components/ui/CustomError";
 import { getAllPizzaAction } from "@/features/Pizzas/Actions/getAllPizza.action";
@@ -24,7 +24,7 @@ export default async function AdminPizzaList() {
       {pizzasArray.map((pizza) => (
         <li key={pizza.id}>
           <Card
-            className={`w-full relative p-4 ${pizza.isAvailableOnMenu ? "bg-green/20" : "bg-destructive/20"}`}
+            className={`w-full relative p-4 h-70 ${pizza.isAvailableOnMenu ? "bg-green/20" : "bg-destructive/20"}`}
           >
             {pizza.publicUrl && pizza.originalName ? (
               <Image
@@ -39,12 +39,16 @@ export default async function AdminPizzaList() {
               <Pizza size={100} />
             )}
 
-            <p>{pizza.pizzaName}</p>
+            <CardTitle className="mt-auto flex flex-row items-center justify-between">
+              <p className="mt-auto">{pizza.pizzaName}</p>
+              <p> {pizza.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}</p>
+            </CardTitle>
 
-            <p>Ár (32 cm): {pizza.pizzaPrice32} Ft</p>
-            <p>Ár (45 cm): {pizza.pizzaPrice45} Ft</p>
-            <p> {pizza.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}</p>
-            <p className="text-balance">{pizza.pizzaDescription}</p>
+            <CardContent className="space-y-2 p-0">
+              <p>Ár (32 cm): {pizza.pizzaPrice32} Ft</p>
+              <p>Ár (45 cm): {pizza.pizzaPrice45} Ft</p>
+              <p className="text-balance">{pizza.pizzaDescription}</p>
+            </CardContent>
 
             <PizzaMenu pizza={pizza} />
           </Card>
