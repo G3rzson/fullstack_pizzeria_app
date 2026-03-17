@@ -13,13 +13,9 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
-import {
-  PizzaFormInputType,
-  PizzaFormOutputType,
-  pizzaSchema,
-} from "../Validation/pizzaSchema";
+import { PizzaFormType, pizzaSchema } from "../Validation/pizzaSchema";
 import CustomInput from "@/components/ui/CustomInput";
-import { createPizzaAction } from "../Actions/createPizza.action";
+import { createPizzaAction } from "../Actions/createPizzaAction";
 import { useRouter } from "next/navigation";
 import { CustomLoader } from "@/components/ui/CustomLoader";
 import { useEffect } from "react";
@@ -32,7 +28,7 @@ export default function PizzaForm({ id }: { id?: string }) {
     control,
     reset,
     formState: { isSubmitting },
-  } = useForm<PizzaFormInputType, unknown, PizzaFormOutputType>({
+  } = useForm<PizzaFormType>({
     resolver: zodResolver(pizzaSchema),
     defaultValues: {
       pizzaName: "",
@@ -40,10 +36,6 @@ export default function PizzaForm({ id }: { id?: string }) {
       pizzaPrice45: undefined,
       pizzaDescription: "",
       isAvailableOnMenu: false,
-      pizzaImage: null,
-      publicId: undefined,
-      originalName: undefined,
-      publicUrl: undefined,
     },
   });
   const router = useRouter();
@@ -64,15 +56,6 @@ export default function PizzaForm({ id }: { id?: string }) {
             pizzaPrice45: editingData.data.pizzaPrice45,
             pizzaDescription: editingData.data.pizzaDescription,
             isAvailableOnMenu: editingData.data.isAvailableOnMenu,
-            pizzaImage: editingData.data.publicUrl
-              ? {
-                  name: editingData.data.originalName || "pizza-image",
-                  url: editingData.data.publicUrl,
-                }
-              : null,
-            publicId: editingData.data.publicId || undefined,
-            originalName: editingData.data.originalName || undefined,
-            publicUrl: editingData.data.publicUrl || undefined,
           });
         }
       }
@@ -81,8 +64,9 @@ export default function PizzaForm({ id }: { id?: string }) {
     fetchPizza();
   }, [id, reset]);
 
-  async function onSubmit(data: PizzaFormOutputType) {
+  async function onSubmit(data: PizzaFormType) {
     if (id) {
+      // update
       const response = await updatePizzaAction(id, data);
 
       if (!response.success) {
@@ -95,8 +79,9 @@ export default function PizzaForm({ id }: { id?: string }) {
       toast.success(response.message || "Pizza sikeresen frissítve!");
 
       reset();
-      router.push("/admin");
+      router.push("/admin/pizzas");
     } else {
+      // create
       const response = await createPizzaAction(data);
 
       if (!response.success) {
@@ -108,7 +93,7 @@ export default function PizzaForm({ id }: { id?: string }) {
 
       toast.success(response.message || "Pizza sikeresen létrehozva!");
       reset();
-      router.push("/admin");
+      router.push("/admin/pizzas");
     }
   }
 
@@ -159,13 +144,6 @@ export default function PizzaForm({ id }: { id?: string }) {
               name="isAvailableOnMenu"
               type="checkbox"
               label="Elérhető legyen az étlapon ?"
-            />
-
-            <CustomInput
-              control={control}
-              name="pizzaImage"
-              type="file"
-              label="Pizza kép (opcionális)"
             />
           </FieldGroup>
         </form>

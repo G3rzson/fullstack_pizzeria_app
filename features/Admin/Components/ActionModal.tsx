@@ -24,7 +24,7 @@ export default function ActionModal({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"secondary"} className="cursor-pointer">
+        <Button variant={"secondary"} className="cursor-pointer w-full">
           {triggerTitle}
         </Button>
       </DialogTrigger>

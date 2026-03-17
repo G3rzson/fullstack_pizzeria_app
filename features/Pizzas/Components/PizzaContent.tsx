@@ -3,9 +3,8 @@ import { CardDescription, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
-import { BackendPizzaType } from "../Types/types";
 
-export default function PizzaContent({ pizza }: { pizza: BackendPizzaType }) {
+export default function PizzaContent({ pizza }: { pizza: any }) {
   const [selectedPizzaSize, setSelectedPizzaSize] = useState<
     "size32" | "size45"
   >("size32");

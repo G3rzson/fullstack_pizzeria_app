@@ -7,16 +7,27 @@ datasource db {
 }
 
 model Pizza {
-  id                String   @id @default(uuid())
+  id                String      @id @default(uuid())
   pizzaName         String
   pizzaDescription  String
   pizzaPrice32      Float
   pizzaPrice45      Float
   isAvailableOnMenu Boolean
-  publicId          String?
-  originalName      String?
-  publicUrl         String?
-  createdBy         String?
-  createdAt         DateTime @default(now())
-  updatedAt         DateTime @updatedAt
+  createdBy         String
+  category          String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  image             PizzaImage?
+}
+
+model PizzaImage {
+  id           String   @id @default(uuid())
+  pizzaId      String   @unique
+  publicId     String
+  publicUrl    String
+  originalName String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pizza Pizza @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
 }

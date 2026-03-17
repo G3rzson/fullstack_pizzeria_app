@@ -1,4 +1,4 @@
-import PizzaForm from "@/features/Pizzas/Components/PizzaForm";
+import PizzaForm from "@/features/Admin/Components/PizzaForm";
 
 export default function NewPizzaPage() {
   return (

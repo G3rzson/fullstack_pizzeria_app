@@ -1,21 +1,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { deletePizzaDal } from "../Dal/pizza.dal";
-import { deleteCloudinaryImage } from "@/features/Pizzas/Actions/Cloudinary/deleteCloudinaryImage";
+import { deletePizzaDal } from "../Dal/pizzaDal";
 
-export async function deletePizzaAction(
-  pizzaId: string,
-  publicId: string | null,
-) {
+export async function deletePizzaAction(pizzaId: string) {
   try {
-    if (publicId) {
-      await deleteCloudinaryImage(publicId);
-    }
     await deletePizzaDal(pizzaId);
 
     revalidatePath("/pizzas");
-    revalidatePath("/admin");
+    revalidatePath("/admin/pizzas");
     return {
       success: true,
       message: "A pizza sikeresen törölve.",

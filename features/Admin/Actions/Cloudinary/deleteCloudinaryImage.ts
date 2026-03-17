@@ -1,6 +1,6 @@
 import cloudinary from "@/lib/claudinary";
 
-export async function deleteCloudinaryImage(publicId: string | undefined) {
+export async function deleteCloudinaryImage(publicId: string | null) {
   if (!publicId) return;
 
   try {

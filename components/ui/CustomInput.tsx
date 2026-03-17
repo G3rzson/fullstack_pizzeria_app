@@ -97,7 +97,7 @@ export default function CustomInput<T extends FieldValues>({
       case "file":
         return (
           <Field data-invalid={fieldState.invalid}>
-            <FieldLabel>Pizza kép (opcionális)</FieldLabel>
+            <FieldLabel>{label}</FieldLabel>
             <PizzaImageDropzone
               value={field.value}
               onChange={field.onChange}

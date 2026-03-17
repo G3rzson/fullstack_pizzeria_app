@@ -1,16 +1,18 @@
 "use server";
-import { changeMenuDal } from "@/features/Pizzas/Dal/pizza.dal";
+
 import { revalidatePath } from "next/cache";
+import { changeMenuDal } from "../Dal/pizzaDal";
 
 export async function changeMenuAction(
   pizzaId: string,
   isAvailableOnMenu: boolean,
 ) {
   try {
+    isAvailableOnMenu = !isAvailableOnMenu;
     await changeMenuDal(pizzaId, isAvailableOnMenu);
 
     revalidatePath("/pizzas");
-    revalidatePath("/admin");
+    revalidatePath("/admin/pizzas");
     return {
       success: true,
       message: "Az étlap státusza sikeresen megváltozott.",

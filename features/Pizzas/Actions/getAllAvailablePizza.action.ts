@@ -1,12 +1,11 @@
 "use server";
 
 import { getAllAvailablePizzaDal } from "../Dal/pizza.dal";
-import { BackendPizzaType } from "../Types/types";
 
 type ResponseType =
   | {
       success: true;
-      data: BackendPizzaType[];
+      data: any[];
     }
   | {
       success: false;

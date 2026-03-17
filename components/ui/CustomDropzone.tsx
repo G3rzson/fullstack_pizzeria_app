@@ -1,4 +1,4 @@
-import { MAX_FILE_SIZE } from "@/features/Pizzas/Constants/Constants";
+import { MAX_FILE_SIZE } from "@/features/Admin/Constants/Constants";
 import { Button } from "./button";
 import { useDropzone } from "react-dropzone";
 import { useCallback, useEffect, useMemo } from "react";

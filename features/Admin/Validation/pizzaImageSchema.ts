@@ -1,46 +1,7 @@
 import z from "zod";
 import { ACCEPTED_TYPES, MAX_FILE_SIZE } from "../Constants/Constants";
 
-export const pizzaSchema = z.object({
-  pizzaName: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .transform((str) => str.replace(/\s+/g, " "))
-    .pipe(
-      z
-        .string()
-        .min(1, "A pizza neve kötelező!")
-        .max(20, "Max hossz 20 karakter!"),
-    ),
-  pizzaPrice32: z
-    .number()
-    .min(1, "A pizza ára kötelező!")
-    .max(9999, "Az ár nem lehet nagyobb 9999-nél!"),
-  pizzaPrice45: z
-    .number()
-    .min(1, "A pizza ára kötelező!")
-    .max(9999, "Az ár nem lehet nagyobb 9999-nél!"),
-
-  pizzaDescription: z
-    .string()
-    .trim()
-    .transform((str) => str.replace(/\s+/g, " "))
-    .pipe(
-      z
-        .string()
-        .min(1, "A pizza leírása kötelező!")
-        .max(100, "Leírás max 100 karakter!"),
-    ),
-
-  isAvailableOnMenu: z.boolean(),
-
-  publicId: z.string().optional(),
-
-  originalName: z.string().optional(),
-
-  publicUrl: z.string().optional(),
-
+export const pizzaImageSchema = z.object({
   pizzaImage: z
     .unknown()
     .transform((value) => toSingleFile(value))
@@ -52,8 +13,8 @@ export const pizzaSchema = z.object({
     }),
 });
 
-export type PizzaFormInputType = z.input<typeof pizzaSchema>;
-export type PizzaFormOutputType = z.output<typeof pizzaSchema>;
+export type PizzaImageFormInputType = z.input<typeof pizzaImageSchema>;
+export type PizzaImageFormOutputType = z.output<typeof pizzaImageSchema>;
 
 type FileListLike = {
   length: number;

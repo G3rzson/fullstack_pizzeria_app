@@ -1,4 +1,4 @@
-import { getPizzaByIdDal } from "../Dal/pizza.dal";
+import { getPizzaByIdDal } from "../Dal/pizzaDal";
 
 export async function getPizzaByIdAction(pizzaId: string) {
   try {
