@@ -1,9 +1,5 @@
-import CustomLink from "@/components/ui/CustomLink";
+import CustomLink from "@/shared/Components/CustomLink";
 
 export default function AdminPage() {
-  return (
-    <div>
-      <CustomLink href="/admin/pizzas">Pizzák</CustomLink>
-    </div>
-  );
+  return <CustomLink href="/admin/pizzas">Pizzák</CustomLink>;
 }

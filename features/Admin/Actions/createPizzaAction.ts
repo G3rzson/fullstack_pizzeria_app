@@ -2,8 +2,10 @@
 
 import { pizzaSchema } from "../Validation/pizzaSchema";
 import { createPizzaDal } from "../Dal/pizzaDal";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function createPizzaAction(pizza: unknown) {
+  await requireAdmin();
   const { data, success } = await pizzaSchema.safeParseAsync(pizza);
 
   if (!success) {

@@ -1,5 +1,4 @@
 "use client";
-import SettingsMenu from "@/features/SettingsMenu/SettingsMenu";
 import { NAV_LINKS } from "../Constants/Constants";
 import Link from "next/link";
 
@@ -15,7 +14,6 @@ export default function DesktopNav() {
           </li>
         ))}
       </ul>
-      <SettingsMenu type="desktop" />
     </nav>
   );
 }

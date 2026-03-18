@@ -1,31 +1,25 @@
 import Image from "next/image";
 import { Pizza } from "lucide-react";
+import { ImageType } from "../Dal/pizza.dal";
 
 type Props = {
-  publicUrl: string | null;
-  originalName: string | null;
+  pizzaImage: ImageType | null;
 };
 
-export default function PizzaImage({ publicUrl, originalName }: Props) {
+export default function PizzaImage({ pizzaImage }: Props) {
   return (
     <>
-      {publicUrl && originalName ? (
-        <div className="absolute bottom-30 left-1/2 -translate-x-1/2 w-full flex justify-center">
-          <div className="relative w-full aspect-square">
-            <Image
-              src={publicUrl}
-              alt={originalName}
-              fill
-              sizes="(max-width: 640px) 80vw, (max-width: 1024px) 40vw, 300px"
-              className="object-contain select-none pointer-events-none"
-              loading="eager"
-            />
-          </div>
-        </div>
+      {pizzaImage ? (
+        <Image
+          src={pizzaImage.publicUrl}
+          alt={pizzaImage.originalName}
+          width={150}
+          height={150}
+          className="object-contain select-none pointer-events-none"
+          loading="eager"
+        />
       ) : (
-        <div className="flex items-center justify-center">
-          <Pizza size={190} />
-        </div>
+        <Pizza size={150} />
       )}
     </>
   );

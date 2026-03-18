@@ -1,6 +1,8 @@
 import { getPizzaByIdDal } from "../Dal/pizzaDal";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function getPizzaByIdAction(pizzaId: string) {
+  await requireAdmin();
   try {
     const pizza = await getPizzaByIdDal(pizzaId);
 

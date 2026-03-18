@@ -13,8 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
-import CustomInput from "@/components/ui/CustomInput";
-import { CustomLoader } from "@/components/ui/CustomLoader";
+import { CustomLoader } from "@/shared/Components/CustomLoader";
 import {
   PizzaImageFormInputType,
   PizzaImageFormOutputType,
@@ -25,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { updateImageAction } from "../Actions/updateImageAction";
 import { getPizzaByIdAction } from "../Actions/getPizzaByIdAction";
+import CustomImage from "@/shared/Components/CustomImage";
 
 export default function PizzaImageForm({ id }: { id: string }) {
   const {
@@ -111,10 +111,9 @@ export default function PizzaImageForm({ id }: { id: string }) {
       <CardContent>
         <form id="pizza-form" onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <CustomInput
+            <CustomImage
               control={control}
               name="pizzaImage"
-              type="file"
               label="Pizza kép *"
             />
           </FieldGroup>

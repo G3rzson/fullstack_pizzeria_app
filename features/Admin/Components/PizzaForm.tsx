@@ -14,13 +14,16 @@ import {
 } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
 import { PizzaFormType, pizzaSchema } from "../Validation/pizzaSchema";
-import CustomInput from "@/components/ui/CustomInput";
 import { createPizzaAction } from "../Actions/createPizzaAction";
 import { useRouter } from "next/navigation";
-import { CustomLoader } from "@/components/ui/CustomLoader";
+import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { useEffect } from "react";
 import { getPizzaByIdAction } from "@/features/Admin/Actions/getPizzaByIdAction";
 import { updatePizzaAction } from "@/features/Admin/Actions/updatePizzaAction";
+import CustomCheckbox from "@/shared/Components/CustomCheckbox";
+import CustomTextarea from "@/shared/Components/CustomTextarea";
+import CustomNumber from "@/shared/Components/CustomNumber";
+import CustomText from "@/shared/Components/CustomText";
 
 export default function PizzaForm({ id }: { id?: string }) {
   const {
@@ -108,41 +111,36 @@ export default function PizzaForm({ id }: { id?: string }) {
       <CardContent>
         <form id="pizza-form" onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <CustomInput
+            <CustomText
               control={control}
               name="pizzaName"
-              type="text"
               label="Pizza neve *"
               placeholder="Margherita, Pepperoni etc."
             />
 
-            <CustomInput
+            <CustomNumber
               control={control}
               name="pizzaPrice32"
-              type="number"
               label="32 cm-es pizza ára *"
               placeholder="1190"
             />
-            <CustomInput
+            <CustomNumber
               control={control}
               name="pizzaPrice45"
-              type="number"
               label="45 cm-es pizza ára *"
               placeholder="1590"
             />
 
-            <CustomInput
+            <CustomTextarea
               control={control}
               name="pizzaDescription"
-              type="textarea"
               label="Pizza leírása *"
               placeholder="Rövid leírás az alapanyagokról és ízvilágról"
             />
 
-            <CustomInput
+            <CustomCheckbox
               control={control}
               name="isAvailableOnMenu"
-              type="checkbox"
               label="Elérhető legyen az étlapon ?"
             />
           </FieldGroup>

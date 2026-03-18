@@ -1,5 +1,5 @@
 "use client";
-import { CardDescription, CardTitle } from "@/components/ui/card";
+import { CardContent, CardDescription, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useState } from "react";
@@ -13,11 +13,7 @@ export default function PizzaContent({ pizza }: { pizza: any }) {
   const size45Id = `size45-${pizza.id}`;
 
   return (
-    <div className="mt-auto flex flex-col items-start gap-2 px-4 pt-4 border-t">
-      <CardTitle>{pizza.pizzaName}</CardTitle>
-      <CardDescription className="text-balance">
-        {pizza.pizzaDescription}
-      </CardDescription>
+    <CardContent className="space-y-2">
       <div className="flex flex-row items-center justify-between w-full">
         <p className="text-green font-semibold whitespace-nowrap">
           {`${
@@ -62,6 +58,6 @@ export default function PizzaContent({ pizza }: { pizza: any }) {
           </div>
         </RadioGroup>
       </div>
-    </div>
+    </CardContent>
   );
 }

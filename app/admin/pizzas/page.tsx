@@ -1,4 +1,4 @@
-import CustomLink from "@/components/ui/CustomLink";
+import CustomLink from "@/shared/Components/CustomLink";
 import AdminPizzaList from "@/features/Admin/Components/AdminPizzaList";
 import { AdminPizzaSkeleton } from "@/features/Admin/Components/AdminPizzaSkeleton";
 import { Suspense } from "react";

@@ -1,11 +1,11 @@
 "use server";
 
-import { getAllAvailablePizzaDal } from "../Dal/pizza.dal";
+import { getAllAvailablePizzaDal, PizzaWithImageType } from "../Dal/pizza.dal";
 
 type ResponseType =
   | {
       success: true;
-      data: any[];
+      data: PizzaWithImageType[];
     }
   | {
       success: false;

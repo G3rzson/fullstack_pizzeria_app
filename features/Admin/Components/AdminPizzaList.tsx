@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import CustomEmptyList from "@/components/ui/CustomEmptyList";
-import CustomError from "@/components/ui/CustomError";
+import CustomEmptyList from "@/shared/Components/CustomEmptyList";
+import CustomError from "@/shared/Components/CustomError";
 import { Pizza } from "lucide-react";
 import { getAllPizzaAction } from "../Actions/getAllPizzaAction";
 import { Badge } from "@/components/ui/badge";

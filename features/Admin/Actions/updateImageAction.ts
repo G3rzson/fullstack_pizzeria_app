@@ -4,12 +4,14 @@ import { updateImageDal } from "../Dal/pizzaDal";
 import { pizzaImageSchema } from "../Validation/pizzaImageSchema";
 import { deleteCloudinaryImage } from "./Cloudinary/deleteCloudinaryImage";
 import { uploadImageToCloudinary } from "./Cloudinary/uploadImageToCloudinary";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function updateImageAction(
   pizzaId: string,
   pizzaImage: unknown,
   publicId: string,
 ) {
+  await requireAdmin();
   const { data, success } = await pizzaImageSchema.safeParseAsync({
     pizzaImage,
   });

@@ -1,6 +1,6 @@
 "use client";
 import { changeMenuAction } from "../Actions/changeMenuAction";
-import ActionModal from "./ActionModal";
+import ActionModal from "../../../shared/Components/ActionModal";
 
 type Props = {
   pizzaId: string;

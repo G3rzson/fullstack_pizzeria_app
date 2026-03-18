@@ -1,4 +1,4 @@
-import CustomLink from "@/components/ui/CustomLink";
+import CustomLink from "@/shared/Components/CustomLink";
 import { ArrowBigLeft } from "lucide-react";
 
 export default function NotFound() {

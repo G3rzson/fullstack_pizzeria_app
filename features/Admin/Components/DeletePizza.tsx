@@ -1,7 +1,7 @@
 "use client";
 
 import { deletePizzaAction } from "../Actions/deletePizzaAction";
-import ActionModal from "./ActionModal";
+import ActionModal from "../../../shared/Components/ActionModal";
 
 type Props = {
   pizzaId: string;

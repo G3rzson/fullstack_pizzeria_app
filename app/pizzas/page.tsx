@@ -1,5 +1,5 @@
 import PizzaList from "@/features/Pizzas/Components/PizzaList";
-import { CustomSkeleton } from "@/components/ui/CustomSkeleton";
+import { CustomSkeleton } from "@/shared/Components/CustomSkeleton";
 import { Suspense } from "react";
 
 export default async function PizzasPage() {

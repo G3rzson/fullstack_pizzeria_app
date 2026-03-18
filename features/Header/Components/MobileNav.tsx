@@ -15,7 +15,6 @@ import { useRef, useState } from "react";
 import { NAV_LINKS } from "../Constants/Constants";
 import Link from "next/link";
 import Logo from "./Logo";
-import SettingsMenu from "@/features/SettingsMenu/SettingsMenu";
 
 export default function MobileNav() {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -80,12 +79,6 @@ export default function MobileNav() {
               ))}
             </ul>
           </nav>
-
-          <div className="border-t">
-            <DrawerFooter>
-              <SettingsMenu type="mobile" />
-            </DrawerFooter>
-          </div>
         </DrawerContent>
       </Drawer>
     </div>

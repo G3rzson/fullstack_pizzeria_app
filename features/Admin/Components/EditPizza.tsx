@@ -1,6 +1,6 @@
 "use client";
 
-import ActionModal from "./ActionModal";
+import ActionModal from "../../../shared/Components/ActionModal";
 import { useRouter } from "next/navigation";
 
 type Props = {

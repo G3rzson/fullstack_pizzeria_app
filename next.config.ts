@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     serverActions: {
       bodySizeLimit: "5mb",
     },
+    optimizeCss: true,
   },
 
   // Configure allowed image domains for Next.js Image component

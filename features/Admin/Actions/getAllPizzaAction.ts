@@ -1,6 +1,7 @@
 "use server";
 
 import { getAllPizzaDal } from "../Dal/pizzaDal";
+import { requireAdmin } from "@/lib/requireAdmin";
 
 type FormattedPizzaType = {
   id: string;
@@ -25,6 +26,7 @@ type ResponseType =
     };
 
 export async function getAllPizzaAction(): Promise<ResponseType> {
+  await requireAdmin();
   try {
     const pizzasArray = await getAllPizzaDal();
 
