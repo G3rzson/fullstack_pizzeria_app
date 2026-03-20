@@ -1,0 +1,48 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model Pizza {
+  id                String      @id @default(uuid())
+  pizzaName         String
+  pizzaDescription  String
+  pizzaPrice32      Float
+  pizzaPrice45      Float
+  isAvailableOnMenu Boolean
+  createdBy         String
+  category          String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  image             PizzaImage?
+}
+
+model PizzaImage {
+  id           String   @id @default(uuid())
+  pizzaId      String   @unique
+  publicId     String
+  publicUrl    String
+  originalName String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pizza Pizza @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  role      Role     @default(USER)
+}
