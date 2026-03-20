@@ -1,6 +1,6 @@
 "use server";
 import prisma from "@/prisma/prisma";
-import { Prisma } from "@prisma/client";
+import type { Prisma } from "@prisma/client";
 
 export async function createPizzaDal(data: Prisma.PizzaCreateInput) {
   await prisma.pizza.create({ data });
