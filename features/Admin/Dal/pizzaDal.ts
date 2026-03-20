@@ -2,18 +2,13 @@
 import prisma from "@/prisma/prisma";
 import { Prisma } from "@prisma/client";
 
-type FrontendPizzaType = {
-  PizzaName: string;
-  description: string;
-  price: number;
-  isAvailableOnMenu: boolean;
-};
-
 export async function createPizzaDal(data: Prisma.PizzaCreateInput) {
   await prisma.pizza.create({ data });
 }
 
-export async function getAllPizzaDal() {
+export async function getAllPizzaDal(): Promise<
+  Prisma.PizzaGetPayload<{ include: { image: true } }>[]
+> {
   const pizzasArray = await prisma.pizza.findMany({
     include: {
       image: true,

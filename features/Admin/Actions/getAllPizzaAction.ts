@@ -28,7 +28,7 @@ export async function getAllPizzaAction(): Promise<ResponseType> {
   try {
     const pizzasArray = await getAllPizzaDal();
 
-    const formattedPizzas = pizzasArray.map((pizza) => ({
+    const formattedPizzas: FormattedPizzaType[] = pizzasArray.map((pizza) => ({
       id: pizza.id,
       pizzaName: pizza.pizzaName,
       pizzaPrice32: pizza.pizzaPrice32,
