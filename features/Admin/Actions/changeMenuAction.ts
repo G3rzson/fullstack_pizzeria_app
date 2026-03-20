@@ -2,14 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { changeMenuDal } from "../Dal/pizzaDal";
-import { requireAdmin } from "@/lib/requireAdmin";
 
 export async function changeMenuAction(
   pizzaId: string,
   isAvailableOnMenu: boolean,
 ) {
   try {
-    await requireAdmin();
     isAvailableOnMenu = !isAvailableOnMenu;
     await changeMenuDal(pizzaId, isAvailableOnMenu);
 

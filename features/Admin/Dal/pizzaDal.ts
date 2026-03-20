@@ -1,9 +1,15 @@
 "use server";
-
-import { FrontendPizzaType } from "@/features/Pizzas/Types/types";
 import prisma from "@/prisma/prisma";
+import { Prisma } from "@prisma/client";
 
-export async function createPizzaDal(data: FrontendPizzaType) {
+type FrontendPizzaType = {
+  PizzaName: string;
+  description: string;
+  price: number;
+  isAvailableOnMenu: boolean;
+};
+
+export async function createPizzaDal(data: Prisma.PizzaCreateInput) {
   await prisma.pizza.create({ data });
 }
 
@@ -32,7 +38,10 @@ export async function deletePizzaDal(pizzaId: string) {
   });
 }
 
-export async function updatePizzaDal(id: string, data: FrontendPizzaType) {
+export async function updatePizzaDal(
+  id: string,
+  data: Prisma.PizzaUpdateInput,
+) {
   await prisma.pizza.update({
     where: { id },
     data,

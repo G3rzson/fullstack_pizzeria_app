@@ -1,14 +1,19 @@
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
 import Logo from "./Logo";
-import { isUserAdmin } from "@/lib/isUserAdmin";
 import Link from "next/link";
 import UserMenu from "@/features/User/Components/UserMenu";
-import { getAuthUser } from "@/shared/auth/requireAuth";
+import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
 
 export default async function Header() {
-  const isAdmin = await isUserAdmin();
-  const user = await getAuthUser();
+  const { getPermissions } = getKindeServerSession();
+
+  const show = await getPermissions();
+
+  const isAdmin = show?.permissions.includes("admin-user");
+
+  console.log(show);
+  console.log(isAdmin);
 
   return (
     <header className="w-full border-b bg-background sticky top-0 left-0 z-50">
@@ -25,7 +30,7 @@ export default async function Header() {
 
         <MobileNav />
 
-        <UserMenu type="desktop" isLoggedIn={!!user} />
+        <UserMenu type="desktop" />
       </div>
     </header>
   );

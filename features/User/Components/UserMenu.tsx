@@ -1,24 +1,26 @@
+"use client";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuGroup,
+  DropdownMenuItem,
   DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeSwitcher } from "@/features/ThemeSwicher/ThemeSwitcher";
 import { User } from "lucide-react";
-import Link from "next/link";
-import LogoutBtn from "./LogoutBtn";
+import {
+  LoginLink,
+  LogoutLink,
+  RegisterLink,
+} from "@kinde-oss/kinde-auth-nextjs/server";
+import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
 
-export default function UserMenu({
-  type,
-  isLoggedIn,
-}: {
-  type: "mobile" | "desktop";
-  isLoggedIn?: boolean;
-}) {
+export default function UserMenu({ type }: { type: "mobile" | "desktop" }) {
   const isMobile = type === "mobile";
+  const { user } = useKindeBrowserClient();
 
   return (
     <DropdownMenu>
@@ -32,34 +34,29 @@ export default function UserMenu({
         align={isMobile ? "center" : "end"}
         className={`${isMobile ? "" : "w-fit"} min-w-56`}
       >
-        <DropdownMenuGroup className="border-b">
-          <DropdownMenuLabel className="pl-4">
-            Felhasználói menü
-          </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuLabel>Felhasználói menü</DropdownMenuLabel>
+          {user ? (
+            <>
+              <DropdownMenuItem asChild>
+                <LogoutLink>Kijelentkezés</LogoutLink>
+              </DropdownMenuItem>
+              <p className="text-center">{user.given_name}</p>
+            </>
+          ) : (
+            <>
+              <DropdownMenuItem asChild>
+                <LoginLink>Bejelentkezés</LoginLink>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <RegisterLink>Regisztráció</RegisterLink>
+              </DropdownMenuItem>
+            </>
+          )}
         </DropdownMenuGroup>
-        {isLoggedIn ? (
-          <LogoutBtn />
-        ) : (
-          <div className="flex flex-col m-2">
-            <Link
-              href="/user/login"
-              className="hover:bg-current/20 w-full h-full p-2 rounded duration-300 text-center"
-            >
-              Bejelentkezés
-            </Link>
-
-            <Link
-              href="/user/register"
-              className="hover:bg-current/20 w-full h-full p-2 rounded duration-300 text-center"
-            >
-              Regisztráció
-            </Link>
-          </div>
-        )}
-        <DropdownMenuGroup className="border-b mb-1">
-          <DropdownMenuLabel className="pl-4">
-            Téma beállítások
-          </DropdownMenuLabel>
+        <DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuLabel>Téma beállítások</DropdownMenuLabel>
         </DropdownMenuGroup>
         <ThemeSwitcher isMobile={isMobile} />
       </DropdownMenuContent>
