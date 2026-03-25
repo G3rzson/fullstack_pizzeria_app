@@ -35,7 +35,7 @@ export default function MobileNav() {
       >
         <DrawerHeader className="p-0">
           <DrawerClose asChild>
-            <Link href="/" className="mr-auto">
+            <Link href="/" className="mr-auto ml-4">
               <Image
                 src="/logo.png"
                 alt="Logo"
