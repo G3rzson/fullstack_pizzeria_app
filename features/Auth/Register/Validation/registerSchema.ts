@@ -4,15 +4,11 @@ export const registerSchema = z.object({
   username: z
     .string()
     .trim()
-    .toLowerCase()
     .transform((str) => str.replace(/\s+/g, " "))
     .pipe(
       z.string().min(1, "A név kötelező!").max(30, "Max hossz 30 karakter!"),
     ),
-  email: z
-    .string()
-    .email("Érvénytelen email cím!")
-    .transform((val) => val.toLowerCase()),
+  email: z.string().toLowerCase().email("Érvénytelen email cím!"),
   password: z
     .string()
     .min(6, "A jelszónak legalább 6 karakter hosszúnak kell lennie!")
