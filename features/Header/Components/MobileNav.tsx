@@ -11,76 +11,70 @@ import {
   DrawerTrigger,
 } from "@/components/ui/drawer";
 import { Menu, X } from "lucide-react";
-import { useRef, useState } from "react";
-import { NAV_LINKS } from "../Constants/Constants";
 import Link from "next/link";
-import Logo from "./Logo";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { NAV_LINKS } from "../NavLinks/navLinks";
 
 export default function MobileNav() {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+  const pathname = usePathname();
   return (
-    <div className="md:hidden">
-      <Drawer
-        direction="left"
-        open={isDrawerOpen}
-        onOpenChange={(nextOpen) => {
-          if (nextOpen && document.activeElement instanceof HTMLElement) {
-            document.activeElement.blur();
-          }
-
-          setIsDrawerOpen(nextOpen);
-        }}
-      >
-        <DrawerTrigger asChild>
-          <Button variant="ghost" size="icon">
-            <Menu />
-          </Button>
-        </DrawerTrigger>
-
-        <DrawerContent
-          className="w-80 max-w-[85vw]"
-          onOpenAutoFocus={(event) => {
-            event.preventDefault();
-            closeButtonRef.current?.focus();
-          }}
+    <Drawer direction="left">
+      <DrawerTrigger asChild>
+        <Button
+          variant="outline"
+          className="capitalize md:hidden"
+          onClick={(e) => e.currentTarget.blur()}
         >
-          <div className="absolute right-4 top-4">
-            <DrawerClose asChild>
-              <Button ref={closeButtonRef} variant="ghost" size="icon">
-                <X />
-              </Button>
-            </DrawerClose>
-          </div>
-
-          <div className="flex items-center justify-center border-b">
-            <DrawerHeader>
-              <DrawerTitle className="sr-only">Navigációs menü</DrawerTitle>
-              <DrawerDescription className="sr-only">
-                A weboldal fő navigációs linkjei
-              </DrawerDescription>
-              <Logo />
-            </DrawerHeader>
-          </div>
-
-          <nav className="flex grow w-full">
-            <ul className="flex flex-col w-full">
+          <Menu />
+        </Button>
+      </DrawerTrigger>
+      <DrawerContent
+        autoFocus
+        className="data-[vaul-drawer-direction=bottom]:max-h-[50vh] data-[vaul-drawer-direction=top]:max-h-[50vh]"
+      >
+        <DrawerHeader className="p-0">
+          <DrawerClose asChild>
+            <Link href="/" className="mr-auto">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={100}
+                height={100}
+                className="w-25 h-25 object-contain"
+                loading="eager"
+              />
+            </Link>
+          </DrawerClose>
+          <div className="no-scrollbar overflow-y-auto">
+            <ul className="flex flex-col items-start">
               {NAV_LINKS.map((link) => (
-                <li key={link.href}>
+                <li key={link.href} className="w-full">
                   <DrawerClose asChild>
                     <Link
-                      className="px-3 py-3 hover:bg-muted block"
+                      className={`${pathname === link.href ? "active" : ""} nav-link mobile text-xl w-full p-4 block`}
                       href={link.href}
                     >
-                      {link.label}
+                      {link.title}
                     </Link>
                   </DrawerClose>
                 </li>
               ))}
             </ul>
-          </nav>
-        </DrawerContent>
-      </Drawer>
-    </div>
+          </div>
+          <DrawerTitle className="sr-only">Navigációs menü</DrawerTitle>
+          <DrawerDescription className="sr-only">
+            A weboldal fő navigációs linkjei
+          </DrawerDescription>
+        </DrawerHeader>
+        <DrawerFooter className="border-t">
+          <DrawerClose asChild>
+            <Button variant="outline" className="cursor-pointer">
+              <X />
+            </Button>
+          </DrawerClose>
+        </DrawerFooter>
+      </DrawerContent>
+    </Drawer>
   );
 }

@@ -1,31 +1,29 @@
-"use client";
+import Link from "next/link";
 import DesktopNav from "./DesktopNav";
 import MobileNav from "./MobileNav";
-import Logo from "./Logo";
-import Link from "next/link";
-import UserMenu from "@/features/User/Components/UserMenu";
-import { useKindeBrowserClient } from "@kinde-oss/kinde-auth-nextjs";
+import { ThemeSwitcher } from "./ThemeSwitcher";
+import Image from "next/image";
+import UserMenu from "./UserMenu";
 
 export default function Header() {
-  const { permissions } = useKindeBrowserClient();
-
-  const isAdmin = permissions?.permissions.includes("admin-user");
-
   return (
-    <header className="w-full border-b bg-background sticky top-0 left-0 z-50">
-      <div className="md:w-4/5 w-full mx-auto flex items-center justify-between px-4 py-3">
-        <Logo />
-
-        <Link href="/admin" className="text-h4">
-          Admin
+    <header className="w-full px-4 md:px-0 border-b-3 sticky top-0 left-0 z-50">
+      <nav className="flex items-center justify-end gap-4 md:w-4/5 w-full mx-auto">
+        <Link href="/" className="mr-auto">
+          <Image
+            src="/logo.png"
+            alt="Logo"
+            width={100}
+            height={100}
+            className="w-25 h-25 object-contain"
+            loading="eager"
+          />
         </Link>
-
         <DesktopNav />
-
         <MobileNav />
-
-        <UserMenu type="desktop" />
-      </div>
+        <UserMenu />
+        <ThemeSwitcher />
+      </nav>
     </header>
   );
 }

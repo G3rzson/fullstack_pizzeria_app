@@ -12,8 +12,9 @@ import {
 import { LaptopMinimalCheck, Moon, Sun } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
+import { Spinner } from "@/components/ui/spinner";
 
-export function ThemeSwitcher({ isMobile }: { isMobile: boolean }) {
+export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -22,24 +23,27 @@ export function ThemeSwitcher({ isMobile }: { isMobile: boolean }) {
   }, []);
 
   if (!mounted) {
-    return null;
+    return (
+      <Button variant="outline" title="Téma kiválasztása">
+        <Spinner />
+      </Button>
+    );
   }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" className="w-full">
-          Téma kiválasztása:
+        <Button variant="outline" title="Téma kiválasztása">
           {theme === "light" ? (
-            <Sun className="ml-2" />
+            <Sun />
           ) : theme === "dark" ? (
-            <Moon className="ml-2" />
+            <Moon />
           ) : (
-            <LaptopMinimalCheck className="ml-2" />
+            <LaptopMinimalCheck />
           )}
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align={isMobile ? "center" : "start"}>
+      <DropdownMenuContent align="end" className="w-40 p-2">
         <DropdownMenuGroup>
           <DropdownMenuLabel>Téma kiválasztása</DropdownMenuLabel>
           <DropdownMenuRadioGroup
