@@ -14,7 +14,7 @@ import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { NAV_LINKS } from "../NavLinks/navLinks";
+import { NAV_LINKS } from "../_constants/navLinks";
 
 export default function MobileNav() {
   const pathname = usePathname();

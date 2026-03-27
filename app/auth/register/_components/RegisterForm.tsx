@@ -11,16 +11,20 @@ import {
 import CustomEmail from "@/shared/Components/CustomEmail";
 import CustomPassword from "@/shared/Components/CustomPassword";
 import CustomText from "@/shared/Components/CustomText";
-import {
-  registerSchema,
-  type RegisterSchemaType,
-} from "../Validation/registerSchema";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import {
+  registerSchema,
+  type RegisterSchemaType,
+} from "../_validation/registerSchema";
+import { registerAction } from "../_actions/registerAction";
+import { toast } from "sonner";
+import { REGISTER_INFO } from "../_constants/info";
 
-export function RegisterForm() {
+export default function RegisterForm() {
   const {
     handleSubmit,
     control,
@@ -36,11 +40,22 @@ export function RegisterForm() {
   });
   const router = useRouter();
 
-  function onSubmit(data: RegisterSchemaType) {
-    console.log(data);
+  async function onSubmit(data: RegisterSchemaType) {
+    try {
+      const response = await registerAction(data);
 
-    //router.push("/auth/login");
-    //reset();
+      if (!response.success) {
+        toast.error(response.message || REGISTER_INFO.error);
+        return;
+      }
+
+      toast.success(response.message || REGISTER_INFO.success);
+      router.push("/auth/login");
+      reset();
+    } catch (err) {
+      toast.error(REGISTER_INFO.error);
+      console.error(err);
+    }
   }
   return (
     <Card className="w-full max-w-sm">
@@ -85,7 +100,7 @@ export function RegisterForm() {
           <p>Van már fiókod? </p>
           <Link
             href="/auth/login"
-            className="hover:text-amber-600 dark:hover:text-amber-300 transition-colors duration-300"
+            className="hover:text-amber-800 text-amber-600 dark:text-amber-200 dark:hover:text-amber-300 transition-colors duration-300"
           >
             Jelentkezz be!
           </Link>

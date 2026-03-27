@@ -4,7 +4,7 @@ import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
-import Header from "@/features/Header/Components/Header";
+import Header from "./_components/Header";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 

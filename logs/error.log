@@ -1,0 +1,22 @@
+{
+  "date": "2026-03-27T17:03:21.110Z",
+  "context": "registerAction - db duplicate error",
+  "error": {
+    "type": "Prisma",
+    "code": "P2002",
+    "meta": {
+      "modelName": "User",
+      "driverAdapterError": {
+        "name": "DriverAdapterError",
+        "cause": {
+          "originalCode": "1062",
+          "originalMessage": "Duplicate entry 'Pali' for key 'user.User_username_key'",
+          "kind": "UniqueConstraintViolation",
+          "constraint": {
+            "index": "User_username_key"
+          }
+        }
+      }
+    }
+  }
+}
