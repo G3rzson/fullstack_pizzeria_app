@@ -39,6 +39,7 @@ export default function CustomPassword<T extends FieldValues>({
             <Button
               type="button"
               variant="outline"
+              disabled={isSubmitting}
               size="icon"
               className="max-w-fit py-2 px-4 absolute right-0 -top-2"
               onClick={() => field.onChange(createPassword())}
