@@ -11,7 +11,6 @@ import {
 import CustomEmail from "@/shared/Components/CustomEmail";
 import CustomPassword from "@/shared/Components/CustomPassword";
 import CustomText from "@/shared/Components/CustomText";
-
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -67,6 +66,7 @@ export default function RegisterForm() {
       </CardHeader>
       <CardContent>
         <form
+          aria-label="register-form"
           id="register-form"
           onSubmit={handleSubmit(onSubmit)}
           className="flex w-full flex-col gap-8"
