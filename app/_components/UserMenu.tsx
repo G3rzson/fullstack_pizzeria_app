@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { User } from "lucide-react";
@@ -16,18 +17,18 @@ export default function UserMenu() {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40 p-2">
-        <Link
-          href="/auth/login"
-          className="block p-2 text-center hover:bg-accent transition-colors duration-300 rounded"
+        <DropdownMenuItem
+          asChild
+          className="p-2 hover:bg-accent transition-colors duration-300 rounded"
         >
-          Bejelentkezés
-        </Link>
-        <Link
-          href="/auth/register"
-          className="block p-2 text-center hover:bg-accent transition-colors duration-300 rounded"
+          <Link href="/auth/login">Bejelentkezés</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          asChild
+          className="p-2 hover:bg-accent transition-colors duration-300 rounded"
         >
-          Regisztráció
-        </Link>
+          <Link href="/auth/register">Regisztráció</Link>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
