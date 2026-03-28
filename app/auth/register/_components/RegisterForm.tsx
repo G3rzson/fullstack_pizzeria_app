@@ -69,6 +69,7 @@ export default function RegisterForm() {
           aria-label="register-form"
           id="register-form"
           onSubmit={handleSubmit(onSubmit)}
+          noValidate
           className="flex w-full flex-col gap-8"
         >
           <CustomText
