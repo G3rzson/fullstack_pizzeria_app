@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "./_components/Header";
+import { AuthProvider } from "@/lib/auth/AuthContext";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,11 +27,13 @@ export default function RootLayout({
       className={cn("font-sans", geist.variable)}
     >
       <body className="flex flex-col min-h-screen">
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <Header />
-          <main className="flex flex-col grow gap-4 p-4">{children}</main>
-          <Toaster />
-        </ThemeProvider>
+        <AuthProvider>
+          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+            <Header />
+            <main className="flex flex-col grow gap-4 p-4">{children}</main>
+            <Toaster />
+          </ThemeProvider>
+        </AuthProvider>
       </body>
     </html>
   );

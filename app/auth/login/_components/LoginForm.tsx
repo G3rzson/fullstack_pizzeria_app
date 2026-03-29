@@ -18,6 +18,7 @@ import { toast } from "sonner";
 import { loginSchema, type LoginSchemaType } from "../_validation/loginSchema";
 import { LOGIN_INFO } from "../_constants/info";
 import { loginAction } from "../_actions/loginAction";
+import { useAuth } from "@/lib/auth/useAuth";
 
 export default function LoginForm() {
   const {
@@ -33,6 +34,7 @@ export default function LoginForm() {
     },
   });
   const router = useRouter();
+  const { refreshUser } = useAuth();
 
   async function onSubmit(data: LoginSchemaType) {
     try {
@@ -42,6 +44,9 @@ export default function LoginForm() {
         toast.error(response.message || LOGIN_INFO.error);
         return;
       }
+
+      // Fetch user data after successful login
+      await refreshUser();
 
       toast.success(response.message || LOGIN_INFO.success);
       router.push("/");
