@@ -36,12 +36,14 @@ describe("Register Form Render", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render text input with correct type", () => {
+  it("should render username input with correct type", () => {
     render(<RegisterForm />);
 
-    const textInput = screen.getByRole("textbox", { name: /felhasználónév/i });
-    expect(textInput).toBeInTheDocument();
-    expect(textInput).toHaveAttribute("type", "text");
+    const usernameInput = screen.getByRole("textbox", {
+      name: /felhasználónév/i,
+    });
+    expect(usernameInput).toBeInTheDocument();
+    expect(usernameInput).toHaveAttribute("type", "text");
   });
 
   it("should render email input with correct type", () => {
