@@ -30,7 +30,9 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Header />
-            <main className="flex flex-col grow gap-4 p-4">{children}</main>
+            <main className="flex flex-col grow gap-4 p-4 w-full md:w-4/5 mx-auto">
+              {children}
+            </main>
             <Toaster />
           </ThemeProvider>
         </AuthProvider>

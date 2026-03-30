@@ -58,7 +58,7 @@ describe("/auth/me route", () => {
     );
   });
 
-  it("should return null user when no access token", async () => {
+  it("should return 401 when no access token", async () => {
     const mockCookieStore = {
       get: vi.fn(() => undefined),
     };
@@ -68,12 +68,14 @@ describe("/auth/me route", () => {
     const response = await GET();
     const data = await response.json();
 
+    expect(response.status).toBe(401);
     expect(data.user).toBeNull();
+    expect(data.error).toBe("No access token");
     expect(mockGetJwtSecrets).not.toHaveBeenCalled();
     expect(mockVerifyAccessToken).not.toHaveBeenCalled();
   });
 
-  it("should return null user when access token is invalid", async () => {
+  it("should return 401 when access token is invalid", async () => {
     const mockCookieStore = {
       get: vi.fn((name: string) => {
         if (name === "access_token") {
@@ -93,6 +95,8 @@ describe("/auth/me route", () => {
     const response = await GET();
     const data = await response.json();
 
+    expect(response.status).toBe(401);
     expect(data.user).toBeNull();
+    expect(data.error).toBe("Invalid or expired token");
   });
 });

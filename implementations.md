@@ -7,3 +7,6 @@
 **todo** zod - validációt külön finkcióba kirakni hogy mokolható és tesztelhető legyen
 
 **todo** route - a routok legyenek egységes response-al és helyes kóddal és message-vel
+
+**todo** pizzas - pizza skeleton a loading állapothoz
+**todo** pizzas - pizza képek a cloudinary-ből beállítani a default helyett ha van kép a list komponensben

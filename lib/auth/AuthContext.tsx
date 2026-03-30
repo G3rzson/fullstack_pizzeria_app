@@ -1,6 +1,7 @@
 "use client";
 
 import { createContext, useState, useEffect, type ReactNode } from "react";
+import { fetchWithAuth } from "@/lib/api/fetchWrapper";
 
 export type UserData = {
   id: string;
@@ -27,29 +28,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshUser = async () => {
     try {
       setIsLoading(true);
-      const response = await fetch("/auth/me");
+      const response = await fetchWithAuth("/auth/me");
       if (!response.ok) {
         setUser(null);
         return;
       }
 
       const data = await response.json();
-      if (data.user === null) {
-        // Próbáljuk meg a refresh token-t
-        const refreshResponse = await fetch("/auth/refresh", {
-          method: "POST",
-        });
-
-        if (!refreshResponse.ok) {
-          setUser(null);
-          return;
-        }
-
-        const refreshData = await refreshResponse.json();
-        setUser(refreshData.user || null);
-      } else {
-        setUser(data.user);
-      }
+      setUser(data.user || null);
     } catch (error) {
       console.error("Auth check failed:", error);
       setUser(null);

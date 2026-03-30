@@ -1,7 +1,15 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { renderHook, waitFor, act } from "@testing-library/react";
 import { AuthProvider } from "./AuthContext";
 import { useAuth } from "./useAuth";
+
+// Mock fetchWrapper
+vi.mock("@/lib/api/fetchWrapper", () => ({
+  fetchWithAuth: vi.fn(),
+}));
+
+import { fetchWithAuth } from "@/lib/api/fetchWrapper";
+const mockFetchWithAuth = fetchWithAuth as Mock;
 
 describe("AuthProvider", () => {
   beforeEach(() => {
@@ -9,20 +17,17 @@ describe("AuthProvider", () => {
   });
 
   it("should initialize with null user and call /auth/me on mount", async () => {
-    const mockFetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            user: {
-              id: "user-123",
-              username: "testuser",
-              role: "USER",
-            },
-          }),
-      } as Response),
-    );
-    global.fetch = mockFetch;
+    mockFetchWithAuth.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          user: {
+            id: "user-123",
+            username: "testuser",
+            role: "USER",
+          },
+        }),
+    } as Response);
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
@@ -39,17 +44,14 @@ describe("AuthProvider", () => {
       username: "testuser",
       role: "USER",
     });
-    expect(mockFetch).toHaveBeenCalledWith("/auth/me");
+    expect(mockFetchWithAuth).toHaveBeenCalledWith("/auth/me");
   });
 
   it("should set user to null when /auth/me fails", async () => {
-    const mockFetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ user: null }),
-      } as Response),
-    );
-    global.fetch = mockFetch;
+    mockFetchWithAuth.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ user: null }),
+    } as Response);
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
@@ -62,25 +64,18 @@ describe("AuthProvider", () => {
     expect(result.current.user).toBeNull();
   });
 
-  it("should attempt refresh when /auth/me returns null user", async () => {
-    const mockFetch = vi
-      .fn()
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () => Promise.resolve({ user: null }),
-      } as Response)
-      .mockResolvedValueOnce({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            user: {
-              id: "user-456",
-              username: "refresheduser",
-              role: "ADMIN",
-            },
-          }),
-      } as Response);
-    global.fetch = mockFetch;
+  it("should set user when /auth/me returns user data", async () => {
+    mockFetchWithAuth.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          user: {
+            id: "user-456",
+            username: "activeuser",
+            role: "ADMIN",
+          },
+        }),
+    } as Response);
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
@@ -92,21 +87,16 @@ describe("AuthProvider", () => {
 
     expect(result.current.user).toEqual({
       id: "user-456",
-      username: "refresheduser",
+      username: "activeuser",
       role: "ADMIN",
     });
-    expect(mockFetch).toHaveBeenCalledWith("/auth/me");
-    expect(mockFetch).toHaveBeenCalledWith("/auth/refresh", { method: "POST" });
   });
 
   it("should update user when login is called", async () => {
-    const mockFetch = vi.fn(() =>
-      Promise.resolve({
-        ok: false,
-        json: () => Promise.resolve({ user: null }),
-      } as Response),
-    );
-    global.fetch = mockFetch;
+    mockFetchWithAuth.mockResolvedValue({
+      ok: false,
+      json: () => Promise.resolve({ user: null }),
+    } as Response);
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
@@ -131,20 +121,17 @@ describe("AuthProvider", () => {
   });
 
   it("should set user to null when logout is called", async () => {
-    const mockFetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () =>
-          Promise.resolve({
-            user: {
-              id: "user-123",
-              username: "testuser",
-              role: "USER",
-            },
-          }),
-      } as Response),
-    );
-    global.fetch = mockFetch;
+    mockFetchWithAuth.mockResolvedValue({
+      ok: true,
+      json: () =>
+        Promise.resolve({
+          user: {
+            id: "user-123",
+            username: "testuser",
+            role: "USER",
+          },
+        }),
+    } as Response);
 
     const { result } = renderHook(() => useAuth(), {
       wrapper: AuthProvider,
@@ -166,8 +153,7 @@ describe("AuthProvider", () => {
   });
 
   it("should handle fetch error in refreshUser", async () => {
-    const mockFetch = vi.fn(() => Promise.reject(new Error("Network error")));
-    global.fetch = mockFetch;
+    mockFetchWithAuth.mockRejectedValue(new Error("Network error"));
     const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
 
     const { result } = renderHook(() => useAuth(), {
