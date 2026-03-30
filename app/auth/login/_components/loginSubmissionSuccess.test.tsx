@@ -23,6 +23,18 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/auth/login"),
 }));
 
+// Mock useAuth
+const mockRefreshUser = vi.fn();
+vi.mock("@/lib/auth/useAuth", () => ({
+  useAuth: vi.fn(() => ({
+    user: null,
+    isLoading: false,
+    login: vi.fn(),
+    logout: vi.fn(),
+    refreshUser: mockRefreshUser,
+  })),
+}));
+
 // Mock toast
 vi.mock("sonner", () => ({
   toast: {
