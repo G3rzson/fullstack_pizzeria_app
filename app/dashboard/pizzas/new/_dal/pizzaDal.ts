@@ -15,7 +15,6 @@ export async function getAllPizzaDal() {
   return pizzasArray;
 }
 
-/*
 export async function changeMenuDal(
   pizzaId: string,
   isAvailableOnMenu: boolean,
@@ -42,6 +41,13 @@ export async function updatePizzaDal(
   });
 }
 
+export async function getPizzaByIdDal(pizzaId: string) {
+  return await prisma.pizza.findUnique({
+    where: { id: pizzaId },
+    include: { image: true },
+  });
+}
+
 export async function uploadImageDal(
   pizzaId: string,
   imageData: { publicId: string; publicUrl: string; originalName: string },
@@ -56,14 +62,6 @@ export async function uploadImageDal(
   });
 }
 
-export async function getPizzaByIdDal(pizzaId: string) {
-  const pizza = await prisma.pizza.findUnique({
-    where: { id: pizzaId },
-    include: { image: true },
-  });
-  return pizza;
-}
-
 export async function updateImageDal(
   pizzaId: string,
   imageData: { publicId: string; publicUrl: string; originalName: string },
@@ -73,4 +71,3 @@ export async function updateImageDal(
     data: imageData,
   });
 }
-*/

@@ -20,8 +20,12 @@ import CustomText from "@/shared/Components/CustomText";
 import CustomNumber from "@/shared/Components/CustomNumber";
 import CustomTextarea from "@/shared/Components/CustomTextarea";
 import CustomCheckbox from "@/shared/Components/CustomCheckbox";
+import { useEffect } from "react";
+import { getPizzaByIdAction } from "../_actions/getPizzaByIdAction";
+import { updatePizzaAction } from "../_actions/updatePizzaAction";
+import { CustomLoader } from "@/shared/Components/CustomLoader";
 
-export default function PizzaForm() {
+export default function PizzaForm({ id }: { id?: string }) {
   const {
     handleSubmit,
     control,
@@ -39,25 +43,70 @@ export default function PizzaForm() {
   });
   const router = useRouter();
 
+  useEffect(() => {
+    const fetchPizza = async () => {
+      if (id) {
+        const editingData = await getPizzaByIdAction(id);
+
+        if (!editingData.success || !editingData.data) {
+          toast.error(
+            editingData.message ||
+              "Hiba történt a pizza adatainak lekérése során.",
+          );
+          return;
+        }
+
+        if (editingData.success) {
+          reset({
+            pizzaName: editingData.data.pizzaName,
+            pizzaPrice32: editingData.data.pizzaPrice32,
+            pizzaPrice45: editingData.data.pizzaPrice45,
+            pizzaDescription: editingData.data.pizzaDescription,
+            isAvailableOnMenu: editingData.data.isAvailableOnMenu,
+          });
+        }
+      }
+    };
+
+    fetchPizza();
+  }, [id, reset]);
+
   async function onSubmit(data: PizzaFormType) {
-    const response = await createPizzaAction(data);
+    if (id) {
+      // update
+      const response = await updatePizzaAction(id, data);
 
-    if (!response.success) {
-      toast.error(
-        response.message || "Szerverhiba történt! Próbáld újra később.",
-      );
-      return;
+      if (!response.success) {
+        toast.error(
+          response.message || "Hiba történt a pizza frissítése során!",
+        );
+        return;
+      }
+
+      toast.success(response.message || "Pizza sikeresen frissítve!");
+
+      reset();
+      router.push("/dashboard/pizzas");
+    } else {
+      // create
+      const response = await createPizzaAction(data);
+
+      if (!response.success) {
+        toast.error(
+          response.message || "Szerverhiba történt! Próbáld újra később.",
+        );
+        return;
+      }
+
+      toast.success(response.message || "Pizza sikeresen létrehozva!");
+      reset();
+      router.push("/dashboard/pizzas");
     }
-
-    toast.success(response.message || "Pizza sikeresen létrehozva!");
-    reset();
-    router.push("/dashboard/pizzas");
   }
-
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Új pizza</CardTitle>
+        <CardTitle>{id ? "Pizza szerkesztése" : "Új pizza"}</CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
@@ -112,7 +161,13 @@ export default function PizzaForm() {
           form="pizza-form"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Mentés..." : "Pizza létrehozása"}
+          {isSubmitting ? (
+            <CustomLoader />
+          ) : id ? (
+            "Pizza frissítése"
+          ) : (
+            "Pizza létrehozása"
+          )}
         </Button>
       </CardFooter>
     </Card>
