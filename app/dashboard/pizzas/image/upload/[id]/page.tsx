@@ -1,4 +1,4 @@
-import PizzaImageForm from "../../../new/_components/PizzaImageForm";
+import PizzaImageForm from "@/app/dashboard/pizzas/_components/PizzaImageForm";
 
 export default async function UploadImagePage({
   params,
@@ -7,5 +7,9 @@ export default async function UploadImagePage({
 }) {
   const id = (await params).id;
 
-  return <PizzaImageForm id={id} />;
+  return (
+    <div className="flex grow items-center justify-center">
+      <PizzaImageForm id={id} />
+    </div>
+  );
 }

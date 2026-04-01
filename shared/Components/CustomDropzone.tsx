@@ -1,7 +1,7 @@
 import { useDropzone } from "react-dropzone";
 import { useCallback, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { MAX_FILE_SIZE } from "@/app/dashboard/pizzas/new/_constants/constants";
+import { MAX_FILE_SIZE } from "../Constants/constants";
 
 type Props = {
   value: unknown;

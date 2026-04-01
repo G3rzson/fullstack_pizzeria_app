@@ -47,3 +47,52 @@ model PizzaImage {
 
   pizza Pizza @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
 }
+
+model Pasta {
+  id                String      @id @default(uuid())
+  pastaName         String
+  pastaDescription  String
+  pastaPrice        Float
+  isAvailableOnMenu Boolean
+  createdBy         String
+  category          String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  image             PastaImage?
+}
+
+model PastaImage {
+  id           String   @id @default(uuid())
+  pastaId      String   @unique
+  publicId     String
+  publicUrl    String
+  originalName String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  pasta Pasta @relation(fields: [pastaId], references: [id], onDelete: Cascade)
+}
+
+model Drink {
+  id                String      @id @default(uuid())
+  drinkName         String
+  drinkPrice        Float
+  isAvailableOnMenu Boolean
+  createdBy         String
+  category          String
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+  image             DrinkImage?
+}
+
+model DrinkImage {
+  id           String   @id @default(uuid())
+  drinkId      String   @unique
+  publicId     String
+  publicUrl    String
+  originalName String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  drink Drink @relation(fields: [drinkId], references: [id], onDelete: Cascade)
+}

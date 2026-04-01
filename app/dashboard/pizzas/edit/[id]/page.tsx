@@ -1,4 +1,4 @@
-import PizzaForm from "../../new/_components/PizzaForm";
+import PizzaForm from "../../_components/PizzaForm";
 
 export default async function EditPizzaPage({
   params,

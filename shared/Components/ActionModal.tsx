@@ -14,17 +14,23 @@ type Props = {
   triggerTitle: string;
   description: string;
   action: () => void;
+  disabled?: boolean;
 };
 
 export default function ActionModal({
   triggerTitle,
   description,
   action,
+  disabled,
 }: Props) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant={"secondary"} className="cursor-pointer w-full">
+        <Button
+          disabled={disabled}
+          variant={"secondary"}
+          className="cursor-pointer w-full"
+        >
           {triggerTitle}
         </Button>
       </DialogTrigger>
@@ -37,7 +43,11 @@ export default function ActionModal({
         </DialogHeader>
         <DialogFooter>
           <DialogClose asChild>
-            <Button variant="destructive" className="cursor-pointer">
+            <Button
+              variant="destructive"
+              className="cursor-pointer"
+              disabled={disabled}
+            >
               Mégse
             </Button>
           </DialogClose>
@@ -46,6 +56,7 @@ export default function ActionModal({
               variant="outline"
               className="cursor-pointer"
               onClick={action}
+              disabled={disabled}
             >
               Igen
             </Button>
