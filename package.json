@@ -5,10 +5,7 @@
   "scripts": {
     "postinstall": "prisma generate",
     "dev": "next dev",
-    "build": "npm run build:conditional",
-    "build:conditional": "node scripts/conditional-build.js",
-    "build:production": "prisma migrate deploy && next build",
-    "build:preview": "next build",
+    "build": "prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
