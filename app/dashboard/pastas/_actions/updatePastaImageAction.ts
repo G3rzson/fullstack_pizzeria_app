@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
@@ -60,6 +61,8 @@ export async function updatePastaImageAction(
 
     await deleteCloudinaryImage(oldPublicId);
 
+    revalidatePath(`/pastas`);
+    revalidatePath(`/dashboard/pastas`);
     return {
       success: true,
       message: "A kép sikeresen frissítve!",

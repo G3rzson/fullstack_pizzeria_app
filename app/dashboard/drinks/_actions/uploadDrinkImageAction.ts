@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
@@ -53,6 +54,8 @@ export async function uploadDrinkImageAction(
     await uploadDrinkImageDal(idData.id, imageData);
 
     publicId = result.public_id; // Store the publicId for potential cleanup
+    revalidatePath(`/drinks`);
+    revalidatePath(`/dashboard/drinks`);
     return {
       success: true,
       message: "Ital kép sikeresen feltöltve!",
