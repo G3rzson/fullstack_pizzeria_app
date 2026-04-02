@@ -3,6 +3,7 @@
 import ActionModal from "@/shared/Components/ActionModal";
 import { toast } from "sonner";
 import { useState } from "react";
+import { changePastaMenuAction } from "../_actions/changePastaMenuAction";
 
 type Props = {
   id: string;
@@ -36,7 +37,7 @@ export default function ChangePastaMenuStateBtn({
         isAvailableOnMenu ? "Levétel a menüről" : "Hozzáadás a menühöz"
       }
       description="Biztos módisítod a menü státuszát?"
-      action={() => changePizzaMenu(id, isAvailableOnMenu)}
+      action={() => changePastaMenu(id, isAvailableOnMenu)}
       disabled={isLoading}
     />
   );

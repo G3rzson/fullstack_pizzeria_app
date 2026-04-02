@@ -4,11 +4,14 @@ import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
-import { uploadPizzaImageDal } from "@/app/dashboard/pizzas/_dal/pizzaDal";
 import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
 import { uploadPastaImageDal } from "../_dal/pastaDal";
+import { SimpleResponseType } from "@/shared/Types/types";
 
-export async function uploadPastaImageAction(id: string, pastaImage: unknown) {
+export async function uploadPastaImageAction(
+  id: string,
+  pastaImage: unknown,
+): Promise<SimpleResponseType> {
   let publicId: string | null = null;
   try {
     const permissionResult = await hasPermission();
@@ -29,22 +32,22 @@ export async function uploadPastaImageAction(id: string, pastaImage: unknown) {
     }
 
     const { data, success } = await imageSchema.safeParseAsync({
-      pastaImage,
+      image: pastaImage,
     });
 
-    if (!success || !data.pastaImage) {
+    if (!success || !data.image) {
       return {
         success: false,
         message: "Érvénytelen kép fájl!",
       };
     }
 
-    const result = await uploadImageToCloudinary(data.pastaImage, "pastas");
+    const result = await uploadImageToCloudinary(data.image, "pastas");
 
     const imageData = {
       publicId: result.public_id,
       publicUrl: result.secure_url,
-      originalName: data.pastaImage.name,
+      originalName: data.image.name,
     };
 
     await uploadPastaImageDal(idData.id, imageData);

@@ -3,10 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
-import { deletePastaDal } from "../_dal/pastaDal";
+import { deleteDrinkDal } from "../_dal/drinkDal";
 
-export async function deletePastaAction(
-  pastaId: string,
+export async function deleteDrinkAction(
+  drinkId: string,
   publicId: string | null,
 ) {
   try {
@@ -15,11 +15,11 @@ export async function deletePastaAction(
     if (!permissionResult) {
       return {
         success: false,
-        message: "Nincs jogosultságod a pasta törléséhez!",
+        message: "Nincs jogosultságod az ital törléséhez!",
       };
     }
 
-    const { success, data } = idValidator.safeParse({ id: pastaId });
+    const { success, data } = idValidator.safeParse({ id: drinkId });
     if (!success) {
       return {
         success: false,
@@ -27,7 +27,7 @@ export async function deletePastaAction(
       };
     }
 
-    await deletePastaDal(data.id);
+    await deleteDrinkDal(data.id);
 
     if (publicId) {
       const { deleteCloudinaryImage } =
@@ -35,17 +35,17 @@ export async function deletePastaAction(
       await deleteCloudinaryImage(publicId);
     }
 
-    revalidatePath("/pastas");
-    revalidatePath("/dashboard/pastas");
+    revalidatePath("/drinks");
+    revalidatePath("/dashboard/drinks");
     return {
       success: true,
-      message: "A pasta sikeresen törölve.",
+      message: "Az ital sikeresen törölve.",
     };
   } catch (error) {
-    console.error("Error deleting pasta:", error);
+    console.error("Error deleting drink:", error);
     return {
       success: false,
-      message: "Hiba történt a pasta törlése során.",
+      message: "Hiba történt az ital törlése során.",
     };
   }
 }

@@ -13,6 +13,7 @@ import { getAllPizzaAction } from "../_actions/getAllPizzaAction";
 import ChangePizzaMenuStateBtn from "./ChangePizzaMenuStateBtn";
 import DeletePizzaBtn from "@/app/dashboard/pizzas/_components/DeletePizzaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
+import { generateBlurUrl } from "@/lib/generateBlurUrl";
 
 export default async function PizzaList() {
   const response = await getAllPizzaAction();
@@ -41,7 +42,7 @@ export default async function PizzaList() {
                       alt={pizza.pizzaName}
                       fill
                       placeholder="blur"
-                      blurDataURL={pizza.publicUrl}
+                      blurDataURL={generateBlurUrl(pizza.publicUrl)}
                       className="rounded-xl object-cover select-none pointer-events-none"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
@@ -65,7 +66,7 @@ export default async function PizzaList() {
 
                 <MenuNavLink
                   href={`/dashboard/pizzas/image/upload/${pizza.pizzaId ? pizza.pizzaId : pizza.id}`}
-                  title="Kép feltöltése"
+                  title={pizza.pizzaId ? "Kép frissítése" : "Kép feltöltése"}
                 />
 
                 <MenuNavLink
@@ -73,7 +74,7 @@ export default async function PizzaList() {
                   title="Pizza szerkesztése"
                 />
 
-                <DeletePizzaBtn id={pizza.id} />
+                <DeletePizzaBtn id={pizza.id} publicId={pizza.publicId} />
               </div>
             </div>
 

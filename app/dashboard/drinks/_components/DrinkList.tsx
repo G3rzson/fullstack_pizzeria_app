@@ -9,38 +9,39 @@ import { Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { getAllPastaAction } from "../_actions/getAllPastaAction";
-import DeletePastaBtn from "./DeletePastaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
+import { getAllDrinkAction } from "../_actions/getAllDrinkAction";
+import { generateBlurUrl } from "@/lib/generateBlurUrl";
+import ChangeDrinkMenuStateBtn from "./ChangeDrinkMenuStateBtn";
+import DeleteDrinkBtn from "./DeleteDrinkBtn";
 
-export default async function PastaList() {
-  const response = await getAllPastaAction();
+export default async function DrinkList() {
+  const response = await getAllDrinkAction();
 
   if (!response.success)
     return (
-      <div>Hiba történt a pasták lekérése során! Próbáld újra később.</div>
+      <div>Hiba történt az italok lekérése során! Próbáld újra később.</div>
     );
 
-  const pastasArray = response.data || [];
+  const drinksArray = response.data || [];
 
-  if (pastasArray.length === 0)
-    return <div>Jelenleg nincs elérhető pasta.</div>;
+  if (drinksArray.length === 0) return <div>Jelenleg nincs elérhető ital.</div>;
 
   return (
     <ul className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-      {pastasArray.map((pasta) => (
-        <li key={pasta.id}>
+      {drinksArray.map((drink) => (
+        <li key={drink.id}>
           <Card className="h-full w-full">
             <div className="w-full flex flex-row justify-between px-4">
               <div className="flex items-center justify-center h-30 w-30  lg:w-50 lg:h-50">
-                {pasta.publicUrl ? (
+                {drink.publicUrl ? (
                   <div className="relative w-full h-full">
                     <Image
-                      src={pasta.publicUrl}
-                      alt={pasta.pastaName}
+                      src={drink.publicUrl}
+                      alt={drink.drinkName}
                       fill
                       placeholder="blur"
-                      blurDataURL={pasta.publicUrl}
+                      blurDataURL={generateBlurUrl(drink.publicUrl)}
                       className="rounded-xl object-cover select-none pointer-events-none"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
@@ -52,39 +53,36 @@ export default async function PastaList() {
 
               <div className="flex flex-col gap-2 items-end">
                 <Badge
-                  className={`${pasta.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} text-foreground w-40`}
+                  className={`${drink.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} text-foreground w-40 p-3`}
                 >
-                  {pasta.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}
+                  {drink.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}
                 </Badge>
 
-                <hangePastaMenuAction
-                  id={pasta.id}
-                  isAvailableOnMenu={pasta.isAvailableOnMenu}
+                <ChangeDrinkMenuStateBtn
+                  id={drink.id}
+                  isAvailableOnMenu={drink.isAvailableOnMenu}
                 />
 
                 <MenuNavLink
-                  href={`/dashboard/pastas/image/upload/${pasta.id}`}
-                  title="Kép feltöltése"
+                  href={`/dashboard/drinks/image/upload/${drink.id}`}
+                  title={drink.drinkId ? "Kép frissítése" : "Kép feltöltése"}
                 />
 
                 <MenuNavLink
-                  href={`/dashboard/pastas/edit/${pasta.id}`}
-                  title="Tészta szerkesztése"
+                  href={`/dashboard/drinks/edit/${drink.id}`}
+                  title="Ital szerkesztése"
                 />
 
-                <DeletePastaBtn id={pasta.id} />
+                <DeleteDrinkBtn id={drink.id} publicId={drink.publicId} />
               </div>
             </div>
 
             <CardHeader>
-              <CardTitle> {pasta.pastaName} </CardTitle>
+              <CardTitle> {drink.drinkName} </CardTitle>
             </CardHeader>
 
             <CardContent className="space-y-2 h-full">
-              <CardTitle>Ár: {pasta.pastaPrice} Ft</CardTitle>
-              <CardTitle className="text-balance mt-auto">
-                {pasta.pastaDescription}
-              </CardTitle>
+              <CardTitle>Ár: {drink.drinkPrice} Ft</CardTitle>
             </CardContent>
 
             <CardFooter>

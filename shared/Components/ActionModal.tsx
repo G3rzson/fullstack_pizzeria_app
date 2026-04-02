@@ -37,11 +37,11 @@ export default function ActionModal({
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{triggerTitle}</DialogTitle>
-          <DialogDescription className="text-destructive text-balance">
+          <DialogDescription className="text-destructive text-balance mt-4 mb-2">
             {description}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="p-2">
           <DialogClose asChild>
             <Button
               variant="destructive"

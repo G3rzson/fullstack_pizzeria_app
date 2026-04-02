@@ -2,11 +2,11 @@
 
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
-import { pastaSchema } from "../_validation/pastaSchema";
-import { updatePastaDal } from "../_dal/pastaDal";
+import { drinkSchema } from "../_validation/drinkSchema";
+import { updateDrinkDal } from "../_dal/drinkDal";
 
-export async function updatePastaAction(pastaId: string, pasta: unknown) {
-  const { data, success } = await pastaSchema.safeParseAsync(pasta);
+export async function updateDrinkAction(drinkId: string, drink: unknown) {
+  const { data, success } = await drinkSchema.safeParseAsync(drink);
 
   if (!success) {
     return {
@@ -20,12 +20,12 @@ export async function updatePastaAction(pastaId: string, pasta: unknown) {
   if (!permissionResult) {
     return {
       success: false,
-      message: "Nincs jogosultságod a pasta frissítéséhez!",
+      message: "Nincs jogosultságod az ital frissítéséhez!",
     };
   }
 
   const { success: successId, data: idData } = idValidator.safeParse({
-    id: pastaId,
+    id: drinkId,
   });
   if (!successId) {
     return {
@@ -35,20 +35,20 @@ export async function updatePastaAction(pastaId: string, pasta: unknown) {
   }
 
   try {
-    const newPasta = {
+    const newDrink = {
       ...data,
-      category: "pasták",
+      category: "italok",
       createdBy: permissionResult.username,
     };
 
-    await updatePastaDal(idData.id, newPasta);
+    await updateDrinkDal(idData.id, newDrink);
 
-    return { success: true, message: "Pasta sikeresen frissítve!" };
+    return { success: true, message: "Ital sikeresen frissítve!" };
   } catch (error) {
-    console.error("Error updating pasta:", error);
+    console.error("Error updating drink:", error);
     return {
       success: false,
-      message: "Hiba történt a pasta frissítése során.",
+      message: "Hiba történt az ital frissítése során.",
     };
   }
 }

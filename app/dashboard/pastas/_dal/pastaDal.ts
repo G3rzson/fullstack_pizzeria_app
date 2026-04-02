@@ -50,7 +50,7 @@ export async function getPastaByIdDal(id: string) {
 
 export async function uploadPastaImageDal(
   id: string,
-  imageData: Prisma.PastaImageCreateWithoutPastaInput,
+  imageData: Prisma.ImageCreateWithoutPastaInput,
 ) {
   await prisma.pasta.update({
     where: { id },
@@ -63,11 +63,11 @@ export async function uploadPastaImageDal(
 }
 
 export async function updatePastaImageDal(
-  id: string,
-  imageData: Prisma.PastaImageUpdateInput,
+  pastaId: string,
+  imageData: Prisma.ImageUpdateInput,
 ) {
-  await prisma.pastaImage.update({
-    where: { id },
+  await prisma.image.update({
+    where: { pastaId },
     data: imageData,
   });
 }

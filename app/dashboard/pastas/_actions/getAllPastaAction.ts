@@ -8,6 +8,7 @@ type FormattedPastaType = {
   pastaPrice: number;
   pastaDescription: string;
   isAvailableOnMenu: boolean;
+  pastaId: string | null;
   publicId: string | null;
   originalName: string | null;
   publicUrl: string | null;
@@ -33,6 +34,7 @@ export async function getAllPastaAction(): Promise<ResponseType> {
       pastaPrice: pasta.pastaPrice,
       pastaDescription: pasta.pastaDescription,
       isAvailableOnMenu: pasta.isAvailableOnMenu,
+      pastaId: pasta.image?.pastaId || null,
       publicId: pasta.image?.publicId || null,
       originalName: pasta.image?.originalName || null,
       publicUrl: pasta.image?.publicUrl || null,

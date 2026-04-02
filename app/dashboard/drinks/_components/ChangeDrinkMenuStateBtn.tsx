@@ -3,21 +3,22 @@
 import ActionModal from "@/shared/Components/ActionModal";
 import { toast } from "sonner";
 import { useState } from "react";
+import { changeDrinkMenuAction } from "../_actions/changeDrinkMenuAction";
 
 type Props = {
   id: string;
   isAvailableOnMenu: boolean;
 };
 
-export default function ChangePastaMenuStateBtn({
+export default function ChangeDrinkMenuStateBtn({
   id,
   isAvailableOnMenu,
 }: Props) {
   const [isLoading, setIsLoading] = useState(false);
-  async function changePastaMenu(id: string, isAvailableOnMenu: boolean) {
+  async function changeDrinkMenu(id: string, isAvailableOnMenu: boolean) {
     try {
       setIsLoading(true);
-      const response = await changePastaMenuAction(id, isAvailableOnMenu);
+      const response = await changeDrinkMenuAction(id, isAvailableOnMenu);
       if (!response.success) {
         toast.error(response.message);
         return;
@@ -36,7 +37,7 @@ export default function ChangePastaMenuStateBtn({
         isAvailableOnMenu ? "Levétel a menüről" : "Hozzáadás a menühöz"
       }
       description="Biztos módisítod a menü státuszát?"
-      action={() => changePizzaMenu(id, isAvailableOnMenu)}
+      action={() => changeDrinkMenu(id, isAvailableOnMenu)}
       disabled={isLoading}
     />
   );

@@ -14,7 +14,6 @@ import {
 } from "@/components/ui/card";
 import { FieldGroup } from "@/components/ui/field";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
 import { CustomLoader } from "@/shared/Components/CustomLoader";
 import CustomImage from "@/shared/Components/CustomImage";
 import {
@@ -22,11 +21,28 @@ import {
   type ImageFormOutputType,
   imageSchema,
 } from "@/shared/Validation/ImageSchema";
-import { uploadPizzaImageAction } from "../_actions/uploadPizzaImageAction";
-import { updatePizzaImageAction } from "../_actions/updatePizzaImageAction";
-import { getPizzaByIdAction } from "../_actions/getPizzaByIdAction";
+import { type MenuObjectType, type SimpleResponseType } from "../Types/types";
 
-export default function PizzaImageForm({ id }: { id: string }) {
+type Props = {
+  returnUrl: string;
+  menuObject: MenuObjectType;
+  updateImageAction: (
+    id: string,
+    image: File | null,
+    publicId: string,
+  ) => Promise<SimpleResponseType>;
+  uploadImageAction: (
+    id: string,
+    image: File | null,
+  ) => Promise<SimpleResponseType>;
+};
+
+export default function ImageForm({
+  returnUrl,
+  menuObject,
+  updateImageAction,
+  uploadImageAction,
+}: Props) {
   const {
     handleSubmit,
     control,
@@ -35,41 +51,18 @@ export default function PizzaImageForm({ id }: { id: string }) {
   } = useForm<ImageFormInputType, unknown, ImageFormOutputType>({
     resolver: zodResolver(imageSchema),
     defaultValues: {
-      pizzaImage: null,
+      image: null,
     },
   });
   const router = useRouter();
-  const [image, setImage] = useState<{
-    id: string;
-    publicId: string;
-    publicUrl: string;
-    originalName: string;
-  } | null>(null);
-
-  useEffect(() => {
-    async function getImageById(id: string) {
-      const response = await getPizzaByIdAction(id);
-
-      if (!response.success || !response.data) {
-        toast.error(response.message);
-        return router.push(`/dashboard/pizzas`);
-      }
-
-      if (response.data.image) {
-        setImage(response.data.image);
-      }
-    }
-
-    getImageById(id);
-  }, [id]);
 
   async function onSubmit(data: ImageFormOutputType) {
-    if (image) {
+    if (menuObject.image) {
       // update
-      const response = await updatePizzaImageAction(
-        id,
-        data.pizzaImage,
-        image.publicId,
+      const response = await updateImageAction(
+        menuObject.id,
+        data.image,
+        menuObject.image.publicId,
       );
 
       if (!response.success) {
@@ -79,12 +72,12 @@ export default function PizzaImageForm({ id }: { id: string }) {
         return;
       }
 
-      toast.success(response.message || "Pizza kép sikeresen frissítve!");
+      toast.success(response.message || "Kép sikeresen frissítve!");
       reset();
-      router.push(`/dashboard/pizzas  `);
+      router.push(returnUrl);
     } else {
       // create
-      const response = await uploadPizzaImageAction(id, data.pizzaImage);
+      const response = await uploadImageAction(menuObject.id, data.image);
 
       if (!response.success) {
         toast.error(response.message);
@@ -93,13 +86,15 @@ export default function PizzaImageForm({ id }: { id: string }) {
 
       toast.success(response.message);
       reset();
-      router.push(`/dashboard/pizzas`);
+      router.push(returnUrl);
     }
   }
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>Kép feltöltése</CardTitle>
+        <CardTitle>
+          {menuObject.image ? "Kép frissítése" : "Kép feltöltése"}
+        </CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
@@ -107,11 +102,7 @@ export default function PizzaImageForm({ id }: { id: string }) {
       <CardContent>
         <form id="image-form" onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <CustomImage
-              control={control}
-              name="pizzaImage"
-              label="Pizza kép *"
-            />
+            <CustomImage control={control} name="image" label="Pizza kép *" />
           </FieldGroup>
         </form>
       </CardContent>
@@ -124,7 +115,7 @@ export default function PizzaImageForm({ id }: { id: string }) {
         >
           {isSubmitting ? (
             <CustomLoader />
-          ) : image ? (
+          ) : menuObject.image ? (
             "Kép frissítése"
           ) : (
             "Kép feltöltése"

@@ -50,7 +50,7 @@ export async function getPizzaByIdDal(pizzaId: string) {
 
 export async function uploadPizzaImageDal(
   id: string,
-  imageData: Prisma.PizzaImageCreateWithoutPizzaInput,
+  imageData: Prisma.ImageCreateWithoutPizzaInput,
 ) {
   await prisma.pizza.update({
     where: { id },
@@ -63,11 +63,11 @@ export async function uploadPizzaImageDal(
 }
 
 export async function updatePizzaImageDal(
-  id: string,
-  imageData: Prisma.PizzaImageUpdateInput,
+  pizzaId: string,
+  imageData: Prisma.ImageUpdateInput,
 ) {
-  await prisma.pizzaImage.update({
-    where: { id },
+  await prisma.image.update({
+    where: { pizzaId },
     data: imageData,
   });
 }

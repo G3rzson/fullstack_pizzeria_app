@@ -23,7 +23,7 @@ model User {
 }
 
 model Pizza {
-  id                String      @id @default(uuid())
+  id                String   @id @default(uuid())
   pizzaName         String
   pizzaDescription  String
   pizzaPrice32      Float
@@ -31,68 +31,50 @@ model Pizza {
   isAvailableOnMenu Boolean
   createdBy         String
   category          String
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  image             PizzaImage?
-}
-
-model PizzaImage {
-  id           String   @id @default(uuid())
-  pizzaId      String   @unique
-  publicId     String
-  publicUrl    String
-  originalName String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  pizza Pizza @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  image             Image?
 }
 
 model Pasta {
-  id                String      @id @default(uuid())
+  id                String   @id @default(uuid())
   pastaName         String
   pastaDescription  String
   pastaPrice        Float
   isAvailableOnMenu Boolean
   createdBy         String
   category          String
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  image             PastaImage?
-}
-
-model PastaImage {
-  id           String   @id @default(uuid())
-  pastaId      String   @unique
-  publicId     String
-  publicUrl    String
-  originalName String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  pasta Pasta @relation(fields: [pastaId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  image             Image?
 }
 
 model Drink {
-  id                String      @id @default(uuid())
+  id                String   @id @default(uuid())
   drinkName         String
   drinkPrice        Float
   isAvailableOnMenu Boolean
   createdBy         String
   category          String
-  createdAt         DateTime    @default(now())
-  updatedAt         DateTime    @updatedAt
-  image             DrinkImage?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+  image             Image?
 }
 
-model DrinkImage {
-  id           String   @id @default(uuid())
-  drinkId      String   @unique
+model Image {
+  id           String @id @default(uuid())
   publicId     String
   publicUrl    String
   originalName String
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
 
-  drink Drink @relation(fields: [drinkId], references: [id], onDelete: Cascade)
+  pizzaId String? @unique
+  pastaId String? @unique
+  drinkId String? @unique
+
+  pizza Pizza? @relation(fields: [pizzaId], references: [id], onDelete: Cascade)
+  pasta Pasta? @relation(fields: [pastaId], references: [id], onDelete: Cascade)
+  drink Drink? @relation(fields: [drinkId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

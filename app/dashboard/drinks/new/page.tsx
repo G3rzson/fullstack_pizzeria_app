@@ -1,4 +1,4 @@
-import PastaForm from "../_components/PastaForm";
+import PastaForm from "../_components/DrinkForm";
 
 export default function NewPastaPage() {
   return (

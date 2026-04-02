@@ -3,7 +3,7 @@ import { ACCEPTED_TYPES } from "../Constants/constants";
 import { MAX_FILE_SIZE } from "../Constants/constants";
 
 export const imageSchema = z.object({
-  pizzaImage: z
+  image: z
     .unknown()
     .transform((value) => toSingleFile(value))
     .refine((file) => file === null || ACCEPTED_TYPES.includes(file.type), {

@@ -3,24 +3,24 @@
 import ActionModal from "@/shared/Components/ActionModal";
 import { toast } from "sonner";
 import { useState } from "react";
-import { deletePastaAction } from "../_actions/deletePastaAction";
+import { deleteDrinkAction } from "../_actions/deleteDrinkAction";
 
 type Props = {
   id: string;
   publicId: string | null;
 };
-export default function DeletePastaBtn({ id, publicId }: Props) {
+export default function DeleteDrinkBtn({ id, publicId }: Props) {
   const [loading, setLoading] = useState(false);
 
   async function handleDelete(id: string, publicId: string | null) {
     try {
       setLoading(true);
-      const response = await deletePastaAction(id, publicId);
+      const response = await deleteDrinkAction(id, publicId);
       if (!response.success) return toast.error(response.message);
 
       toast.success(response.message);
     } catch (error) {
-      toast.error("Hiba történt a tészta törlése során!");
+      toast.error("Hiba történt az ital törlése során!");
     } finally {
       setLoading(false);
     }
@@ -28,8 +28,8 @@ export default function DeletePastaBtn({ id, publicId }: Props) {
 
   return (
     <ActionModal
-      triggerTitle="Tészta törlése"
-      description="Biztos törölni szeretnéd a tésztát az étlapról? Ez a művelet nem visszavonható!"
+      triggerTitle="Ital törlése"
+      description="Biztos törölni szeretnéd az italt az étlapról? Ez a művelet nem visszavonható!"
       action={() => handleDelete(id, publicId)}
       disabled={loading}
     />

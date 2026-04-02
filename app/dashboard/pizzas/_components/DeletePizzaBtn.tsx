@@ -5,13 +5,18 @@ import { toast } from "sonner";
 import { useState } from "react";
 import { deletePizzaAction } from "../_actions/deletePizzaAction";
 
-export default function DeletePizzaBtn({ id }: { id: string }) {
+type Props = {
+  id: string;
+  publicId: string | null;
+};
+
+export default function DeletePizzaBtn({ id, publicId }: Props) {
   const [loading, setLoading] = useState(false);
 
-  async function handleDelete(id: string) {
+  async function handleDelete(id: string, publicId: string | null) {
     try {
       setLoading(true);
-      const response = await deletePizzaAction(id);
+      const response = await deletePizzaAction(id, publicId);
       if (!response.success) return toast.error(response.message);
 
       toast.success(response.message);
@@ -26,7 +31,7 @@ export default function DeletePizzaBtn({ id }: { id: string }) {
     <ActionModal
       triggerTitle="Pizza törlése"
       description="Biztos törölni szeretnéd a pizzát az étlapról? Ez a művelet nem visszavonható!"
-      action={() => handleDelete(id)}
+      action={() => handleDelete(id, publicId)}
       disabled={loading}
     />
   );

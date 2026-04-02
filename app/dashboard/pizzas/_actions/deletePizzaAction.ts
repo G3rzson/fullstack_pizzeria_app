@@ -5,7 +5,7 @@ import { deletePizzaDal } from "../_dal/pizzaDal";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 
-export async function deletePizzaAction(id: string) {
+export async function deletePizzaAction(id: string, publicId: string | null) {
   try {
     const permissionResult = await hasPermission();
 
@@ -25,6 +25,12 @@ export async function deletePizzaAction(id: string) {
     }
 
     await deletePizzaDal(data.id);
+
+    if (publicId) {
+      const { deleteCloudinaryImage } =
+        await import("@/shared/Functions/deleteCloudinaryImage");
+      await deleteCloudinaryImage(publicId);
+    }
 
     revalidatePath(`/pizzas`);
     revalidatePath(`/dashboard/pizzas`);

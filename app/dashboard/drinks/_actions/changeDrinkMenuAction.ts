@@ -1,12 +1,12 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { changePastaMenuDal } from "../_dal/pastaDal";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
+import { changeDrinkMenuDal } from "../_dal/drinkDal";
 
-export async function changePastaMenuAction(
-  pastaId: string,
+export async function changeDrinkMenuAction(
+  drinkId: string,
   isAvailableOnMenu: boolean,
 ) {
   try {
@@ -19,7 +19,7 @@ export async function changePastaMenuAction(
       };
     }
 
-    const { success, data } = idValidator.safeParse({ id: pastaId });
+    const { success, data } = idValidator.safeParse({ id: drinkId });
     if (!success) {
       return {
         success: false,
@@ -27,10 +27,10 @@ export async function changePastaMenuAction(
       };
     }
 
-    await changePastaMenuDal(data.id, !isAvailableOnMenu);
+    await changeDrinkMenuDal(data.id, !isAvailableOnMenu);
 
-    revalidatePath("/pastas");
-    revalidatePath("/dashboard/pastas");
+    revalidatePath("/drinks");
+    revalidatePath("/dashboard/drinks");
     return {
       success: true,
       message: "Az étlap státusza sikeresen megváltozott.",

@@ -5,13 +5,14 @@ import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage"
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
-import { updatePizzaImageDal } from "@/app/dashboard/pizzas/_dal/pizzaDal";
+import { SimpleResponseType } from "@/shared/Types/types";
+import { updatePastaImageDal } from "../_dal/pastaDal";
 
 export async function updatePastaImageAction(
   pastaId: string,
   pastaImage: unknown,
   publicId: string,
-) {
+): Promise<SimpleResponseType> {
   const permissionResult = await hasPermission();
   let newPublicId: string | null = null;
 
@@ -34,25 +35,25 @@ export async function updatePastaImageAction(
     }
 
     const { data, success } = await imageSchema.safeParseAsync({
-      pastaImage,
+      image: pastaImage,
     });
     const oldPublicId = publicId; // Store the old publicId for potential cleanup
 
-    if (!success || !data.pastaImage) {
+    if (!success || !data.image) {
       return {
         success: false,
         message: "Érvénytelen kép fájl!",
       };
     }
 
-    const result = await uploadImageToCloudinary(data.pastaImage, "pastas");
+    const result = await uploadImageToCloudinary(data.image, "pastas");
 
     newPublicId = result.public_id; // Store the new publicId for potential cleanup
 
     const updatedImageData = {
       publicId: result.public_id,
       publicUrl: result.secure_url,
-      originalName: data.pastaImage.name,
+      originalName: data.image.name,
     };
 
     await updatePastaImageDal(idData.id, updatedImageData);

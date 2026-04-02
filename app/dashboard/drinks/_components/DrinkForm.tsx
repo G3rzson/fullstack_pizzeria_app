@@ -16,36 +16,34 @@ import { FieldGroup } from "@/components/ui/field";
 import { useRouter } from "next/navigation";
 import CustomText from "@/shared/Components/CustomText";
 import CustomNumber from "@/shared/Components/CustomNumber";
-import CustomTextarea from "@/shared/Components/CustomTextarea";
 import CustomCheckbox from "@/shared/Components/CustomCheckbox";
 import { useEffect } from "react";
 import { CustomLoader } from "@/shared/Components/CustomLoader";
-import { type PastaFormType, pastaSchema } from "../_validation/pastaSchema";
-import { createPastaAction } from "../_actions/createPastaAction";
-import { updatePastaAction } from "../_actions/updatePastaAction";
-import { getPastaByIdAction } from "../_actions/getPastaByIdAction";
+import { createDrinkAction } from "../_actions/createDrinkAction";
+import { updateDrinkAction } from "../_actions/updateDrinkAction";
+import { type DrinkFormType, drinkSchema } from "../_validation/drinkSchema";
+import { getDrinkByIdAction } from "../_actions/getDrinkByIdAction";
 
-export default function PastaForm({ id }: { id?: string }) {
+export default function DrinkForm({ id }: { id?: string }) {
   const {
     handleSubmit,
     control,
     reset,
     formState: { isSubmitting },
-  } = useForm<PastaFormType>({
-    resolver: zodResolver(pastaSchema),
+  } = useForm<DrinkFormType>({
+    resolver: zodResolver(drinkSchema),
     defaultValues: {
-      pastaName: "",
-      pastaPrice: undefined,
-      pastaDescription: "",
+      drinkName: "",
+      drinkPrice: undefined,
       isAvailableOnMenu: false,
     },
   });
   const router = useRouter();
 
   useEffect(() => {
-    const fetchPasta = async () => {
+    const fetchDrink = async () => {
       if (id) {
-        const editingData = await getPastaByIdAction(id);
+        const editingData = await getDrinkByIdAction(id);
 
         if (!editingData.success || !editingData.data) {
           toast.error(editingData.message);
@@ -53,36 +51,35 @@ export default function PastaForm({ id }: { id?: string }) {
         }
 
         reset({
-          pastaName: editingData.data.pastaName,
-          pastaPrice: editingData.data.pastaPrice,
-          pastaDescription: editingData.data.pastaDescription,
+          drinkName: editingData.data.drinkName,
+          drinkPrice: editingData.data.drinkPrice,
           isAvailableOnMenu: editingData.data.isAvailableOnMenu,
         });
       }
     };
 
-    fetchPasta();
+    fetchDrink();
   }, [id, reset]);
 
-  async function onSubmit(data: PastaFormType) {
+  async function onSubmit(data: DrinkFormType) {
     if (id) {
       // update
-      const response = await updatePastaAction(id, data);
+      const response = await updateDrinkAction(id, data);
 
       if (!response.success) {
         toast.error(
-          response.message || "Hiba történt a pasta frissítése során!",
+          response.message || "Hiba történt az ital frissítése során!",
         );
         return;
       }
 
-      toast.success(response.message || "Pasta sikeresen frissítve!");
+      toast.success(response.message || "Ital sikeresen frissítve!");
 
       reset();
-      router.push("/dashboard/pastas");
+      router.push("/dashboard/drinks");
     } else {
       // create
-      const response = await createPastaAction(data);
+      const response = await createDrinkAction(data);
 
       if (!response.success) {
         toast.error(
@@ -91,43 +88,35 @@ export default function PastaForm({ id }: { id?: string }) {
         return;
       }
 
-      toast.success(response.message || "Pasta sikeresen létrehozva!");
+      toast.success(response.message || "Ital sikeresen létrehozva!");
       reset();
-      router.push("/dashboard/pastas");
+      router.push("/dashboard/drinks");
     }
   }
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{id ? "Tészta szerkesztése" : "Új tészta"}</CardTitle>
+        <CardTitle>{id ? "Ital szerkesztése" : "Új ital"}</CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form id="pasta-form" onSubmit={handleSubmit(onSubmit)}>
+        <form id="drink-form" onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
             <CustomText
               control={control}
-              name="pastaName"
-              label="Tészta neve *"
-              placeholder="Spaghetti, Penne etc."
+              name="drinkName"
+              label="Ital neve *"
+              placeholder="Cola, Fanta etc."
               isSubmitting={isSubmitting}
             />
 
             <CustomNumber
               control={control}
-              name="pastaPrice"
-              label="Tészta ára *"
+              name="drinkPrice"
+              label="Ital ára *"
               placeholder="1190"
-              isSubmitting={isSubmitting}
-            />
-
-            <CustomTextarea
-              control={control}
-              name="pastaDescription"
-              label="Tészta leírása *"
-              placeholder="Rövid leírás az alapanyagokról és ízvilágról"
               isSubmitting={isSubmitting}
             />
 
@@ -144,15 +133,15 @@ export default function PastaForm({ id }: { id?: string }) {
         <Button
           type="submit"
           className="w-full cursor-pointer"
-          form="pasta-form"
+          form="drink-form"
           disabled={isSubmitting}
         >
           {isSubmitting ? (
             <CustomLoader />
           ) : id ? (
-            "Tészta frissítése"
+            "Ital frissítése"
           ) : (
-            "Tészta létrehozása"
+            "Ital létrehozása"
           )}
         </Button>
       </CardFooter>

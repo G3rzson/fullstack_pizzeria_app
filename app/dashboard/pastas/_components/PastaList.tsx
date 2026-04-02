@@ -12,6 +12,8 @@ import { Button } from "@/components/ui/button";
 import { getAllPastaAction } from "../_actions/getAllPastaAction";
 import DeletePastaBtn from "./DeletePastaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
+import ChangePastaMenuStateBtn from "./ChangePastaMenuStateBtn";
+import { generateBlurUrl } from "@/lib/generateBlurUrl";
 
 export default async function PastaList() {
   const response = await getAllPastaAction();
@@ -40,7 +42,7 @@ export default async function PastaList() {
                       alt={pasta.pastaName}
                       fill
                       placeholder="blur"
-                      blurDataURL={pasta.publicUrl}
+                      blurDataURL={generateBlurUrl(pasta.publicUrl)}
                       className="rounded-xl object-cover select-none pointer-events-none"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
@@ -52,19 +54,19 @@ export default async function PastaList() {
 
               <div className="flex flex-col gap-2 items-end">
                 <Badge
-                  className={`${pasta.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} text-foreground w-40`}
+                  className={`${pasta.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} p-3 text-foreground w-40`}
                 >
                   {pasta.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}
                 </Badge>
 
-                <hangePastaMenuAction
+                <ChangePastaMenuStateBtn
                   id={pasta.id}
                   isAvailableOnMenu={pasta.isAvailableOnMenu}
                 />
 
                 <MenuNavLink
-                  href={`/dashboard/pastas/image/upload/${pasta.id}`}
-                  title="Kép feltöltése"
+                  href={`/dashboard/pastas/image/upload/${pasta.pastaId ? pasta.pastaId : pasta.id}`}
+                  title={pasta.pastaId ? "Kép frissítése" : "Kép feltöltése"}
                 />
 
                 <MenuNavLink
@@ -72,7 +74,7 @@ export default async function PastaList() {
                   title="Tészta szerkesztése"
                 />
 
-                <DeletePastaBtn id={pasta.id} />
+                <DeletePastaBtn id={pasta.id} publicId={pasta.publicId} />
               </div>
             </div>
 

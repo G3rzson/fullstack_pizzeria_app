@@ -6,8 +6,12 @@ import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
 import { uploadPizzaImageDal } from "@/app/dashboard/pizzas/_dal/pizzaDal";
 import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
+import { type SimpleResponseType } from "@/shared/Types/types";
 
-export async function uploadPizzaImageAction(id: string, pizzaImage: unknown) {
+export async function uploadPizzaImageAction(
+  id: string,
+  pizzaImage: unknown,
+): Promise<SimpleResponseType> {
   let publicId: string | null = null;
   try {
     const permissionResult = await hasPermission();
@@ -28,22 +32,22 @@ export async function uploadPizzaImageAction(id: string, pizzaImage: unknown) {
     }
 
     const { data, success } = await imageSchema.safeParseAsync({
-      pizzaImage,
+      image: pizzaImage,
     });
 
-    if (!success || !data.pizzaImage) {
+    if (!success || !data.image) {
       return {
         success: false,
         message: "Érvénytelen kép fájl!",
       };
     }
 
-    const result = await uploadImageToCloudinary(data.pizzaImage, "pizzas");
+    const result = await uploadImageToCloudinary(data.image, "pizzas");
 
     const imageData = {
       publicId: result.public_id,
       publicUrl: result.secure_url,
-      originalName: data.pizzaImage.name,
+      originalName: data.image.name,
     };
 
     await uploadPizzaImageDal(idData.id, imageData);

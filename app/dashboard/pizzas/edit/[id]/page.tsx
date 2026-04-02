@@ -6,5 +6,9 @@ export default async function EditPizzaPage({
   params: Promise<{ id: string }>;
 }) {
   const id = (await params).id;
-  return <PizzaForm id={id} />;
+  return (
+    <div className="flex grow items-center justify-center">
+      <PizzaForm id={id} />
+    </div>
+  );
 }
