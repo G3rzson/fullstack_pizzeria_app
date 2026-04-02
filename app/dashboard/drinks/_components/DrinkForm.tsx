@@ -24,7 +24,11 @@ import { type DrinkFormType, drinkSchema } from "../_validation/drinkSchema";
 import { DrinkType } from "@/shared/Types/types";
 import { useEffect } from "react";
 
-export default function DrinkForm({ drinkObject }: { drinkObject: DrinkType }) {
+export default function DrinkForm({
+  drinkObject,
+}: {
+  drinkObject?: DrinkType;
+}) {
   const {
     handleSubmit,
     control,
