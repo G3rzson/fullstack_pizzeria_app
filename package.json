@@ -5,7 +5,10 @@
   "scripts": {
     "postinstall": "prisma generate",
     "dev": "next dev",
-    "build": "next build",
+    "build": "npm run build:conditional",
+    "build:conditional": "node scripts/conditional-build.js",
+    "build:production": "prisma migrate deploy && next build",
+    "build:preview": "next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
@@ -13,7 +16,10 @@
     "test:run": "vitest run",
     "db:migrate": "prisma migrate dev",
     "db:init": "prisma migrate dev --name init",
-    "db:generate": "prisma generate"
+    "db:generate": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "db:status": "prisma migrate status",
+    "db:push": "prisma db push"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
