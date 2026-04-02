@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { pastaSchema } from "../_validation/pastaSchema";
@@ -43,6 +44,8 @@ export async function updatePastaAction(pastaId: string, pasta: unknown) {
 
     await updatePastaDal(idData.id, newPasta);
 
+    revalidatePath(`/pastas`);
+    revalidatePath(`/dashboard/pastas`);
     return { success: true, message: "Pasta sikeresen frissítve!" };
   } catch (error) {
     console.error("Error updating pasta:", error);

@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { updatePizzaDal } from "../_dal/pizzaDal";
 import { pizzaSchema } from "../_validation/pizzaSchema";
@@ -43,6 +44,8 @@ export async function updatePizzaAction(pizzaId: string, pizza: unknown) {
 
     await updatePizzaDal(idData.id, newPizza);
 
+    revalidatePath(`/pizzas`);
+    revalidatePath(`/dashboard/pizzas`);
     return { success: true, message: "Pizza sikeresen frissítve!" };
   } catch (error) {
     console.error("Error updating pizza:", error);

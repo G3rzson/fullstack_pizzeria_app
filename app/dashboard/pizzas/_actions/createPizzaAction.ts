@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { createPizzaDal } from "../_dal/pizzaDal";
 import { pizzaSchema } from "../_validation/pizzaSchema";
 import { hasPermission } from "@/shared/Functions/hasPermission";
@@ -32,6 +33,8 @@ export async function createPizzaAction(pizza: unknown) {
 
     await createPizzaDal(newPizza);
 
+    revalidatePath(`/pizzas`);
+    revalidatePath(`/dashboard/pizzas`);
     return { success: true, message: "Pizza sikeresen létrehozva!" };
   } catch (error) {
     console.error("Error creating pizza:", error);

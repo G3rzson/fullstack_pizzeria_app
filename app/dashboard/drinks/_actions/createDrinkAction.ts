@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { drinkSchema } from "../_validation/drinkSchema";
 import { createDrinkDal } from "../_dal/drinkDal";
@@ -32,6 +33,8 @@ export async function createDrinkAction(drink: unknown) {
 
     await createDrinkDal(newDrink);
 
+    revalidatePath(`/drinks`);
+    revalidatePath(`/dashboard/drinks`);
     return { success: true, message: "Ital sikeresen létrehozva!" };
   } catch (error) {
     console.error("Error creating drink:", error);

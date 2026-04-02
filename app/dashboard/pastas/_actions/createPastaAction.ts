@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { pastaSchema } from "../_validation/pastaSchema";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { createPastaDal } from "../_dal/pastaDal";
@@ -32,6 +33,8 @@ export async function createPastaAction(pasta: unknown) {
 
     await createPastaDal(newPasta);
 
+    revalidatePath(`/pastas`);
+    revalidatePath(`/dashboard/pastas`);
     return { success: true, message: "Pasta sikeresen létrehozva!" };
   } catch (error) {
     console.error("Error creating pasta:", error);
