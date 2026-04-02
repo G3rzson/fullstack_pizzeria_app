@@ -13,7 +13,7 @@ import CustomText from "@/shared/Components/CustomText";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { loginSchema, type LoginSchemaType } from "../_validation/loginSchema";
 import { LOGIN_INFO } from "../_constants/info";
@@ -35,6 +35,8 @@ export default function LoginForm() {
   });
   const router = useRouter();
   const { refreshUser } = useAuth();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl");
 
   async function onSubmit(data: LoginSchemaType) {
     try {
@@ -49,7 +51,7 @@ export default function LoginForm() {
       await refreshUser();
 
       toast.success(response.message || LOGIN_INFO.success);
-      router.push("/");
+      router.push(callbackUrl || "/");
       reset();
     } catch (err) {
       toast.error(LOGIN_INFO.error);

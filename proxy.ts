@@ -20,14 +20,29 @@ export async function proxy(request: NextRequest) {
   // JWT secrets ellenőrzése
   const jwtSecrets = getJwtSecrets();
   if (!jwtSecrets) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    const loginUrl = new URL("/auth/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   // Access token lekérése és ellenőrzése
   const accessToken = request.cookies.get("access_token")?.value;
 
   if (!accessToken) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    // Nincs access token - próbáljunk refresh-elni
+    const refreshToken = request.cookies.get("refresh_token")?.value;
+
+    if (refreshToken) {
+      // Van refresh token, irányítsunk a refresh endpoint-ra
+      const refreshUrl = new URL("/auth/refresh", request.url);
+      refreshUrl.searchParams.set("returnTo", pathname);
+      return NextResponse.redirect(refreshUrl);
+    }
+
+    // Nincs refresh token sem - login
+    const loginUrl = new URL("/auth/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   const decodedToken = verifyAccessToken(
@@ -36,7 +51,22 @@ export async function proxy(request: NextRequest) {
   );
 
   if (!decodedToken) {
-    return NextResponse.redirect(new URL("/auth/login", request.url));
+    // Érvénytelen access token - próbáljunk refresh-elni
+    const refreshToken = request.cookies.get("refresh_token")?.value;
+
+    if (refreshToken) {
+      // Van refresh token, irányítsunk a refresh endpoint-ra
+      const refreshUrl = new URL("/auth/refresh", request.url);
+      refreshUrl.searchParams.set("returnTo", pathname);
+      return NextResponse.redirect(refreshUrl);
+    }
+
+    // Nincs refresh token - login
+    const loginUrl = new URL("/auth/login", request.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    const response = NextResponse.redirect(loginUrl);
+    response.cookies.delete("access_token");
+    return response;
   }
 
   // ADMIN role ellenőrzése
