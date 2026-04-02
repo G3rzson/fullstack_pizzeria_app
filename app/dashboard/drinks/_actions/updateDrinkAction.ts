@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { drinkSchema } from "../_validation/drinkSchema";
@@ -43,6 +44,8 @@ export async function updateDrinkAction(drinkId: string, drink: unknown) {
 
     await updateDrinkDal(idData.id, newDrink);
 
+    revalidatePath(`/drinks`);
+    revalidatePath(`/dashboard/drinks`);
     return { success: true, message: "Ital sikeresen frissítve!" };
   } catch (error) {
     console.error("Error updating drink:", error);
