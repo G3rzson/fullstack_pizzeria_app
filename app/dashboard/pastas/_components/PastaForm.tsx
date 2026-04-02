@@ -25,7 +25,11 @@ import { updatePastaAction } from "../_actions/updatePastaAction";
 import { PastaType } from "@/shared/Types/types";
 import { useEffect } from "react";
 
-export default function PastaForm({ pastaObject }: { pastaObject: PastaType }) {
+export default function PastaForm({
+  pastaObject,
+}: {
+  pastaObject?: PastaType;
+}) {
   const {
     handleSubmit,
     control,

@@ -1,5 +1,23 @@
 # 🌿 Branch Strategy & Deployment
 
+## ⚠️ FONTOS: Első Production Deployment
+
+**Ha új/üres Railway database-d van, ELŐSZÖR inicializálni kell!**
+
+Lásd: [PRODUCTION_DB_INIT.md](./PRODUCTION_DB_INIT.md)
+
+Quick init:
+
+```powershell
+# Windows
+$env:DATABASE_URL = "railway-url"
+.\scripts\init-production-db.ps1
+```
+
+Csak **egyszer** kell futtatni az első deployment előtt!
+
+---
+
 ## Branch Struktúra
 
 ```

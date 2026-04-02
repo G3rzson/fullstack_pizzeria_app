@@ -25,7 +25,11 @@ import { createPizzaAction } from "../_actions/createPizzaAction";
 import { updatePizzaAction } from "../_actions/updatePizzaAction";
 import { PizzaType } from "@/shared/Types/types";
 
-export default function PizzaForm({ pizzaObject }: { pizzaObject: PizzaType }) {
+export default function PizzaForm({
+  pizzaObject,
+}: {
+  pizzaObject?: PizzaType;
+}) {
   const {
     handleSubmit,
     control,
