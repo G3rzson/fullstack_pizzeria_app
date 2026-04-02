@@ -17,14 +17,14 @@ import { useRouter } from "next/navigation";
 import CustomText from "@/shared/Components/CustomText";
 import CustomNumber from "@/shared/Components/CustomNumber";
 import CustomCheckbox from "@/shared/Components/CustomCheckbox";
-import { useEffect } from "react";
 import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { createDrinkAction } from "../_actions/createDrinkAction";
 import { updateDrinkAction } from "../_actions/updateDrinkAction";
 import { type DrinkFormType, drinkSchema } from "../_validation/drinkSchema";
-import { getDrinkByIdAction } from "../_actions/getDrinkByIdAction";
+import { DrinkType } from "@/shared/Types/types";
+import { useEffect } from "react";
 
-export default function DrinkForm({ id }: { id?: string }) {
+export default function DrinkForm({ drinkObject }: { drinkObject: DrinkType }) {
   const {
     handleSubmit,
     control,
@@ -41,30 +41,19 @@ export default function DrinkForm({ id }: { id?: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchDrink = async () => {
-      if (id) {
-        const editingData = await getDrinkByIdAction(id);
-
-        if (!editingData.success || !editingData.data) {
-          toast.error(editingData.message);
-          return;
-        }
-
-        reset({
-          drinkName: editingData.data.drinkName,
-          drinkPrice: editingData.data.drinkPrice,
-          isAvailableOnMenu: editingData.data.isAvailableOnMenu,
-        });
-      }
-    };
-
-    fetchDrink();
-  }, [id, reset]);
+    if (drinkObject) {
+      reset({
+        drinkName: drinkObject.drinkName,
+        drinkPrice: drinkObject.drinkPrice,
+        isAvailableOnMenu: drinkObject.isAvailableOnMenu,
+      });
+    }
+  }, [drinkObject, reset]);
 
   async function onSubmit(data: DrinkFormType) {
-    if (id) {
+    if (drinkObject) {
       // update
-      const response = await updateDrinkAction(id, data);
+      const response = await updateDrinkAction(drinkObject.id, data);
 
       if (!response.success) {
         toast.error(
@@ -96,7 +85,7 @@ export default function DrinkForm({ id }: { id?: string }) {
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{id ? "Ital szerkesztése" : "Új ital"}</CardTitle>
+        <CardTitle>{drinkObject ? "Ital szerkesztése" : "Új ital"}</CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
@@ -138,7 +127,7 @@ export default function DrinkForm({ id }: { id?: string }) {
         >
           {isSubmitting ? (
             <CustomLoader />
-          ) : id ? (
+          ) : drinkObject ? (
             "Ital frissítése"
           ) : (
             "Ital létrehozása"

@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -18,14 +19,13 @@ import CustomText from "@/shared/Components/CustomText";
 import CustomNumber from "@/shared/Components/CustomNumber";
 import CustomTextarea from "@/shared/Components/CustomTextarea";
 import CustomCheckbox from "@/shared/Components/CustomCheckbox";
-import { useEffect } from "react";
-import { getPizzaByIdAction } from "../_actions/getPizzaByIdAction";
 import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { pizzaSchema, type PizzaFormType } from "../_validation/pizzaSchema";
 import { createPizzaAction } from "../_actions/createPizzaAction";
 import { updatePizzaAction } from "../_actions/updatePizzaAction";
+import { PizzaType } from "@/shared/Types/types";
 
-export default function PizzaForm({ id }: { id?: string }) {
+export default function PizzaForm({ pizzaObject }: { pizzaObject: PizzaType }) {
   const {
     handleSubmit,
     control,
@@ -44,37 +44,21 @@ export default function PizzaForm({ id }: { id?: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchPizza = async () => {
-      if (id) {
-        const editingData = await getPizzaByIdAction(id);
-
-        if (!editingData.success || !editingData.data) {
-          toast.error(
-            editingData.message ||
-              "Hiba történt a pizza adatainak lekérése során.",
-          );
-          return;
-        }
-
-        if (editingData.success) {
-          reset({
-            pizzaName: editingData.data.pizzaName,
-            pizzaPrice32: editingData.data.pizzaPrice32,
-            pizzaPrice45: editingData.data.pizzaPrice45,
-            pizzaDescription: editingData.data.pizzaDescription,
-            isAvailableOnMenu: editingData.data.isAvailableOnMenu,
-          });
-        }
-      }
-    };
-
-    fetchPizza();
-  }, [id, reset]);
+    if (pizzaObject) {
+      reset({
+        pizzaName: pizzaObject.pizzaName,
+        pizzaPrice32: pizzaObject.pizzaPrice32,
+        pizzaPrice45: pizzaObject.pizzaPrice45,
+        pizzaDescription: pizzaObject.pizzaDescription,
+        isAvailableOnMenu: pizzaObject.isAvailableOnMenu,
+      });
+    }
+  }, [pizzaObject, reset]);
 
   async function onSubmit(data: PizzaFormType) {
-    if (id) {
+    if (pizzaObject) {
       // update
-      const response = await updatePizzaAction(id, data);
+      const response = await updatePizzaAction(pizzaObject.id, data);
 
       if (!response.success) {
         toast.error(
@@ -106,7 +90,7 @@ export default function PizzaForm({ id }: { id?: string }) {
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{id ? "Pizza szerkesztése" : "Új pizza"}</CardTitle>
+        <CardTitle>{pizzaObject ? "Pizza szerkesztése" : "Új pizza"}</CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
@@ -163,7 +147,7 @@ export default function PizzaForm({ id }: { id?: string }) {
         >
           {isSubmitting ? (
             <CustomLoader />
-          ) : id ? (
+          ) : pizzaObject ? (
             "Pizza frissítése"
           ) : (
             "Pizza létrehozása"

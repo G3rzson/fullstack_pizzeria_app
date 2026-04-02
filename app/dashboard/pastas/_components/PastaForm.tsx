@@ -18,14 +18,14 @@ import CustomText from "@/shared/Components/CustomText";
 import CustomNumber from "@/shared/Components/CustomNumber";
 import CustomTextarea from "@/shared/Components/CustomTextarea";
 import CustomCheckbox from "@/shared/Components/CustomCheckbox";
-import { useEffect } from "react";
 import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { type PastaFormType, pastaSchema } from "../_validation/pastaSchema";
 import { createPastaAction } from "../_actions/createPastaAction";
 import { updatePastaAction } from "../_actions/updatePastaAction";
-import { getPastaByIdAction } from "../_actions/getPastaByIdAction";
+import { PastaType } from "@/shared/Types/types";
+import { useEffect } from "react";
 
-export default function PastaForm({ id }: { id?: string }) {
+export default function PastaForm({ pastaObject }: { pastaObject: PastaType }) {
   const {
     handleSubmit,
     control,
@@ -43,40 +43,29 @@ export default function PastaForm({ id }: { id?: string }) {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchPasta = async () => {
-      if (id) {
-        const editingData = await getPastaByIdAction(id);
-
-        if (!editingData.success || !editingData.data) {
-          toast.error(editingData.message);
-          return;
-        }
-
-        reset({
-          pastaName: editingData.data.pastaName,
-          pastaPrice: editingData.data.pastaPrice,
-          pastaDescription: editingData.data.pastaDescription,
-          isAvailableOnMenu: editingData.data.isAvailableOnMenu,
-        });
-      }
-    };
-
-    fetchPasta();
-  }, [id, reset]);
+    if (pastaObject) {
+      reset({
+        pastaName: pastaObject.pastaName,
+        pastaPrice: pastaObject.pastaPrice,
+        pastaDescription: pastaObject.pastaDescription,
+        isAvailableOnMenu: pastaObject.isAvailableOnMenu,
+      });
+    }
+  }, [pastaObject, reset]);
 
   async function onSubmit(data: PastaFormType) {
-    if (id) {
+    if (pastaObject) {
       // update
-      const response = await updatePastaAction(id, data);
+      const response = await updatePastaAction(pastaObject.id, data);
 
       if (!response.success) {
         toast.error(
-          response.message || "Hiba történt a pasta frissítése során!",
+          response.message || "Hiba történt a tészta frissítése során!",
         );
         return;
       }
 
-      toast.success(response.message || "Pasta sikeresen frissítve!");
+      toast.success(response.message || "Tészta sikeresen frissítve!");
 
       reset();
       router.push("/dashboard/pastas");
@@ -91,7 +80,7 @@ export default function PastaForm({ id }: { id?: string }) {
         return;
       }
 
-      toast.success(response.message || "Pasta sikeresen létrehozva!");
+      toast.success(response.message || "Tészta sikeresen létrehozva!");
       reset();
       router.push("/dashboard/pastas");
     }
@@ -99,7 +88,9 @@ export default function PastaForm({ id }: { id?: string }) {
   return (
     <Card className="w-full sm:max-w-md mx-auto">
       <CardHeader>
-        <CardTitle>{id ? "Tészta szerkesztése" : "Új tészta"}</CardTitle>
+        <CardTitle>
+          {pastaObject ? "Tészta szerkesztése" : "Új tészta"}
+        </CardTitle>
         <CardDescription>
           A *-gal jelölt mezők kitöltése kötelező.
         </CardDescription>
@@ -149,7 +140,7 @@ export default function PastaForm({ id }: { id?: string }) {
         >
           {isSubmitting ? (
             <CustomLoader />
-          ) : id ? (
+          ) : pastaObject ? (
             "Tészta frissítése"
           ) : (
             "Tészta létrehozása"
