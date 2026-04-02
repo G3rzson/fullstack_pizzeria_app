@@ -1,5 +1,6 @@
 "use server";
 
+import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
@@ -53,6 +54,8 @@ export async function uploadPastaImageAction(
     await uploadPastaImageDal(idData.id, imageData);
 
     publicId = result.public_id; // Store the publicId for potential cleanup
+    revalidatePath(`/pastas`);
+    revalidatePath(`/dashboard/pastas`);
     return {
       success: true,
       message: "Pasta kép sikeresen feltöltve!",
