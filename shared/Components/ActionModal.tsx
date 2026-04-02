@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,43 +16,59 @@ import {
 type Props = {
   triggerTitle: string;
   description: string;
-  action: () => void;
+  action: () => void | Promise<void>;
+  disabled?: boolean;
 };
 
 export default function ActionModal({
   triggerTitle,
   description,
   action,
+  disabled,
 }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  async function handleAction() {
+    await action();
+    setIsOpen(false);
+  }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant={"secondary"} className="cursor-pointer w-full">
+        <Button
+          disabled={disabled}
+          variant={"secondary"}
+          className="cursor-pointer w-full"
+        >
           {triggerTitle}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-sm">
         <DialogHeader>
           <DialogTitle>{triggerTitle}</DialogTitle>
-          <DialogDescription className="text-destructive text-balance">
+          <DialogDescription className="text-destructive text-balance mt-4 mb-2">
             {description}
           </DialogDescription>
         </DialogHeader>
-        <DialogFooter>
+        <DialogFooter className="p-2">
           <DialogClose asChild>
-            <Button variant="destructive" className="cursor-pointer">
+            <Button
+              variant="destructive"
+              className="cursor-pointer"
+              disabled={disabled}
+            >
               Mégse
             </Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={action}
-            >
-              Igen
-            </Button>
-          </DialogClose>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={handleAction}
+            disabled={disabled}
+          >
+            Igen
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

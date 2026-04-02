@@ -7,6 +7,7 @@ type Props<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   placeholder: string;
+  isSubmitting: boolean;
 };
 
 export default function CustomNumber<T extends FieldValues>({
@@ -14,6 +15,7 @@ export default function CustomNumber<T extends FieldValues>({
   name,
   label,
   placeholder,
+  isSubmitting,
 }: Props<T>) {
   return (
     <Controller
@@ -35,6 +37,7 @@ export default function CustomNumber<T extends FieldValues>({
             max={9999}
             placeholder={placeholder}
             aria-invalid={fieldState.invalid}
+            disabled={isSubmitting}
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>

@@ -1,32 +1,52 @@
-import { getKindeServerSession } from "@kinde-oss/kinde-auth-nextjs/server";
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
+import { verifyAccessToken, getJwtSecrets } from "@/shared/Functions/jwt";
 
-export default async function middleware(req: NextRequest) {
-  const { getUser, getPermissions } = await getKindeServerSession();
-  const user = await getUser();
+// Védett route-ok, amikhez ADMIN role kell
+const ADMIN_PROTECTED_ROUTES = ["/dashboard"];
 
-  // Ha nincs bejelentkezve, redirecteljük a főoldalra
-  // A login-t a Kinde komponensek (LoginLink) kezelik
-  if (!user) {
-    return NextResponse.redirect(new URL("/", req.url));
+export async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
+
+  // Ellenőrizzük, hogy a kért útvonal védett-e
+  const isAdminProtectedRoute = ADMIN_PROTECTED_ROUTES.some((route) =>
+    pathname.startsWith(route),
+  );
+
+  if (!isAdminProtectedRoute) {
+    return NextResponse.next();
   }
 
-  // Permissions lekérése
-  const permissions = await getPermissions();
-  const permissionsList = permissions?.permissions || [];
-
-  // Ellenőrizzük, hogy van-e admin jogosultság
-  const isAdminByPermission = permissionsList.includes("admin-user");
-
-  // Ha nincs admin permission, redirect a főoldalra
-  if (!isAdminByPermission) {
-    return NextResponse.redirect(new URL("/", req.url));
+  // JWT secrets ellenőrzése
+  const jwtSecrets = getJwtSecrets();
+  if (!jwtSecrets) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
   }
 
-  // Ha minden rendben, engedjük tovább
+  // Access token lekérése és ellenőrzése
+  const accessToken = request.cookies.get("access_token")?.value;
+
+  if (!accessToken) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+
+  const decodedToken = verifyAccessToken(
+    accessToken,
+    jwtSecrets.accessTokenSecret,
+  );
+
+  if (!decodedToken) {
+    return NextResponse.redirect(new URL("/auth/login", request.url));
+  }
+
+  // ADMIN role ellenőrzése
+  if (decodedToken.role !== "ADMIN") {
+    return NextResponse.redirect(new URL("/", request.url));
+  }
+
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*"], // minden /admin aloldalra érvényes
+  matcher: ["/dashboard", "/dashboard/:path*"],
 };

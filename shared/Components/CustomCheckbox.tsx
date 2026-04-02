@@ -11,12 +11,14 @@ type Props<T extends FieldValues> = {
   control: Control<T>;
   name: Path<T>;
   label: string;
+  isSubmitting: boolean;
 };
 
 export default function CustomCheckbox<T extends FieldValues>({
   control,
   name,
   label,
+  isSubmitting,
 }: Props<T>) {
   return (
     <Controller
@@ -30,6 +32,7 @@ export default function CustomCheckbox<T extends FieldValues>({
             onCheckedChange={(checked) => field.onChange(checked === true)}
             aria-invalid={fieldState.invalid}
             className="cursor-pointer"
+            disabled={isSubmitting}
           />
           <FieldContent>
             <FieldLabel htmlFor={field.name} className="cursor-pointer">

@@ -7,6 +7,7 @@ type Props<T extends FieldValues> = {
   name: Path<T>;
   label: string;
   placeholder: string;
+  isSubmitting: boolean;
 };
 
 export default function CustomTextarea<T extends FieldValues>({
@@ -14,6 +15,7 @@ export default function CustomTextarea<T extends FieldValues>({
   name,
   label,
   placeholder,
+  isSubmitting,
 }: Props<T>) {
   return (
     <Controller
@@ -28,6 +30,7 @@ export default function CustomTextarea<T extends FieldValues>({
             value={field.value ?? ""}
             aria-invalid={fieldState.invalid}
             placeholder={placeholder}
+            disabled={isSubmitting}
           />
           {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
         </Field>
