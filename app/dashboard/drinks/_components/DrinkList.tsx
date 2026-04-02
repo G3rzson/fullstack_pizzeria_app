@@ -32,8 +32,8 @@ export default async function DrinkList() {
       {drinksArray.map((drink) => (
         <li key={drink.id}>
           <Card className="h-full w-full">
-            <div className="w-full flex flex-row justify-between px-4">
-              <div className="flex items-center justify-center h-30 w-30  lg:w-50 lg:h-50">
+            <CardHeader className="w-full flex flex-row justify-between px-4">
+              <CardContent className="flex items-center justify-center h-30 w-30  lg:w-50 lg:h-50">
                 {drink.publicUrl ? (
                   <div className="relative w-full h-full">
                     <Image
@@ -49,11 +49,11 @@ export default async function DrinkList() {
                 ) : (
                   <ImageIcon className="w-full h-full" />
                 )}
-              </div>
+              </CardContent>
 
-              <div className="flex flex-col gap-2 items-end">
+              <CardContent className="flex flex-col gap-2 p-0 w-45">
                 <Badge
-                  className={`${drink.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} text-foreground w-40 p-3`}
+                  className={`${drink.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} text-foreground w-full p-3`}
                 >
                   {drink.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}
                 </Badge>
@@ -74,14 +74,11 @@ export default async function DrinkList() {
                 />
 
                 <DeleteDrinkBtn id={drink.id} publicId={drink.publicId} />
-              </div>
-            </div>
-
-            <CardHeader>
-              <CardTitle> {drink.drinkName} </CardTitle>
+              </CardContent>
             </CardHeader>
 
             <CardContent className="space-y-2 h-full">
+              <CardTitle> {drink.drinkName} </CardTitle>
               <CardTitle>Ár: {drink.drinkPrice} Ft</CardTitle>
             </CardContent>
 

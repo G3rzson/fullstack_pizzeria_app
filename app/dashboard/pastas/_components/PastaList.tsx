@@ -33,8 +33,8 @@ export default async function PastaList() {
       {pastasArray.map((pasta) => (
         <li key={pasta.id}>
           <Card className="h-full w-full">
-            <div className="w-full flex flex-row justify-between px-4">
-              <div className="flex items-center justify-center h-30 w-30  lg:w-50 lg:h-50">
+            <CardHeader className="w-full flex flex-row justify-between px-4">
+              <CardContent className="flex items-center justify-center h-30 w-30 lg:w-50 lg:h-50 p-0">
                 {pasta.publicUrl ? (
                   <div className="relative w-full h-full">
                     <Image
@@ -50,11 +50,11 @@ export default async function PastaList() {
                 ) : (
                   <ImageIcon className="w-full h-full" />
                 )}
-              </div>
+              </CardContent>
 
-              <div className="flex flex-col gap-2 items-end">
+              <CardContent className="flex flex-col gap-2 p-0 w-45">
                 <Badge
-                  className={`${pasta.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} p-3 text-foreground w-40`}
+                  className={`${pasta.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} p-3 text-foreground w-full`}
                 >
                   {pasta.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}
                 </Badge>
@@ -75,14 +75,11 @@ export default async function PastaList() {
                 />
 
                 <DeletePastaBtn id={pasta.id} publicId={pasta.publicId} />
-              </div>
-            </div>
-
-            <CardHeader>
-              <CardTitle> {pasta.pastaName} </CardTitle>
+              </CardContent>
             </CardHeader>
 
             <CardContent className="space-y-2 h-full">
+              <CardTitle> {pasta.pastaName} </CardTitle>
               <CardTitle>Ár: {pasta.pastaPrice} Ft</CardTitle>
               <CardTitle className="text-balance mt-auto">
                 {pasta.pastaDescription}

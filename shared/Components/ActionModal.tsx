@@ -1,3 +1,6 @@
+"use client";
+
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -13,7 +16,7 @@ import {
 type Props = {
   triggerTitle: string;
   description: string;
-  action: () => void;
+  action: () => void | Promise<void>;
   disabled?: boolean;
 };
 
@@ -23,8 +26,15 @@ export default function ActionModal({
   action,
   disabled,
 }: Props) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  async function handleAction() {
+    await action();
+    setIsOpen(false);
+  }
+
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
           disabled={disabled}
@@ -51,16 +61,14 @@ export default function ActionModal({
               Mégse
             </Button>
           </DialogClose>
-          <DialogClose asChild>
-            <Button
-              variant="outline"
-              className="cursor-pointer"
-              onClick={action}
-              disabled={disabled}
-            >
-              Igen
-            </Button>
-          </DialogClose>
+          <Button
+            variant="outline"
+            className="cursor-pointer"
+            onClick={handleAction}
+            disabled={disabled}
+          >
+            Igen
+          </Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

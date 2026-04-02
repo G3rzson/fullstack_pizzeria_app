@@ -33,8 +33,8 @@ export default async function PizzaList() {
       {pizzasArray.map((pizza) => (
         <li key={pizza.id}>
           <Card className="h-full w-full">
-            <div className="w-full flex flex-row justify-between px-4">
-              <div className="flex items-center justify-center h-30 w-30  lg:w-50 lg:h-50">
+            <CardHeader className="w-full flex flex-row justify-between px-4">
+              <CardContent className="flex items-center justify-center h-30 w-30 lg:w-50 lg:h-50 p-0">
                 {pizza.publicUrl ? (
                   <div className="relative w-full h-full">
                     <Image
@@ -50,11 +50,11 @@ export default async function PizzaList() {
                 ) : (
                   <Pizza className="w-full h-full" />
                 )}
-              </div>
+              </CardContent>
 
-              <div className="flex flex-col gap-2 items-end">
+              <CardContent className="flex flex-col gap-2 p-0 w-45">
                 <Badge
-                  className={`${pizza.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} p-3 text-foreground w-40`}
+                  className={`${pizza.isAvailableOnMenu ? "bg-green-500/20" : "bg-destructive/20"} p-3 text-foreground w-full text-center`}
                 >
                   {pizza.isAvailableOnMenu ? "Elérhető" : "Nem elérhető"}
                 </Badge>
@@ -75,21 +75,17 @@ export default async function PizzaList() {
                 />
 
                 <DeletePizzaBtn id={pizza.id} publicId={pizza.publicId} />
-              </div>
-            </div>
-
-            <CardHeader>
-              <CardTitle> {pizza.pizzaName} </CardTitle>
+              </CardContent>
             </CardHeader>
 
             <CardContent className="space-y-2 h-full">
+              <CardTitle> {pizza.pizzaName} </CardTitle>
               <CardTitle>Ár (32 cm): {pizza.pizzaPrice32} Ft</CardTitle>
               <CardTitle>Ár (45 cm): {pizza.pizzaPrice45} Ft</CardTitle>
               <CardTitle className="text-balance mt-auto">
                 {pizza.pizzaDescription}
               </CardTitle>
             </CardContent>
-
             <CardFooter>
               <Button variant="default" className="w-full">
                 Hozzáadás a kosárhoz
