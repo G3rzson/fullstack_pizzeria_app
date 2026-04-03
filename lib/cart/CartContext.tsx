@@ -10,7 +10,7 @@ import {
 } from "react";
 import { type FormattedDrinkType } from "@/app/drinks/_actions/getAllAvailableDrinkAction";
 import { type FormattedPastaType } from "@/app/pastas/_actions/getAllAvailablePastaAction";
-import { type pizzaDtoType } from "@/app/pizzas/_actions/getAllAvailablePizzaAction";
+import { type pizzaDtoType } from "@/shared/Types/types";
 import { loadFromLocalStorage } from "@/shared/Functions/localStorage";
 
 export type CartItem =
