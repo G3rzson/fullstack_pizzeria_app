@@ -6,3 +6,8 @@ export const ACCEPTED_TYPES = [
   "image/webp",
   "image/gif",
 ];
+
+export const BACKEND_RESPONSE_MESSAGES = {
+  SUCCESS: "Sikeres művelet!",
+  SERVER_ERROR: "Hiba történ! Kérlek, próbáld újra később.",
+};

@@ -2,7 +2,7 @@
 
 import { getAllPizzaDal } from "../_dal/pizzaDal";
 
-type FormattedPizzaType = {
+type pizzaDtoType = {
   id: string;
   pizzaName: string;
   pizzaPrice32: number;
@@ -18,7 +18,7 @@ type FormattedPizzaType = {
 type ResponseType =
   | {
       success: true;
-      data: FormattedPizzaType[];
+      data: pizzaDtoType[];
     }
   | {
       success: false;
@@ -29,7 +29,7 @@ export async function getAllPizzaAction(): Promise<ResponseType> {
   try {
     const pizzasArray = await getAllPizzaDal();
 
-    const formattedPizzas: FormattedPizzaType[] = pizzasArray.map((pizza) => ({
+    const formattedPizzas: pizzaDtoType[] = pizzasArray.map((pizza) => ({
       id: pizza.id,
       pizzaName: pizza.pizzaName,
       pizzaPrice32: pizza.pizzaPrice32,

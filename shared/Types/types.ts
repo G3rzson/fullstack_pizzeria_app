@@ -1,5 +1,14 @@
 export type MenuType = "pizzas" | "pastas" | "drinks";
 
+export type pizzaDtoType = {
+  id: string;
+  pizzaName: string;
+  pizzaPrice32: number;
+  pizzaPrice45: number;
+  pizzaDescription: string;
+  publicUrl: string | null;
+};
+
 export type MenuObjectType = PizzaType | PastaType | DrinkType;
 
 export type SimpleResponseType =

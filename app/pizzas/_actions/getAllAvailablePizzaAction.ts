@@ -1,31 +1,21 @@
 "use server";
 
+import { pizzaDtoType } from "@/shared/Types/types";
 import { getAllAvailablePizzaDal } from "../_dal/pizzaDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
-export type FormattedPizzaType = {
-  id: string;
-  pizzaName: string;
-  pizzaPrice32: number;
-  pizzaPrice45: number;
-  pizzaDescription: string;
-  publicUrl: string | null;
-};
-
-type ResponseType =
-  | {
-      success: true;
-      data: FormattedPizzaType[];
-    }
-  | {
-      success: false;
-      message: string;
-    };
-
-export async function getAllAvailablePizzaAction(): Promise<ResponseType> {
+export async function getAllAvailablePizzaAction(): Promise<{
+  success: boolean;
+  message: string;
+  data?: pizzaDtoType[];
+}> {
   try {
     const pizzasArray = await getAllAvailablePizzaDal();
 
-    const formattedPizzas: FormattedPizzaType[] = pizzasArray.map((pizza) => ({
+    const pizzaDto: pizzaDtoType[] = pizzasArray.map((pizza) => ({
       id: pizza.id,
       pizzaName: pizza.pizzaName,
       pizzaPrice32: pizza.pizzaPrice32,
@@ -34,15 +24,11 @@ export async function getAllAvailablePizzaAction(): Promise<ResponseType> {
       publicUrl: pizza.image?.publicUrl || null,
     }));
 
-    return {
-      success: true,
-      data: formattedPizzas,
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS, pizzaDto);
   } catch (error) {
-    console.error("Error fetching pizzas:", error);
-    return {
-      success: false,
-      message: "Hiba történt a pizzák lekérése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - getAllAvailablePizzaAction")
+      : console.error("Error fetching pizzas:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

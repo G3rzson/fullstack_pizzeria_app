@@ -1,11 +1,12 @@
 import fs from "fs/promises";
 import path from "path";
 import { getCurrentError } from "./getCurrentError";
+import isDev from "./isDev";
 
 export async function errorLogger(error: unknown, context: string) {
   try {
     const logDirectory = path.join(process.cwd(), "logs");
-    const isDev = process.env.NODE_ENV !== "production";
+    const isDevMode = isDev();
 
     await fs.mkdir(logDirectory, { recursive: true });
 
@@ -19,7 +20,7 @@ export async function errorLogger(error: unknown, context: string) {
       error: errorLog,
     };
 
-    const logMessage = isDev
+    const logMessage = isDevMode
       ? JSON.stringify(logObject, null, 2) + "\n"
       : JSON.stringify(logObject) + "\n";
 
