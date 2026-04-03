@@ -81,12 +81,6 @@ export default async function DrinkList() {
               <CardTitle> {drink.drinkName} </CardTitle>
               <CardTitle>Ár: {drink.drinkPrice} Ft</CardTitle>
             </CardContent>
-
-            <CardFooter>
-              <Button variant="default" className="w-full">
-                Hozzáadás a kosárhoz
-              </Button>
-            </CardFooter>
           </Card>
         </li>
       ))}

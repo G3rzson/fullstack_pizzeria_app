@@ -45,18 +45,19 @@ export default function UserMenu() {
           </div>
         ) : user ? (
           <>
-            <DropdownMenuItem asChild></DropdownMenuItem>
             <p className="text-center p-4 rounded-full bg-current/20 w-10 h-10 flex items-center justify-center mx-auto my-2">
               {user.username.charAt(0).toUpperCase()}
             </p>
-            <p className="text-center mb-2">{user.username}</p>
-            <Button
-              variant={"ghost"}
-              className="w-full"
-              onClick={() => handleLogout()}
-            >
-              Kijelentkezés
-            </Button>
+            <p className="text-center mb-2">{user.username}</p>{" "}
+            <DropdownMenuItem asChild>
+              <Button
+                variant="ghost"
+                className="w-full"
+                onClick={() => handleLogout()}
+              >
+                Kijelentkezés
+              </Button>
+            </DropdownMenuItem>
           </>
         ) : (
           <>

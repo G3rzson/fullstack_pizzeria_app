@@ -2,7 +2,7 @@
 
 import { getAllAvailablePastaDal } from "../_dal/pastaDal";
 
-type FormattedPastaType = {
+export type FormattedPastaType = {
   id: string;
   pastaName: string;
   pastaPrice: number;

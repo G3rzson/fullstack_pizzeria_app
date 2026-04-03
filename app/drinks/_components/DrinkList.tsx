@@ -1,10 +1,10 @@
 import { Card, CardTitle, CardFooter } from "@/components/ui/card";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
 import { textFormatter } from "@/shared/Functions/textFormatter";
 import { getAllAvailableDrinkAction } from "../_actions/getAllAvailableDrinkAction";
+import AddToCartBtn from "@/shared/Components/AddToCartBtn";
 
 export default async function DrinkList() {
   const response = await getAllAvailableDrinkAction();
@@ -54,9 +54,7 @@ export default async function DrinkList() {
             </div>
 
             <CardFooter>
-              <Button variant="default" className="w-full">
-                Hozzáadás a kosárhoz
-              </Button>
+              <AddToCartBtn menu={drink} type="drink" />
             </CardFooter>
           </Card>
         </li>
