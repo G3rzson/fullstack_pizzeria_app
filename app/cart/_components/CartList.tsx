@@ -4,9 +4,9 @@ import Loading from "@/app/loading";
 import { useCart } from "@/lib/cart/useCart";
 import CartItemCard from "./CartItemCard";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { getTotalPrice } from "@/shared/Functions/cartHelper";
 import { priceFormatter } from "@/shared/Functions/priceFormatter";
+import ActionModal from "@/shared/Components/ActionModal";
 
 export default function CartList() {
   const { cartItems, isLoading } = useCart();
@@ -51,9 +51,11 @@ export default function CartList() {
           </div>
         </CardContent>
         <CardFooter>
-          <Button className="w-full" size="lg">
-            Rendelés leadása
-          </Button>
+          <ActionModal
+            triggerTitle="Tovább a fizetéshez"
+            description="A fizetési rendszer fejlesztés alatt!"
+            action={() => {}}
+          />
         </CardFooter>
       </Card>
     </div>
