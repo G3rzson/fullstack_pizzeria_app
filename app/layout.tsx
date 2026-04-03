@@ -4,15 +4,25 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "./_components/Header";
+import CookieConsentBanner from "./_components/CookieConsentBanner";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
 export const metadata: Metadata = {
-  title: "Fullstack Pizzeria App",
+  title: "Pizzeria App",
   description:
-    "A fullstack pizzeria application built with Next.js, Prisma, and Tailwind CSS.",
+    "Pizzéria rendelő alkalmazás, ahol tudsz regisztrálni, pizzát rendelni és kezelni a rendeléseidet.",
+
+  metadataBase: new URL("https://fullstack-pizzeria-app.vercel.app"),
+  openGraph: {
+    title: "Pizzéria App - Rendelés és Kezelés",
+    description:
+      "Pizzéria rendelő alkalmazás, ahol tudsz regisztrálni, pizzát rendelni és kezelni a rendeléseidet.",
+    url: "https://fullstack-pizzeria-app.vercel.app",
+    images: ["/og-image.png"], // optimális méret: 1200x630 px
+  },
 };
 
 export default function RootLayout({
@@ -34,6 +44,7 @@ export default function RootLayout({
               {children}
             </main>
             <Toaster />
+            <CookieConsentBanner />
           </ThemeProvider>
         </AuthProvider>
       </body>
