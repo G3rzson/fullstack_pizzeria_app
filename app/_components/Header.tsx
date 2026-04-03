@@ -4,6 +4,7 @@ import MobileNav from "./MobileNav";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 import Image from "next/image";
 import UserMenu from "./UserMenu";
+import CartLink from "./CartLink";
 
 export default function Header() {
   return (
@@ -22,6 +23,7 @@ export default function Header() {
         <DesktopNav />
         <MobileNav />
         <UserMenu />
+        <CartLink />
         <ThemeSwitcher />
       </nav>
     </header>

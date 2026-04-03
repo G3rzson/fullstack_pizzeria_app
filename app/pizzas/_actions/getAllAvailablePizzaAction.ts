@@ -2,7 +2,7 @@
 
 import { getAllAvailablePizzaDal } from "../_dal/pizzaDal";
 
-type FormattedPizzaType = {
+export type FormattedPizzaType = {
   id: string;
   pizzaName: string;
   pizzaPrice32: number;

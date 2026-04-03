@@ -15,9 +15,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { NAV_LINKS } from "../_constants/navLinks";
+import { useAuth } from "@/lib/auth/useAuth";
 
 export default function MobileNav() {
   const pathname = usePathname();
+  const { user } = useAuth();
   return (
     <Drawer direction="left">
       <DrawerTrigger asChild>
@@ -48,18 +50,23 @@ export default function MobileNav() {
           </DrawerClose>
           <div className="no-scrollbar overflow-y-auto">
             <ul className="flex flex-col items-start">
-              {NAV_LINKS.map((link) => (
-                <li key={link.href} className="w-full">
-                  <DrawerClose asChild>
-                    <Link
-                      className={`${pathname === link.href ? "active" : ""} nav-link mobile text-xl w-full p-4 block`}
-                      href={link.href}
-                    >
-                      {link.title}
-                    </Link>
-                  </DrawerClose>
-                </li>
-              ))}
+              {NAV_LINKS.map((link) => {
+                if (link.href === "/dashboard" && user?.role !== "ADMIN") {
+                  return null; // Skip rendering the dashboard link in the desktop nav if user is not an admin
+                }
+                return (
+                  <li key={link.href} className="w-full">
+                    <DrawerClose asChild>
+                      <Link
+                        className={`${pathname === link.href ? "active" : ""} nav-link mobile text-xl w-full p-4 block`}
+                        href={link.href}
+                      >
+                        {link.title}
+                      </Link>
+                    </DrawerClose>
+                  </li>
+                );
+              })}
             </ul>
           </div>
           <DrawerTitle className="sr-only">Navigációs menü</DrawerTitle>

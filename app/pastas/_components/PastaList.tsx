@@ -1,17 +1,15 @@
 import {
   Card,
-  CardContent,
-  CardHeader,
   CardTitle,
   CardFooter,
   CardDescription,
 } from "@/components/ui/card";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
 import { getAllAvailablePastaAction } from "../_actions/getAllAvailablePastaAction";
 import { textFormatter } from "@/shared/Functions/textFormatter";
+import AddToCartBtn from "@/shared/Components/AddToCartBtn";
 
 export default async function PastaList() {
   const response = await getAllAvailablePastaAction();
@@ -66,9 +64,7 @@ export default async function PastaList() {
             </div>
 
             <CardFooter>
-              <Button variant="default" className="w-full">
-                Hozzáadás a kosárhoz
-              </Button>
+              <AddToCartBtn menu={pasta} type="pasta" />
             </CardFooter>
           </Card>
         </li>

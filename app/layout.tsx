@@ -7,6 +7,7 @@ import Header from "./_components/Header";
 import CookieConsentBanner from "./_components/CookieConsentBanner";
 import { AuthProvider } from "@/lib/auth/AuthContext";
 import "./globals.css";
+import { CartProvider } from "@/lib/cart/CartContext";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -38,14 +39,16 @@ export default function RootLayout({
     >
       <body className="flex flex-col min-h-screen">
         <AuthProvider>
-          <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Header />
-            <main className="flex flex-col grow gap-4 p-4 md:px-0 w-full md:w-4/5 mx-auto">
-              {children}
-            </main>
-            <Toaster />
-            <CookieConsentBanner />
-          </ThemeProvider>
+          <CartProvider>
+            <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+              <Header />
+              <main className="flex flex-col grow gap-4 p-4 md:px-0 w-full md:w-4/5 mx-auto">
+                {children}
+              </main>
+              <Toaster />
+              <CookieConsentBanner />
+            </ThemeProvider>
+          </CartProvider>
         </AuthProvider>
       </body>
     </html>

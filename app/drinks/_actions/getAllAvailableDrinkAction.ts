@@ -2,7 +2,7 @@
 
 import { getAllAvailableDrinkDal } from "../_dal/drinkDal";
 
-type FormattedDrinkType = {
+export type FormattedDrinkType = {
   id: string;
   drinkName: string;
   drinkPrice: number;
