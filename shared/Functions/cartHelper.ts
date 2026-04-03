@@ -3,6 +3,20 @@ import { type FormattedPastaType } from "@/app/pastas/_actions/getAllAvailablePa
 import { type FormattedPizzaType } from "@/app/pizzas/_actions/getAllAvailablePizzaAction";
 import { type CartItem } from "@/lib/cart/CartContext";
 
+export function getTotalPrice(cartItems: CartItem[]) {
+  return cartItems.reduce((sum, item) => {
+    const price =
+      item.type === "pizza"
+        ? item.size === 32
+          ? item.product.pizzaPrice32
+          : item.product.pizzaPrice45
+        : item.type === "pasta"
+          ? item.product.pastaPrice
+          : item.product.drinkPrice;
+    return sum + price * item.quantity;
+  }, 0);
+}
+
 export function removeFromMenuArray(
   cartItems: CartItem[],
   itemToRemove: CartItem,
@@ -78,4 +92,67 @@ export function createCartItem(
     };
   }
   return newCartItems;
+}
+
+export function increaseQuantity(
+  cartItems: CartItem[],
+  itemToIncrease: CartItem,
+): CartItem[] {
+  return cartItems.map((cartItem) => {
+    // Ellenőrizzük hogy ugyanaz a termék-e
+    if (cartItem.product.id !== itemToIncrease.product.id) return cartItem;
+    if (cartItem.type !== itemToIncrease.type) return cartItem;
+
+    // Ha pizza, akkor a méretet is ellenőrizni kell
+    if (cartItem.type === "pizza" && itemToIncrease.type === "pizza") {
+      if (cartItem.size !== itemToIncrease.size) return cartItem;
+    }
+
+    // Egyezik, növeljük a quantity-t
+    return { ...cartItem, quantity: cartItem.quantity + 1 };
+  });
+}
+
+export function decreaseQuantity(
+  cartItems: CartItem[],
+  itemToDecrease: CartItem,
+): CartItem[] {
+  return cartItems.map((cartItem) => {
+    // Ellenőrizzük hogy ugyanaz a termék-e
+    if (cartItem.product.id !== itemToDecrease.product.id) return cartItem;
+    if (cartItem.type !== itemToDecrease.type) return cartItem;
+
+    // Ha pizza, akkor a méretet is ellenőrizni kell
+    if (cartItem.type === "pizza" && itemToDecrease.type === "pizza") {
+      if (cartItem.size !== itemToDecrease.size) return cartItem;
+    }
+
+    // Egyezik, csökkentjük a quantity-t (de minimum 1)
+    return {
+      ...cartItem,
+      quantity: Math.max(1, cartItem.quantity - 1),
+    };
+  });
+}
+
+export function getItemPrice(item: CartItem): number {
+  if (item.type === "pizza") {
+    return item.size === 32
+      ? item.product.pizzaPrice32
+      : item.product.pizzaPrice45;
+  } else if (item.type === "pasta") {
+    return item.product.pastaPrice;
+  } else {
+    return item.product.drinkPrice;
+  }
+}
+
+export function getProductName(item: CartItem): string {
+  if (item.type === "pizza") {
+    return item.product.pizzaName;
+  } else if (item.type === "pasta") {
+    return item.product.pastaName;
+  } else {
+    return item.product.drinkName;
+  }
 }

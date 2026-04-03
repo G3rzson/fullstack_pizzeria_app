@@ -1,3 +1,11 @@
+import CartList from "./_components/CartList";
+
 export default function CartPage() {
-  return <div>CartPage</div>;
+  return (
+    <>
+      <h1 className="text-2xl sm:text-4xl">Kosár</h1>
+
+      <CartList />
+    </>
+  );
 }

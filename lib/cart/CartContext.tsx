@@ -36,7 +36,7 @@ export const CartContext = createContext<CartContextType | undefined>(
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const storedCartItems = loadFromLocalStorage();
@@ -45,6 +45,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     } else {
       setCartItems([]);
     }
+    setIsLoading(false);
   }, [setCartItems]);
 
   return (
