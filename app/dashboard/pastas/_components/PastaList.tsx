@@ -85,12 +85,6 @@ export default async function PastaList() {
                 {pasta.pastaDescription}
               </CardTitle>
             </CardContent>
-
-            <CardFooter>
-              <Button variant="default" className="w-full">
-                Hozzáadás a kosárhoz
-              </Button>
-            </CardFooter>
           </Card>
         </li>
       ))}

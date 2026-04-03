@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import "./globals.css";
 import { Geist } from "next/font/google";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/sonner";
 import Header from "./_components/Header";
 import { AuthProvider } from "@/lib/auth/AuthContext";
+import "./globals.css";
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
         <AuthProvider>
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
             <Header />
-            <main className="flex flex-col grow gap-4 p-4 w-full md:w-4/5 mx-auto">
+            <main className="flex flex-col grow gap-4 p-4 md:px-0 w-full md:w-4/5 mx-auto">
               {children}
             </main>
             <Toaster />

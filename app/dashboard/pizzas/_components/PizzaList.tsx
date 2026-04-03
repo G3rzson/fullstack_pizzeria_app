@@ -86,11 +86,6 @@ export default async function PizzaList() {
                 {pizza.pizzaDescription}
               </CardTitle>
             </CardContent>
-            <CardFooter>
-              <Button variant="default" className="w-full">
-                Hozzáadás a kosárhoz
-              </Button>
-            </CardFooter>
           </Card>
         </li>
       ))}
