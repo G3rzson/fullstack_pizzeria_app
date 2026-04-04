@@ -2,7 +2,7 @@
 import prisma from "@/prisma/prisma";
 
 export async function getAllAvailablePizzaDal() {
-  const pizzasArray = await prisma.pizza.findMany({
+  return await prisma.pizza.findMany({
     where: {
       isAvailableOnMenu: true,
     },
@@ -10,5 +10,4 @@ export async function getAllAvailablePizzaDal() {
       image: true,
     },
   });
-  return pizzasArray;
 }

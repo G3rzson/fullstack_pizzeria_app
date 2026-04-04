@@ -10,7 +10,7 @@ export default function CartLink() {
   return (
     <div className="relative">
       <Link href="/cart">
-        <Button variant="outline" size="icon">
+        <Button variant="outline" title="Kosár">
           <ShoppingCart />
         </Button>
       </Link>

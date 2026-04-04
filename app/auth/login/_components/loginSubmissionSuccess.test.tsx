@@ -3,8 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginForm from "./LoginForm";
 import { loginAction } from "../_actions/loginAction";
-import { LOGIN_INFO } from "../_constants/info";
 import { toast } from "sonner";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // Mock loginAction
 vi.mock("../_actions/loginAction", () => ({
@@ -57,7 +57,7 @@ describe("Form Submission", () => {
     const user = userEvent.setup();
     mockLoginAction.mockResolvedValue({
       success: true,
-      message: LOGIN_INFO.success,
+      message: BACKEND_RESPONSE_MESSAGES.SUCCESS,
     });
 
     render(<LoginForm />);
@@ -80,7 +80,9 @@ describe("Form Submission", () => {
     });
 
     // toast.success
-    expect(mockToastSuccess).toHaveBeenCalledWith(LOGIN_INFO.success);
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+    );
     // router.push
     expect(mockPush).toHaveBeenCalledWith("/");
     // reset()

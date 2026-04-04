@@ -23,12 +23,12 @@ import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { pizzaSchema, type PizzaFormType } from "../_validation/pizzaSchema";
 import { createPizzaAction } from "../_actions/createPizzaAction";
 import { updatePizzaAction } from "../_actions/updatePizzaAction";
-import { PizzaType } from "@/shared/Types/types";
+import { type AdminPizzaDtoType } from "@/shared/Types/types";
 
 export default function PizzaForm({
   pizzaObject,
 }: {
-  pizzaObject?: PizzaType;
+  pizzaObject?: AdminPizzaDtoType;
 }) {
   const {
     handleSubmit,

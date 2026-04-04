@@ -1,44 +1,33 @@
 "use server";
 
+import { DrinkDtoType } from "@/shared/Types/types";
 import { getAllAvailableDrinkDal } from "../_dal/drinkDal";
+import isDev from "@/shared/Functions/isDev";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
-export type FormattedDrinkType = {
-  id: string;
-  drinkName: string;
-  drinkPrice: number;
-  publicUrl: string | null;
-};
-
-type ResponseType =
-  | {
-      success: true;
-      data: FormattedDrinkType[];
-    }
-  | {
-      success: false;
-      message: string;
-    };
-
-export async function getAllAvailableDrinkAction(): Promise<ResponseType> {
+export async function getAllAvailableDrinkAction(): Promise<{
+  success: boolean;
+  message: string;
+  data?: DrinkDtoType[];
+}> {
   try {
     const drinksArray = await getAllAvailableDrinkDal();
 
-    const formattedDrinks: FormattedDrinkType[] = drinksArray.map((drink) => ({
+    const drinkDto: DrinkDtoType[] = drinksArray.map((drink) => ({
       id: drink.id,
       drinkName: drink.drinkName,
       drinkPrice: drink.drinkPrice,
-      publicUrl: drink.image?.publicUrl || null,
+      isAvailableOnMenu: drink.isAvailableOnMenu,
+      image: drink.image ? { publicUrl: drink.image.publicUrl } : null,
     }));
 
-    return {
-      success: true,
-      data: formattedDrinks,
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS, drinkDto);
   } catch (error) {
-    console.error("Error fetching drinks:", error);
-    return {
-      success: false,
-      message: "Hiba történt az italok lekérése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - getAllAvailableDrinkAction")
+      : console.error("Error fetching drinks:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

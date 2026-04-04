@@ -21,7 +21,7 @@ import {
 } from "../_validation/registerSchema";
 import { registerAction } from "../_actions/registerAction";
 import { toast } from "sonner";
-import { REGISTER_INFO } from "../_constants/info";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 export default function RegisterForm() {
   const {
@@ -44,15 +44,15 @@ export default function RegisterForm() {
       const response = await registerAction(data);
 
       if (!response.success) {
-        toast.error(response.message || REGISTER_INFO.error);
+        toast.error(response.message);
         return;
       }
 
-      toast.success(response.message || REGISTER_INFO.success);
+      toast.success(response.message);
       router.push("/auth/login");
       reset();
     } catch (err) {
-      toast.error(REGISTER_INFO.error);
+      toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
       console.error(err);
     }
   }

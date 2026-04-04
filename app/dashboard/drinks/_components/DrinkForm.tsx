@@ -21,13 +21,13 @@ import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { createDrinkAction } from "../_actions/createDrinkAction";
 import { updateDrinkAction } from "../_actions/updateDrinkAction";
 import { type DrinkFormType, drinkSchema } from "../_validation/drinkSchema";
-import { DrinkType } from "@/shared/Types/types";
 import { useEffect } from "react";
+import { type AdminDrinkDtoType } from "@/shared/Types/types";
 
 export default function DrinkForm({
   drinkObject,
 }: {
-  drinkObject?: DrinkType;
+  drinkObject?: AdminDrinkDtoType;
 }) {
   const {
     handleSubmit,

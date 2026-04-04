@@ -4,6 +4,7 @@ import ActionModal from "@/shared/Components/ActionModal";
 import { toast } from "sonner";
 import { useState } from "react";
 import { deletePastaAction } from "../_actions/deletePastaAction";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 type Props = {
   id: string;
@@ -27,7 +28,7 @@ export default function DeletePastaBtn({ id, publicId }: Props) {
 
       toast.success(response.message);
     } catch (error) {
-      toast.error("Hiba történt a tészta törlése során!");
+      toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     } finally {
       setLoading(false);
     }

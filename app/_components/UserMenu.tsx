@@ -34,7 +34,7 @@ export default function UserMenu() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" title="Téma kiválasztása">
+        <Button variant="outline" title="Felhasználói menü">
           <User />
         </Button>
       </DropdownMenuTrigger>

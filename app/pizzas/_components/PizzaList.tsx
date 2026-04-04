@@ -1,22 +1,26 @@
+import ServerError from "@/shared/Components/ServerError";
 import { getAllAvailablePizzaAction } from "../_actions/getAllAvailablePizzaAction";
 import PizzaCard from "./PizzaCard";
+import EmptyList from "@/shared/Components/EmptyList";
 
 export default async function PizzaList() {
   const response = await getAllAvailablePizzaAction();
 
-  if (!response.success)
+  if (!response.success || !response.data)
     return (
-      <div>Hiba történt a pizzák lekérése során! Próbáld újra később.</div>
+      <ServerError
+        errorMsg={response.message}
+        path="/"
+        title="Vissza a főoldalra"
+      />
     );
 
-  const pizzasArray = response.data || [];
-
-  if (pizzasArray.length === 0)
-    return <div>Jelenleg nincs elérhető pizza.</div>;
+  if (response.data.length === 0)
+    return <EmptyList text="Jelenleg nincs elérhető pizza!" />;
 
   return (
-    <ul className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-      {pizzasArray.map((pizza) => (
+    <ul className="menu-grid">
+      {response.data.map((pizza) => (
         <li key={pizza.id}>
           <PizzaCard pizza={pizza} />
         </li>

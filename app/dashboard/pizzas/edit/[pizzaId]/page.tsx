@@ -22,7 +22,7 @@ export default async function EditPizzaPage({
   }
 
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <PizzaForm pizzaObject={response.data} />
     </div>
   );

@@ -1,48 +1,45 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { getAllPastaAction } from "../_actions/getAllPastaAction";
 import DeletePastaBtn from "./DeletePastaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 import ChangePastaMenuStateBtn from "./ChangePastaMenuStateBtn";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
+import ServerError from "@/shared/Components/ServerError";
+import EmptyList from "@/shared/Components/EmptyList";
 
 export default async function PastaList() {
   const response = await getAllPastaAction();
 
-  if (!response.success)
+  if (!response.success || !response.data)
     return (
-      <div>Hiba történt a pasták lekérése során! Próbáld újra később.</div>
+      <ServerError
+        errorMsg={response.message}
+        path="/dashboard"
+        title="Vissza a főoldalra"
+      />
     );
 
-  const pastasArray = response.data || [];
-
-  if (pastasArray.length === 0)
-    return <div>Jelenleg nincs elérhető pasta.</div>;
+  if (response.data.length === 0)
+    return <EmptyList text="Jelenleg nincs elérhető tészta!" />;
 
   return (
-    <ul className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-      {pastasArray.map((pasta) => (
+    <ul className="menu-grid">
+      {response.data.map((pasta) => (
         <li key={pasta.id}>
           <Card className="h-full w-full">
             <CardHeader className="w-full flex flex-row justify-between px-4">
               <CardContent className="flex items-center justify-center h-30 w-30 lg:w-50 lg:h-50 p-0">
-                {pasta.publicUrl ? (
+                {pasta.image ? (
                   <div className="relative w-full h-full">
                     <Image
-                      src={pasta.publicUrl}
+                      src={pasta.image.publicUrl}
                       alt={pasta.pastaName}
                       fill
                       placeholder="blur"
-                      blurDataURL={generateBlurUrl(pasta.publicUrl)}
+                      blurDataURL={generateBlurUrl(pasta.image.publicUrl)}
                       className="rounded-xl object-cover select-none pointer-events-none"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
@@ -65,8 +62,10 @@ export default async function PastaList() {
                 />
 
                 <MenuNavLink
-                  href={`/dashboard/pastas/image/upload/${pasta.pastaId ? pasta.pastaId : pasta.id}`}
-                  title={pasta.pastaId ? "Kép frissítése" : "Kép feltöltése"}
+                  href={`/dashboard/pastas/image/upload/${pasta.id}`}
+                  title={
+                    pasta.image?.publicId ? "Kép frissítése" : "Kép feltöltése"
+                  }
                 />
 
                 <MenuNavLink
@@ -74,7 +73,10 @@ export default async function PastaList() {
                   title="Tészta szerkesztése"
                 />
 
-                <DeletePastaBtn id={pasta.id} publicId={pasta.publicId} />
+                <DeletePastaBtn
+                  id={pasta.id}
+                  publicId={pasta.image?.publicId ?? null}
+                />
               </CardContent>
             </CardHeader>
 

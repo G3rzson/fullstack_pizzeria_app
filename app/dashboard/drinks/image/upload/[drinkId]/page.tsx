@@ -4,7 +4,7 @@ import ServerError from "@/shared/Components/ServerError";
 import { updateDrinkImageAction } from "../../../_actions/updateDrinkImageAction";
 import { uploadDrinkImageAction } from "../../../_actions/uploadDrinkImageAction";
 
-export default async function UploadImagePage({
+export default async function UploadDrinkImagePage({
   params,
 }: {
   params: Promise<{ drinkId: string }>;
@@ -24,7 +24,7 @@ export default async function UploadImagePage({
   }
 
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <ImageForm
         returnUrl="/dashboard/drinks"
         menuObject={response.data}

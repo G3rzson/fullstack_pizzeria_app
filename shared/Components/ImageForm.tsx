@@ -21,20 +21,46 @@ import {
   type ImageFormOutputType,
   imageSchema,
 } from "@/shared/Validation/ImageSchema";
-import { type MenuObjectType, type SimpleResponseType } from "../Types/types";
+import {
+  type AdminDrinkDtoType,
+  type AdminPastaDtoType,
+  type AdminPizzaDtoType,
+} from "../Types/types";
 
 type Props = {
   returnUrl: string;
-  menuObject: MenuObjectType;
+  menuObject: AdminPizzaDtoType | AdminPastaDtoType | AdminDrinkDtoType;
   updateImageAction: (
     id: string,
     image: File | null,
     publicId: string,
-  ) => Promise<SimpleResponseType>;
+  ) => Promise<
+    | {
+        success: boolean;
+        message: string;
+        data?: undefined;
+      }
+    | {
+        success: boolean;
+        message: string;
+        data: {} | null;
+      }
+  >;
   uploadImageAction: (
     id: string,
     image: File | null,
-  ) => Promise<SimpleResponseType>;
+  ) => Promise<
+    | {
+        success: boolean;
+        message: string;
+        data?: undefined;
+      }
+    | {
+        success: boolean;
+        message: string;
+        data: {} | null;
+      }
+  >;
 };
 
 export default function ImageForm({
@@ -66,13 +92,11 @@ export default function ImageForm({
       );
 
       if (!response.success) {
-        toast.error(
-          response.message || "Szerverhiba történt! Próbáld újra később.",
-        );
+        toast.error(response.message);
         return;
       }
 
-      toast.success(response.message || "Kép sikeresen frissítve!");
+      toast.success(response.message);
       reset();
       router.push(returnUrl);
     } else {

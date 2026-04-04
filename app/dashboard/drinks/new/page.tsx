@@ -1,8 +1,8 @@
 import DrinkForm from "../_components/DrinkForm";
 
-export default function NewPastaPage() {
+export default function NewDrinkPage() {
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <DrinkForm />
     </div>
   );

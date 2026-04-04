@@ -7,25 +7,21 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { getTotalPrice } from "@/shared/Functions/cartHelper";
 import { priceFormatter } from "@/shared/Functions/priceFormatter";
 import ActionModal from "@/shared/Components/ActionModal";
+import EmptyList from "@/shared/Components/EmptyList";
 
 export default function CartList() {
   const { cartItems, isLoading } = useCart();
 
   if (isLoading) {
     return (
-      <div className="flex grow items-center justify-center">
+      <div className="centered-container">
         <Loading />
       </div>
     );
   }
 
-  if (!isLoading && cartItems.length === 0) {
-    return (
-      <div className="flex grow items-center justify-center">
-        <h1 className="text-center text-2xl sm:text-4xl">A kosár üres.</h1>
-      </div>
-    );
-  }
+  if (!isLoading && cartItems.length === 0)
+    return <EmptyList text="A kosarad üres!" />;
 
   return (
     <div className="space-y-4 my-6">
@@ -41,11 +37,11 @@ export default function CartList() {
       </ul>
 
       {/* Összesítés */}
-      <Card className="p-0 gap-0">
+      <Card className="bg-gradient p-0 gap-0">
         <CardContent className="p-4">
           <div className="flex justify-between items-center">
             <span className="text-lg font-semibold">Végösszeg:</span>
-            <span className="text-2xl font-bold text-green-500">
+            <span className="text-2xl font-bold text-success">
               {priceFormatter(getTotalPrice(cartItems))}
             </span>
           </div>

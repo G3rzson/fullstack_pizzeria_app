@@ -1,6 +1,8 @@
-import { type FormattedDrinkType } from "@/app/drinks/_actions/getAllAvailableDrinkAction";
-import { type FormattedPastaType } from "@/app/pastas/_actions/getAllAvailablePastaAction";
-import { type FormattedPizzaType } from "@/app/pizzas/_actions/getAllAvailablePizzaAction";
+import {
+  type PizzaDtoType,
+  type PastaDtoType,
+  type DrinkDtoType,
+} from "@/shared/Types/types";
 import { type CartItem } from "@/lib/cart/CartContext";
 
 export function getTotalPrice(cartItems: CartItem[]) {
@@ -67,27 +69,27 @@ export function isMenuItemInCart(
 
 export function createCartItem(
   type: "drink" | "pasta" | "pizza",
-  menu: FormattedDrinkType | FormattedPastaType | FormattedPizzaType,
+  menu: DrinkDtoType | PastaDtoType | PizzaDtoType,
   size?: 32 | 45,
 ): CartItem {
   let newCartItems: CartItem;
   if (type === "pizza") {
     newCartItems = {
       type: "pizza",
-      product: menu as FormattedPizzaType,
+      product: menu as PizzaDtoType,
       size: (size ?? 32) as 32 | 45,
       quantity: 1,
     };
   } else if (type === "pasta") {
     newCartItems = {
       type: "pasta",
-      product: menu as FormattedPastaType,
+      product: menu as PastaDtoType,
       quantity: 1,
     };
   } else {
     newCartItems = {
       type: "drink",
-      product: menu as FormattedDrinkType,
+      product: menu as DrinkDtoType,
       quantity: 1,
     };
   }

@@ -1,13 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  Card,
-  CardTitle,
-  CardFooter,
-  CardDescription,
-  CardContent,
-} from "@/components/ui/card";
+import { Card, CardTitle, CardFooter, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Pizza } from "lucide-react";
@@ -15,29 +9,25 @@ import Image from "next/image";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
 import { textFormatter } from "@/shared/Functions/textFormatter";
 import AddToCartBtn from "@/shared/Components/AddToCartBtn";
-import type { FormattedPizzaType } from "../_actions/getAllAvailablePizzaAction";
+import type { PizzaDtoType } from "@/shared/Types/types";
 
-type Props = {
-  pizza: FormattedPizzaType;
-};
-
-export default function PizzaCard({ pizza }: Props) {
+export default function PizzaCard({ pizza }: { pizza: PizzaDtoType }) {
   const [selectedSize, setSelectedSize] = useState<32 | 45>(32);
 
   const size32Id = `size32-${pizza.id}`;
   const size45Id = `size45-${pizza.id}`;
 
   return (
-    <Card className="h-full w-full">
+    <Card className="bg-gradient h-full w-full">
       <div className="flex flex-row items-start justify-between gap-4 px-4">
-        {pizza.publicUrl ? (
+        {pizza.image ? (
           <div className="relative shrink-0 h-30 w-30 lg:w-50 lg:h-50">
             <Image
-              src={pizza.publicUrl}
+              src={pizza.image.publicUrl}
               alt={pizza.pizzaName}
               fill
               placeholder="blur"
-              blurDataURL={generateBlurUrl(pizza.publicUrl)}
+              blurDataURL={generateBlurUrl(pizza.image.publicUrl)}
               className="object-cover select-none pointer-events-none"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />
@@ -49,19 +39,17 @@ export default function PizzaCard({ pizza }: Props) {
         )}
 
         <div className="flex flex-col items-end justify-end gap-2">
-          <CardTitle className="text-lg lg:text-xl">
+          <CardTitle className="card-title">
             {textFormatter(pizza.pizzaName)}
           </CardTitle>
 
-          <CardDescription className="text-end text-balance">
-            {pizza.pizzaDescription}
-          </CardDescription>
+          <p className="card-description">{pizza.pizzaDescription}</p>
         </div>
       </div>
 
       <CardContent className="space-y-2">
         <div className="flex flex-row items-center justify-between w-full">
-          <p className="text-green-500 font-semibold whitespace-nowrap">
+          <p className="text-success font-semibold whitespace-nowrap">
             {selectedSize === 32 ? pizza.pizzaPrice32 : pizza.pizzaPrice45} Ft
           </p>
           <RadioGroup
@@ -77,7 +65,7 @@ export default function PizzaCard({ pizza }: Props) {
               />
               <Label
                 htmlFor={size32Id}
-                className={`cursor-pointer ${selectedSize === 32 ? "text-green-500" : ""}`}
+                className={`cursor-pointer ${selectedSize === 32 ? "text-success" : ""}`}
               >
                 32 cm
               </Label>
@@ -91,7 +79,7 @@ export default function PizzaCard({ pizza }: Props) {
               />
               <Label
                 htmlFor={size45Id}
-                className={`cursor-pointer ${selectedSize === 45 ? "text-green-500" : ""}`}
+                className={`cursor-pointer ${selectedSize === 45 ? "text-success" : ""}`}
               >
                 45 cm
               </Label>

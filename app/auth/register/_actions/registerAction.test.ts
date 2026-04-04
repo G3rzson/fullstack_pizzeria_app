@@ -1,7 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { registerAction } from "./registerAction";
 import { Prisma } from "@prisma/client";
-import { REGISTER_INFO } from "../_constants/info";
 
 // Mock bcrypt
 vi.mock("bcrypt", () => ({
@@ -24,6 +23,7 @@ vi.mock("@/shared/Functions/errorLogger", () => ({
 import bcrypt from "bcrypt";
 import { registerDal } from "../_dal/registerDal";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // típusok a mockokhoz
 const mockBcryptHash = bcrypt.hash as unknown as Mock;
@@ -52,7 +52,7 @@ describe("registerAction", () => {
     const result = await registerAction(mockData);
 
     expect(result.success).toBe(true);
-    expect(result.message).toBe(REGISTER_INFO.success);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SUCCESS);
     expect(mockBcryptHash).toHaveBeenCalledWith("Password123", 10);
     expect(mockRegisterDal).toHaveBeenCalledWith({
       username: "TestUser",
@@ -71,7 +71,7 @@ describe("registerAction", () => {
     const result = await registerAction(invalidData);
 
     expect(result.success).toBe(false);
-    expect(result.message).toBe(REGISTER_INFO.validationError);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
     expect(mockErrorLogger).toHaveBeenCalledWith(
       expect.any(Object),
       "registerAction - validation error",
@@ -102,7 +102,7 @@ describe("registerAction", () => {
     const result = await registerAction(mockData);
 
     expect(result.success).toBe(false);
-    expect(result.message).toBe(REGISTER_INFO.duplicateError);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.DUPLICATE_ERROR);
     expect(mockErrorLogger).toHaveBeenCalledWith(
       prismaError,
       "registerAction - db duplicate error",
@@ -121,7 +121,7 @@ describe("registerAction", () => {
     const result = await registerAction(mockData);
 
     expect(result.success).toBe(false);
-    expect(result.message).toBe(REGISTER_INFO.serverError);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     expect(mockErrorLogger).toHaveBeenCalledWith(
       expect.any(Error),
       "registerAction - server error",

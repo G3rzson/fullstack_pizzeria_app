@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { deleteDrinkDal } from "../_dal/drinkDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
 export async function deleteDrinkAction(
   drinkId: string,
@@ -12,20 +16,12 @@ export async function deleteDrinkAction(
   try {
     const permissionResult = await hasPermission();
 
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod az ital törléséhez!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
     const { success, data } = idValidator.safeParse({ id: drinkId });
-    if (!success) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     await deleteDrinkDal(data.id);
 
@@ -37,15 +33,11 @@ export async function deleteDrinkAction(
 
     revalidatePath("/drinks");
     revalidatePath("/dashboard/drinks");
-    return {
-      success: true,
-      message: "Az ital sikeresen törölve.",
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    console.error("Error deleting drink:", error);
-    return {
-      success: false,
-      message: "Hiba történt az ital törlése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - deleteDrinkAction")
+      : console.error("Error deleting drink:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

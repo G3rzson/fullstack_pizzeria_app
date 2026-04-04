@@ -3,57 +3,56 @@ import prisma from "@/prisma/prisma";
 import type { Prisma } from "@prisma/client";
 
 export async function createPastaDal(data: Prisma.PastaCreateInput) {
-  await prisma.pasta.create({ data });
+  return await prisma.pasta.create({ data });
 }
 
 export async function getAllPastaDal() {
-  const pastasArray = await prisma.pasta.findMany({
+  return await prisma.pasta.findMany({
     include: {
       image: true,
     },
   });
-  return pastasArray;
 }
 
 export async function changePastaMenuDal(
-  id: string,
+  pastaId: string,
   isAvailableOnMenu: boolean,
 ) {
-  await prisma.pasta.update({
-    where: { id },
+  return await prisma.pasta.update({
+    where: { id: pastaId },
     data: { isAvailableOnMenu },
   });
 }
 
-export async function deletePastaDal(id: string) {
-  await prisma.pasta.delete({
-    where: { id },
+export async function deletePastaDal(pastaId: string) {
+  return await prisma.pasta.delete({
+    where: { id: pastaId },
   });
 }
 
 export async function updatePastaDal(
-  id: string,
+  pastaId: string,
   data: Prisma.PastaUpdateInput,
 ) {
-  await prisma.pasta.update({
-    where: { id },
+  return await prisma.pasta.update({
+    where: { id: pastaId },
     data,
   });
 }
 
-export async function getPastaByIdDal(id: string) {
+export async function getPastaByIdDal(pastaId: string) {
   return await prisma.pasta.findUnique({
-    where: { id },
+    where: { id: pastaId },
     include: { image: true },
   });
 }
 
 export async function uploadPastaImageDal(
-  id: string,
+  pastaId: string,
   imageData: Prisma.ImageCreateWithoutPastaInput,
 ) {
-  await prisma.pasta.update({
-    where: { id },
+  return await prisma.pasta.update({
+    where: { id: pastaId },
     data: {
       image: {
         create: imageData,
@@ -66,7 +65,7 @@ export async function updatePastaImageDal(
   pastaId: string,
   imageData: Prisma.ImageUpdateInput,
 ) {
-  await prisma.image.update({
+  return await prisma.image.update({
     where: { pastaId },
     data: imageData,
   });

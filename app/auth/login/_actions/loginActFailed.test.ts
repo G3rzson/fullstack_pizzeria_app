@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { loginAction } from "./loginAction";
-import { LOGIN_INFO } from "../_constants/info";
 
 // Mock bcrypt
 vi.mock("bcrypt", () => ({
@@ -46,6 +45,7 @@ import { getUserByUsername } from "../_dal/loginDal";
 import { getJwtSecrets } from "@/shared/Functions/jwt";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // típusok a mockokhoz
 const mockBcryptCompare = bcrypt.compare as unknown as Mock;
@@ -65,14 +65,14 @@ describe("loginAction - failed scenarios", () => {
     const response = await loginAction(invalidData);
 
     expect(response.success).toBe(false);
-    expect(response.message).toBe(LOGIN_INFO.validationError);
+    expect(response.message).toBe(BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
     expect(mockErrorLogger).toHaveBeenCalledWith(
       expect.anything(),
       "loginAction - validation error",
     );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
-      LOGIN_INFO.validationError,
+      BACKEND_RESPONSE_MESSAGES.INVALID_DATA,
     );
     expect(mockGetUserByUsername).not.toHaveBeenCalled();
     expect(mockBcryptCompare).not.toHaveBeenCalled();
@@ -86,11 +86,11 @@ describe("loginAction - failed scenarios", () => {
     const response = await loginAction(validData);
 
     expect(response.success).toBe(false);
-    expect(response.message).toBe(LOGIN_INFO.userNotExist);
+    expect(response.message).toBe(BACKEND_RESPONSE_MESSAGES.NOT_FOUND);
     expect(mockGetUserByUsername).toHaveBeenCalledWith(validData.username);
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
-      LOGIN_INFO.userNotExist,
+      BACKEND_RESPONSE_MESSAGES.NOT_FOUND,
     );
     expect(mockBcryptCompare).not.toHaveBeenCalled();
     expect(mockGetJwtSecrets).not.toHaveBeenCalled();
@@ -109,7 +109,7 @@ describe("loginAction - failed scenarios", () => {
     const response = await loginAction(validData);
 
     expect(response.success).toBe(false);
-    expect(response.message).toBe(LOGIN_INFO.userNotExist);
+    expect(response.message).toBe(BACKEND_RESPONSE_MESSAGES.NOT_FOUND);
     expect(mockGetUserByUsername).toHaveBeenCalledWith(validData.username);
     expect(mockBcryptCompare).toHaveBeenCalledWith(
       validData.password,
@@ -117,7 +117,7 @@ describe("loginAction - failed scenarios", () => {
     );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
-      LOGIN_INFO.userNotExist,
+      BACKEND_RESPONSE_MESSAGES.NOT_FOUND,
     );
     expect(mockGetJwtSecrets).not.toHaveBeenCalled();
   });
@@ -135,7 +135,7 @@ describe("loginAction - failed scenarios", () => {
 
     const response = await loginAction(validData);
     expect(response.success).toBe(false);
-    expect(response.message).toBe(LOGIN_INFO.serverError);
+    expect(response.message).toBe(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     expect(mockGetUserByUsername).toHaveBeenCalledWith(validData.username);
     expect(mockBcryptCompare).toHaveBeenCalledWith(
       validData.password,
@@ -148,7 +148,7 @@ describe("loginAction - failed scenarios", () => {
     );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
-      LOGIN_INFO.serverError,
+      BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
     );
   });
 
@@ -168,7 +168,7 @@ describe("loginAction - failed scenarios", () => {
     const response = await loginAction(validData);
 
     expect(response.success).toBe(false);
-    expect(response.message).toBe(LOGIN_INFO.serverError);
+    expect(response.message).toBe(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     expect(mockGetUserByUsername).toHaveBeenCalledWith(validData.username);
     expect(mockBcryptCompare).toHaveBeenCalledWith(
       validData.password,
@@ -181,7 +181,7 @@ describe("loginAction - failed scenarios", () => {
     );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
-      LOGIN_INFO.serverError,
+      BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
     );
   });
 });

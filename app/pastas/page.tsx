@@ -5,7 +5,7 @@ import PastaList from "./_components/PastaList";
 export default function PastaPage() {
   return (
     <div className="flex grow flex-col gap-4">
-      <h1 className="text-4xl">Tészták</h1>
+      <h1 className="page-title">Tészták</h1>
 
       <Suspense fallback={<Loading />}>
         <PastaList />

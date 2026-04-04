@@ -3,8 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RegisterForm from "../_components/RegisterForm";
 import { registerAction } from "../_actions/registerAction";
-import { REGISTER_INFO } from "../_constants/info";
 import { toast } from "sonner";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // Mock registerAction
 vi.mock("../_actions/registerAction", () => ({
@@ -45,7 +45,7 @@ describe("Form Submission", () => {
     const user = userEvent.setup();
     mockRegisterAction.mockResolvedValue({
       success: false,
-      message: REGISTER_INFO.error,
+      message: BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
     });
 
     render(<RegisterForm />);
@@ -71,7 +71,9 @@ describe("Form Submission", () => {
     });
 
     // toast.error should be called with the error message
-    expect(mockToastError).toHaveBeenCalledWith(REGISTER_INFO.error);
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
+    );
     // router.push should not be called
     expect(mockPush).not.toHaveBeenCalled();
     // reset() should not be called

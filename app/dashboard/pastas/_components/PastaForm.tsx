@@ -22,13 +22,13 @@ import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { type PastaFormType, pastaSchema } from "../_validation/pastaSchema";
 import { createPastaAction } from "../_actions/createPastaAction";
 import { updatePastaAction } from "../_actions/updatePastaAction";
-import { PastaType } from "@/shared/Types/types";
 import { useEffect } from "react";
+import { type AdminPastaDtoType } from "@/shared/Types/types";
 
 export default function PastaForm({
   pastaObject,
 }: {
-  pastaObject?: PastaType;
+  pastaObject?: AdminPastaDtoType;
 }) {
   const {
     handleSubmit,

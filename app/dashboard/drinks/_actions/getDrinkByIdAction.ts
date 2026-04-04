@@ -1,36 +1,35 @@
-import { type ActionResponseType, type DrinkType } from "@/shared/Types/types";
+"use server";
+
 import { getDrinkByIdDal } from "../_dal/drinkDal";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { hasPermission } from "@/shared/Functions/hasPermission";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { type AdminDrinkDtoType } from "@/shared/Types/types";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
-export async function getDrinkByIdAction(
-  drinkId: string,
-): Promise<ActionResponseType<DrinkType>> {
+export async function getDrinkByIdAction(drinkId: string): Promise<{
+  success: boolean;
+  message: string;
+  data?: AdminDrinkDtoType;
+}> {
   try {
     const permissionResult = await hasPermission();
 
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod ehhez a művelethez!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
     const { success, data } = idValidator.safeParse({ id: drinkId });
-    if (!success) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     const drink = await getDrinkByIdDal(data.id);
 
-    if (!drink) {
-      return { success: false, message: "Drink not found" };
-    }
+    if (!drink)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.NOT_FOUND);
 
-    const formattedDrink: DrinkType = {
+    const AdminDrinkDto: AdminDrinkDtoType = {
       id: drink.id,
       drinkName: drink.drinkName,
       drinkPrice: drink.drinkPrice,
@@ -44,20 +43,17 @@ export async function getDrinkByIdAction(
             originalName: drink.image.originalName,
           }
         : null,
-      createdAt: drink.createdAt.toISOString(),
-      updatedAt: drink.updatedAt.toISOString(),
     };
 
-    return {
-      success: true,
-      message: "Drink adatai sikeresen lekérve",
-      data: formattedDrink,
-    };
+    return handleResponse(
+      true,
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+      AdminDrinkDto,
+    );
   } catch (error) {
-    console.error("Error fetching drink by ID:", error);
-    return {
-      success: false,
-      message: "Hiba történt a drink adatainak lekérése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - getDrinkByIdAction")
+      : console.error("Error fetching drink by ID:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

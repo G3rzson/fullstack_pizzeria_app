@@ -4,6 +4,7 @@ import ActionModal from "@/shared/Components/ActionModal";
 import { toast } from "sonner";
 import { useState } from "react";
 import { changeDrinkMenuAction } from "../_actions/changeDrinkMenuAction";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 type Props = {
   id: string;
@@ -25,7 +26,7 @@ export default function ChangeDrinkMenuStateBtn({
       }
       toast.success(response.message);
     } catch (error) {
-      toast.error("Hiba történt a menü státuszának megváltoztatása során.");
+      toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     } finally {
       setIsLoading(false);
     }

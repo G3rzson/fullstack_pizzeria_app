@@ -16,9 +16,9 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { loginSchema, type LoginSchemaType } from "../_validation/loginSchema";
-import { LOGIN_INFO } from "../_constants/info";
 import { loginAction } from "../_actions/loginAction";
 import { useAuth } from "@/lib/auth/useAuth";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 export default function LoginForm() {
   const {
@@ -43,18 +43,18 @@ export default function LoginForm() {
       const response = await loginAction(data);
 
       if (!response.success) {
-        toast.error(response.message || LOGIN_INFO.error);
+        toast.error(response.message);
         return;
       }
 
       // Fetch user data after successful login
       await refreshUser();
 
-      toast.success(response.message || LOGIN_INFO.success);
+      toast.success(response.message);
       router.push(callbackUrl || "/");
       reset();
     } catch (err) {
-      toast.error(LOGIN_INFO.error);
+      toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
       console.error(err);
     }
   }

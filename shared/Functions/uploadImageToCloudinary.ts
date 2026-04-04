@@ -1,10 +1,9 @@
 import cloudinary from "@/lib/claudinary";
 import { UploadApiResponse } from "cloudinary";
-import { type MenuType } from "../Types/types";
 
 export async function uploadImageToCloudinary(
   pizzaImage: File,
-  menuType: MenuType,
+  menuType: "pizzas" | "pastas" | "drinks",
 ): Promise<UploadApiResponse> {
   const bytes = await pizzaImage.arrayBuffer();
   const buffer = Buffer.from(bytes);

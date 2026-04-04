@@ -1,47 +1,44 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Image as ImageIcon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 import { getAllDrinkAction } from "../_actions/getAllDrinkAction";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
 import ChangeDrinkMenuStateBtn from "./ChangeDrinkMenuStateBtn";
 import DeleteDrinkBtn from "./DeleteDrinkBtn";
+import ServerError from "@/shared/Components/ServerError";
 
 export default async function DrinkList() {
   const response = await getAllDrinkAction();
 
-  if (!response.success)
+  if (!response.success || !response.data)
     return (
-      <div>Hiba történt az italok lekérése során! Próbáld újra később.</div>
+      <ServerError
+        errorMsg={response.message}
+        path="/dashboard"
+        title="Vissza a dashboardra"
+      />
     );
 
-  const drinksArray = response.data || [];
-
-  if (drinksArray.length === 0) return <div>Jelenleg nincs elérhető ital.</div>;
+  if (response.data.length === 0)
+    return <div>Jelenleg nincs elérhető ital.</div>;
 
   return (
     <ul className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-      {drinksArray.map((drink) => (
+      {response.data.map((drink) => (
         <li key={drink.id}>
           <Card className="h-full w-full">
             <CardHeader className="w-full flex flex-row justify-between px-4">
               <CardContent className="flex items-center justify-center h-30 w-30  lg:w-50 lg:h-50">
-                {drink.publicUrl ? (
+                {drink.image ? (
                   <div className="relative w-full h-full">
                     <Image
-                      src={drink.publicUrl}
+                      src={drink.image.publicUrl}
                       alt={drink.drinkName}
                       fill
                       placeholder="blur"
-                      blurDataURL={generateBlurUrl(drink.publicUrl)}
+                      blurDataURL={generateBlurUrl(drink.image.publicUrl)}
                       className="rounded-xl object-cover select-none pointer-events-none"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
@@ -65,7 +62,9 @@ export default async function DrinkList() {
 
                 <MenuNavLink
                   href={`/dashboard/drinks/image/upload/${drink.id}`}
-                  title={drink.drinkId ? "Kép frissítése" : "Kép feltöltése"}
+                  title={
+                    drink.image?.publicId ? "Kép frissítése" : "Kép feltöltése"
+                  }
                 />
 
                 <MenuNavLink
@@ -73,7 +72,10 @@ export default async function DrinkList() {
                   title="Ital szerkesztése"
                 />
 
-                <DeleteDrinkBtn id={drink.id} publicId={drink.publicId} />
+                <DeleteDrinkBtn
+                  id={drink.id}
+                  publicId={drink.image?.publicId ?? null}
+                />
               </CardContent>
             </CardHeader>
 

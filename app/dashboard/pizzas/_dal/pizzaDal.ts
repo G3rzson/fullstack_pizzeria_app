@@ -3,40 +3,39 @@ import prisma from "@/prisma/prisma";
 import type { Prisma } from "@prisma/client";
 
 export async function createPizzaDal(data: Prisma.PizzaCreateInput) {
-  await prisma.pizza.create({ data });
+  return await prisma.pizza.create({ data });
 }
 
 export async function getAllPizzaDal() {
-  const pizzasArray = await prisma.pizza.findMany({
+  return await prisma.pizza.findMany({
     include: {
       image: true,
     },
   });
-  return pizzasArray;
 }
 
 export async function changePizzaMenuDal(
-  id: string,
+  pizzaId: string,
   isAvailableOnMenu: boolean,
 ) {
-  await prisma.pizza.update({
-    where: { id },
+  return await prisma.pizza.update({
+    where: { id: pizzaId },
     data: { isAvailableOnMenu },
   });
 }
 
-export async function deletePizzaDal(id: string) {
-  await prisma.pizza.delete({
-    where: { id },
+export async function deletePizzaDal(pizzaId: string) {
+  return await prisma.pizza.delete({
+    where: { id: pizzaId },
   });
 }
 
 export async function updatePizzaDal(
-  id: string,
+  pizzaId: string,
   data: Prisma.PizzaUpdateInput,
 ) {
-  await prisma.pizza.update({
-    where: { id },
+  return await prisma.pizza.update({
+    where: { id: pizzaId },
     data,
   });
 }
@@ -49,11 +48,11 @@ export async function getPizzaByIdDal(pizzaId: string) {
 }
 
 export async function uploadPizzaImageDal(
-  id: string,
+  pizzaId: string,
   imageData: Prisma.ImageCreateWithoutPizzaInput,
 ) {
-  await prisma.pizza.update({
-    where: { id },
+  return await prisma.pizza.update({
+    where: { id: pizzaId },
     data: {
       image: {
         create: imageData,
@@ -66,7 +65,7 @@ export async function updatePizzaImageDal(
   pizzaId: string,
   imageData: Prisma.ImageUpdateInput,
 ) {
-  await prisma.image.update({
+  return await prisma.image.update({
     where: { pizzaId },
     data: imageData,
   });

@@ -3,8 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import RegisterForm from "../_components/RegisterForm";
 import { registerAction } from "../_actions/registerAction";
-import { REGISTER_INFO } from "../_constants/info";
 import { toast } from "sonner";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // Mock registerAction
 vi.mock("../_actions/registerAction", () => ({
@@ -45,7 +45,7 @@ describe("Form Submission", () => {
     const user = userEvent.setup();
     mockRegisterAction.mockResolvedValue({
       success: true,
-      message: REGISTER_INFO.success,
+      message: BACKEND_RESPONSE_MESSAGES.SUCCESS,
     });
 
     render(<RegisterForm />);
@@ -71,7 +71,9 @@ describe("Form Submission", () => {
     });
 
     // toast.success
-    expect(mockToastSuccess).toHaveBeenCalledWith(REGISTER_INFO.success);
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+    );
     // router.push
     expect(mockPush).toHaveBeenCalledWith("/auth/login");
     // reset()

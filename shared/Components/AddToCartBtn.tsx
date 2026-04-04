@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { useCart } from "@/lib/cart/useCart";
-import { type FormattedDrinkType } from "@/app/drinks/_actions/getAllAvailableDrinkAction";
-import { type FormattedPastaType } from "@/app/pastas/_actions/getAllAvailablePastaAction";
-import { type FormattedPizzaType } from "@/app/pizzas/_actions/getAllAvailablePizzaAction";
+import {
+  type PizzaDtoType,
+  type PastaDtoType,
+  type DrinkDtoType,
+} from "@/shared/Types/types";
 import { toast } from "sonner";
 import { type CartItem } from "@/lib/cart/CartContext";
 import { saveToLocalStorage } from "../Functions/localStorage";
@@ -16,7 +18,7 @@ import {
 } from "../Functions/cartHelper";
 
 type Props = {
-  menu: FormattedDrinkType | FormattedPastaType | FormattedPizzaType;
+  menu: DrinkDtoType | PastaDtoType | PizzaDtoType;
   type: "drink" | "pasta" | "pizza";
   size?: 32 | 45;
 };
@@ -51,8 +53,8 @@ export default function AddToCartBtn({ menu, type, size }: Props) {
 
   return (
     <Button
-      variant="default"
-      className="w-full"
+      variant="outline"
+      className="w-full cursor-pointer"
       disabled={isLoading}
       onClick={handleAddToCart}
     >

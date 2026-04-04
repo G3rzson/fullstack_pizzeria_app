@@ -4,25 +4,24 @@ import { revalidatePath } from "next/cache";
 import { deletePizzaDal } from "../_dal/pizzaDal";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import isDev from "@/shared/Functions/isDev";
+import { errorLogger } from "@/shared/Functions/errorLogger";
 
-export async function deletePizzaAction(id: string, publicId: string | null) {
+export async function deletePizzaAction(
+  pizzaId: string,
+  publicId: string | null,
+) {
   try {
     const permissionResult = await hasPermission();
 
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod a törléshez!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
-    const { success, data } = idValidator.safeParse({ id });
-    if (!success) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    const { success, data } = idValidator.safeParse({ id: pizzaId });
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     await deletePizzaDal(data.id);
 
@@ -34,15 +33,11 @@ export async function deletePizzaAction(id: string, publicId: string | null) {
 
     revalidatePath(`/pizzas`);
     revalidatePath(`/dashboard/pizzas`);
-    return {
-      success: true,
-      message: "Sikeresen törölve.",
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    console.error("Error deleting:", error);
-    return {
-      success: false,
-      message: "Hiba történt a törlés során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - deletePizzaAction")
+      : console.error("Error deleting pizza:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

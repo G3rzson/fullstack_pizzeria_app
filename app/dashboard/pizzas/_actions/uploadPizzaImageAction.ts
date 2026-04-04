@@ -7,41 +7,29 @@ import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
 import { uploadPizzaImageDal } from "@/app/dashboard/pizzas/_dal/pizzaDal";
 import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
-import { type SimpleResponseType } from "@/shared/Types/types";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
-export async function uploadPizzaImageAction(
-  id: string,
-  pizzaImage: unknown,
-): Promise<SimpleResponseType> {
+export async function uploadPizzaImageAction(id: string, pizzaImage: unknown) {
   let publicId: string | null = null;
+
   try {
     const permissionResult = await hasPermission();
-
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod a művelethez!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
     const { success: successId, data: idData } = idValidator.safeParse({ id });
-    if (!successId) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    if (!successId)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     const { data, success } = await imageSchema.safeParseAsync({
       image: pizzaImage,
     });
 
-    if (!success || !data.image) {
-      return {
-        success: false,
-        message: "Érvénytelen kép fájl!",
-      };
-    }
+    if (!success || !data.image)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const result = await uploadImageToCloudinary(data.image, "pizzas");
 
@@ -54,20 +42,18 @@ export async function uploadPizzaImageAction(
     await uploadPizzaImageDal(idData.id, imageData);
 
     publicId = result.public_id; // Store the publicId for potential cleanup
+
     revalidatePath(`/pizzas`);
     revalidatePath(`/dashboard/pizzas`);
-    return {
-      success: true,
-      message: "Pizza kép sikeresen feltöltve!",
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
     if (publicId) {
       await deleteCloudinaryImage(publicId);
     }
-    console.error("Error uploading image:", error);
-    return {
-      success: false,
-      message: "Hiba történt a kép feltöltése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - uploadPizzaImageAction")
+      : console.error("Error uploading image:", error);
+
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }
