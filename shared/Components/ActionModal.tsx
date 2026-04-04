@@ -38,7 +38,7 @@ export default function ActionModal({
       <DialogTrigger asChild>
         <Button
           disabled={disabled}
-          variant={"secondary"}
+          variant={"outline"}
           className="cursor-pointer w-full"
         >
           {triggerTitle}

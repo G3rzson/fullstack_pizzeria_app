@@ -1,6 +1,6 @@
 "use server";
 
-import { pizzaDtoType } from "@/shared/Types/types";
+import { PizzaDtoType } from "@/shared/Types/types";
 import { getAllAvailablePizzaDal } from "../_dal/pizzaDal";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
@@ -10,18 +10,22 @@ import isDev from "@/shared/Functions/isDev";
 export async function getAllAvailablePizzaAction(): Promise<{
   success: boolean;
   message: string;
-  data?: pizzaDtoType[];
+  data?: PizzaDtoType[];
 }> {
   try {
     const pizzasArray = await getAllAvailablePizzaDal();
 
-    const pizzaDto: pizzaDtoType[] = pizzasArray.map((pizza) => ({
+    const pizzaDto: PizzaDtoType[] = pizzasArray.map((pizza) => ({
       id: pizza.id,
       pizzaName: pizza.pizzaName,
       pizzaPrice32: pizza.pizzaPrice32,
       pizzaPrice45: pizza.pizzaPrice45,
       pizzaDescription: pizza.pizzaDescription,
-      publicUrl: pizza.image?.publicUrl || null,
+      image: pizza.image
+        ? {
+            publicUrl: pizza.image.publicUrl,
+          }
+        : null,
     }));
 
     return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS, pizzaDto);

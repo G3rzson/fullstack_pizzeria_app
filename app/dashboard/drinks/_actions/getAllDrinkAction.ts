@@ -1,52 +1,45 @@
 "use server";
 
+import { type AdminDrinkDtoType } from "@/shared/Types/types";
 import { getAllDrinkDal } from "../_dal/drinkDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
-type FormattedDrinkType = {
-  id: string;
-  drinkName: string;
-  drinkPrice: number;
-  isAvailableOnMenu: boolean;
-  drinkId: string | null;
-  publicId: string | null;
-  originalName: string | null;
-  publicUrl: string | null;
-};
-
-type ResponseType =
-  | {
-      success: true;
-      data: FormattedDrinkType[];
-    }
-  | {
-      success: false;
-      message: string;
-    };
-
-export async function getAllDrinkAction(): Promise<ResponseType> {
+export async function getAllDrinkAction(): Promise<{
+  success: boolean;
+  message: string;
+  data?: AdminDrinkDtoType[];
+}> {
   try {
     const drinksArray = await getAllDrinkDal();
 
-    const formattedDrinks: FormattedDrinkType[] = drinksArray.map((drink) => ({
+    const AdminDrinkDto: AdminDrinkDtoType[] = drinksArray.map((drink) => ({
       id: drink.id,
       drinkName: drink.drinkName,
       drinkPrice: drink.drinkPrice,
       isAvailableOnMenu: drink.isAvailableOnMenu,
-      publicId: drink.image?.publicId || null,
-      originalName: drink.image?.originalName || null,
-      publicUrl: drink.image?.publicUrl || null,
-      drinkId: drink.image?.drinkId || null,
+      image: drink.image
+        ? {
+            id: drink.image.id,
+            drinkId: drink.image.drinkId,
+            publicId: drink.image.publicId,
+            publicUrl: drink.image.publicUrl,
+            originalName: drink.image.originalName,
+          }
+        : null,
     }));
 
-    return {
-      success: true,
-      data: formattedDrinks,
-    };
+    return handleResponse(
+      true,
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+      AdminDrinkDto,
+    );
   } catch (error) {
-    console.error("Error fetching drinks:", error);
-    return {
-      success: false,
-      message: "Hiba történt az italok lekérése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - getAllAvailableDrinkAction")
+      : console.error("Error fetching drinks:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

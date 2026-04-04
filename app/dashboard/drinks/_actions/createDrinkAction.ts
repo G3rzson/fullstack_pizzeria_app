@@ -4,27 +4,23 @@ import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { drinkSchema } from "../_validation/drinkSchema";
 import { createDrinkDal } from "../_dal/drinkDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
 export async function createDrinkAction(drink: unknown) {
-  const { data, success } = await drinkSchema.safeParseAsync(drink);
-
-  if (!success) {
-    return {
-      success: false,
-      message: "Érvénytelen adatok!",
-    };
-  }
-
-  const permissionResult = await hasPermission();
-
-  if (!permissionResult) {
-    return {
-      success: false,
-      message: "Nincs jogosultságod új ital létrehozásához!",
-    };
-  }
-
   try {
+    const permissionResult = await hasPermission();
+
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
+
+    const { data, success } = await drinkSchema.safeParseAsync(drink);
+
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
+
     const newDrink = {
       ...data,
       category: "italok",
@@ -35,12 +31,11 @@ export async function createDrinkAction(drink: unknown) {
 
     revalidatePath(`/drinks`);
     revalidatePath(`/dashboard/drinks`);
-    return { success: true, message: "Ital sikeresen létrehozva!" };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    console.error("Error creating drink:", error);
-    return {
-      success: false,
-      message: "Hiba történt az ital létrehozása során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - createDrinkAction")
+      : console.error("Error creating drink:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

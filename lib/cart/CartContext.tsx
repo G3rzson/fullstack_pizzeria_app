@@ -8,20 +8,22 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { type FormattedDrinkType } from "@/app/drinks/_actions/getAllAvailableDrinkAction";
-import { type FormattedPastaType } from "@/app/pastas/_actions/getAllAvailablePastaAction";
-import { type pizzaDtoType } from "@/shared/Types/types";
+import {
+  type PizzaDtoType,
+  type PastaDtoType,
+  type DrinkDtoType,
+} from "@/shared/Types/types";
 import { loadFromLocalStorage } from "@/shared/Functions/localStorage";
 
 export type CartItem =
   | {
       type: "pizza";
-      product: pizzaDtoType;
+      product: PizzaDtoType;
       size: 32 | 45;
       quantity: number;
     }
-  | { type: "pasta"; product: FormattedPastaType; quantity: number }
-  | { type: "drink"; product: FormattedDrinkType; quantity: number };
+  | { type: "pasta"; product: PastaDtoType; quantity: number }
+  | { type: "drink"; product: DrinkDtoType; quantity: number };
 
 type CartContextType = {
   cartItems: CartItem[];

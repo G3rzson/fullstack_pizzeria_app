@@ -4,7 +4,7 @@ import { updatePizzaImageAction } from "../../../_actions/updatePizzaImageAction
 import { getPizzaByIdAction } from "../../../_actions/getPizzaByIdAction";
 import ServerError from "@/shared/Components/ServerError";
 
-export default async function UploadImagePage({
+export default async function UploadPizzaImagePage({
   params,
 }: {
   params: Promise<{ pizzaId: string }>;
@@ -24,7 +24,7 @@ export default async function UploadImagePage({
   }
 
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <ImageForm
         returnUrl={"/dashboard/pizzas"}
         menuObject={response.data}

@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { loginAction } from "./loginAction";
-import { LOGIN_INFO } from "../_constants/info";
 
 // Mock bcrypt
 vi.mock("bcrypt", () => ({
@@ -51,6 +50,7 @@ import {
 } from "@/shared/Functions/jwt";
 import { cookies } from "next/headers";
 import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // típusok a mockokhoz
 const mockBcryptCompare = bcrypt.compare as Mock;
@@ -100,7 +100,7 @@ describe("loginAction - success scenarios", () => {
 
     const result = await loginAction(mockData);
     expect(result.success).toBe(true);
-    expect(result.message).toBe(LOGIN_INFO.success);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SUCCESS);
     expect(mockGetUserByUsername).toHaveBeenCalledWith("TestUser");
     expect(mockBcryptCompare).toHaveBeenCalledWith(
       "Password123",
@@ -143,6 +143,9 @@ describe("loginAction - success scenarios", () => {
         maxAge: expect.any(Number),
       }),
     );
-    expect(mockHandleResponse).toHaveBeenCalledWith(true, LOGIN_INFO.success);
+    expect(mockHandleResponse).toHaveBeenCalledWith(
+      true,
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+    );
   });
 });

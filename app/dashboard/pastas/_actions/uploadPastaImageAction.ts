@@ -7,41 +7,35 @@ import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
 import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
 import { uploadPastaImageDal } from "../_dal/pastaDal";
-import { SimpleResponseType } from "@/shared/Types/types";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
 export async function uploadPastaImageAction(
-  id: string,
+  pastaId: string,
   pastaImage: unknown,
-): Promise<SimpleResponseType> {
+) {
   let publicId: string | null = null;
   try {
     const permissionResult = await hasPermission();
 
     if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod a művelethez!",
-      };
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
     }
 
-    const { success: successId, data: idData } = idValidator.safeParse({ id });
-    if (!successId) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    const { success: successId, data: idData } = idValidator.safeParse({
+      id: pastaId,
+    });
+    if (!successId)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     const { data, success } = await imageSchema.safeParseAsync({
       image: pastaImage,
     });
 
-    if (!success || !data.image) {
-      return {
-        success: false,
-        message: "Érvénytelen kép fájl!",
-      };
-    }
+    if (!success || !data.image)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const result = await uploadImageToCloudinary(data.image, "pastas");
 
@@ -56,18 +50,14 @@ export async function uploadPastaImageAction(
     publicId = result.public_id; // Store the publicId for potential cleanup
     revalidatePath(`/pastas`);
     revalidatePath(`/dashboard/pastas`);
-    return {
-      success: true,
-      message: "Pasta kép sikeresen feltöltve!",
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
     if (publicId) {
       await deleteCloudinaryImage(publicId);
     }
-    console.error("Error uploading image:", error);
-    return {
-      success: false,
-      message: "Hiba történt a kép feltöltése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - uploadPastaImageAction")
+      : console.error("Error uploading image:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

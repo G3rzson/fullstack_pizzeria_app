@@ -1,36 +1,35 @@
+"use server";
+
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { getPizzaByIdDal } from "../_dal/pizzaDal";
 import { idValidator } from "@/shared/Functions/idValidator";
-import { type ActionResponseType, type PizzaType } from "@/shared/Types/types";
+import { AdminPizzaDtoType } from "@/shared/Types/types";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import isDev from "@/shared/Functions/isDev";
+import { errorLogger } from "@/shared/Functions/errorLogger";
 
-export async function getPizzaByIdAction(
-  id: string,
-): Promise<ActionResponseType<PizzaType>> {
+export async function getPizzaByIdAction(id: string): Promise<{
+  success: boolean;
+  message: string;
+  data?: AdminPizzaDtoType;
+}> {
   try {
     const permissionResult = await hasPermission();
 
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod ehhez a művelethez!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
     const { success, data } = idValidator.safeParse({ id });
-    if (!success) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     const pizza = await getPizzaByIdDal(data.id);
 
-    if (!pizza) {
-      return { success: false, message: "Menü nem található!" };
-    }
+    if (!pizza)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.NOT_FOUND);
 
-    const formattedPizza: PizzaType = {
+    const AdminPizzaDto: AdminPizzaDtoType = {
       id: pizza.id,
       pizzaName: pizza.pizzaName,
       pizzaDescription: pizza.pizzaDescription,
@@ -46,20 +45,17 @@ export async function getPizzaByIdAction(
             originalName: pizza.image.originalName,
           }
         : null,
-      createdAt: pizza.createdAt.toISOString(),
-      updatedAt: pizza.updatedAt.toISOString(),
     };
 
-    return {
-      success: true,
-      message: "Sikeres lekérés!",
-      data: formattedPizza,
-    };
+    return handleResponse(
+      true,
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+      AdminPizzaDto,
+    );
   } catch (error) {
-    console.error("Error fetching pizza by ID:", error);
-    return {
-      success: false,
-      message: "Hiba történt a lekérés során!",
-    };
+    isDev()
+      ? errorLogger(error, "server error - getPizzaByIdAction")
+      : console.error("Error fetching pizza by ID:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

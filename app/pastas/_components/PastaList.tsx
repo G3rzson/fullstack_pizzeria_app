@@ -1,43 +1,42 @@
-import {
-  Card,
-  CardTitle,
-  CardFooter,
-  CardDescription,
-} from "@/components/ui/card";
+import { Card, CardTitle, CardFooter } from "@/components/ui/card";
 import { Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
 import { getAllAvailablePastaAction } from "../_actions/getAllAvailablePastaAction";
 import { textFormatter } from "@/shared/Functions/textFormatter";
 import AddToCartBtn from "@/shared/Components/AddToCartBtn";
+import ServerError from "@/shared/Components/ServerError";
+import EmptyList from "@/shared/Components/EmptyList";
 
 export default async function PastaList() {
   const response = await getAllAvailablePastaAction();
 
-  if (!response.success)
+  if (!response.success || !response.data)
     return (
-      <div>Hiba történt a pasták lekérése során! Próbáld újra később.</div>
+      <ServerError
+        errorMsg={response.message}
+        path="/"
+        title="Vissza a főoldalra"
+      />
     );
 
-  const pastasArray = response.data || [];
-
-  if (pastasArray.length === 0)
-    return <div>Jelenleg nincs elérhető pasta.</div>;
+  if (response.data.length === 0)
+    return <EmptyList text="Jelenleg nincs elérhető tészta!" />;
 
   return (
-    <ul className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-      {pastasArray.map((pasta) => (
+    <ul className="menu-grid">
+      {response.data.map((pasta) => (
         <li key={pasta.id}>
-          <Card className="h-full w-full">
+          <Card className="bg-gradient h-full w-full">
             <div className="flex flex-row items-start justify-between gap-4 px-4">
-              {pasta.publicUrl ? (
+              {pasta.image ? (
                 <div className="relative shrink-0 h-30 w-30 lg:w-50 lg:h-50">
                   <Image
-                    src={pasta.publicUrl}
+                    src={pasta.image.publicUrl}
                     alt={pasta.pastaName}
                     fill
                     placeholder="blur"
-                    blurDataURL={generateBlurUrl(pasta.publicUrl)}
+                    blurDataURL={generateBlurUrl(pasta.image.publicUrl)}
                     className="object-cover select-none pointer-events-none"
                     sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                   />
@@ -49,15 +48,13 @@ export default async function PastaList() {
               )}
 
               <div className="flex flex-col items-end justify-end gap-2 h-full">
-                <CardTitle className="text-lg lg:text-xl">
+                <CardTitle className="card-title">
                   {textFormatter(pasta.pastaName)}
                 </CardTitle>
 
-                <CardDescription className="text-end text-balance">
-                  {pasta.pastaDescription}
-                </CardDescription>
+                <p className="card-description">{pasta.pastaDescription}</p>
 
-                <p className="text-end text-green-500 font-semibold mt-auto">
+                <p className="text-end text-success font-semibold mt-auto whitespace-nowrap">
                   {pasta.pastaPrice} Ft
                 </p>
               </div>

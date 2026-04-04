@@ -3,8 +3,8 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import LoginForm from "./LoginForm";
 import { loginAction } from "../_actions/loginAction";
-import { LOGIN_INFO } from "../_constants/info";
 import { toast } from "sonner";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // Mock loginAction
 vi.mock("../_actions/loginAction", () => ({
@@ -56,7 +56,7 @@ describe("Form Submission", () => {
     const user = userEvent.setup();
     mockLoginAction.mockResolvedValue({
       success: false,
-      message: LOGIN_INFO.serverError,
+      message: BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
     });
 
     render(<LoginForm />);
@@ -79,7 +79,9 @@ describe("Form Submission", () => {
     });
 
     // toast.error should be called with the error message
-    expect(mockToastError).toHaveBeenCalledWith(LOGIN_INFO.serverError);
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
+    );
     // router.push should not be called
     expect(mockPush).not.toHaveBeenCalled();
     // reset() should not be called

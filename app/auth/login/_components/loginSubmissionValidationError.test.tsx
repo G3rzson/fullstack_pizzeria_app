@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import LoginForm from "./LoginForm";
 import { loginAction } from "../_actions/loginAction";
 import { toast } from "sonner";
-import { LOGIN_INFO } from "../_constants/info";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // Mock loginAction
 vi.mock("../_actions/loginAction", () => ({
@@ -56,7 +56,7 @@ describe("Form Submission", () => {
     const user = userEvent.setup();
     mockLoginAction.mockResolvedValue({
       success: false,
-      message: LOGIN_INFO.validationError,
+      message: BACKEND_RESPONSE_MESSAGES.INVALID_DATA,
     });
 
     render(<LoginForm />);
@@ -79,7 +79,9 @@ describe("Form Submission", () => {
     });
 
     // toast.error should be called with the error message
-    expect(mockToastError).toHaveBeenCalledWith(LOGIN_INFO.validationError);
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.INVALID_DATA,
+    );
     // router.push should not be called
     expect(mockPush).not.toHaveBeenCalled();
     // reset() should not be called

@@ -9,9 +9,9 @@ import Image from "next/image";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
 import { textFormatter } from "@/shared/Functions/textFormatter";
 import AddToCartBtn from "@/shared/Components/AddToCartBtn";
-import type { pizzaDtoType } from "@/shared/Types/types";
+import type { PizzaDtoType } from "@/shared/Types/types";
 
-export default function PizzaCard({ pizza }: { pizza: pizzaDtoType }) {
+export default function PizzaCard({ pizza }: { pizza: PizzaDtoType }) {
   const [selectedSize, setSelectedSize] = useState<32 | 45>(32);
 
   const size32Id = `size32-${pizza.id}`;
@@ -20,14 +20,14 @@ export default function PizzaCard({ pizza }: { pizza: pizzaDtoType }) {
   return (
     <Card className="bg-gradient h-full w-full">
       <div className="flex flex-row items-start justify-between gap-4 px-4">
-        {pizza.publicUrl ? (
+        {pizza.image ? (
           <div className="relative shrink-0 h-30 w-30 lg:w-50 lg:h-50">
             <Image
-              src={pizza.publicUrl}
+              src={pizza.image.publicUrl}
               alt={pizza.pizzaName}
               fill
               placeholder="blur"
-              blurDataURL={generateBlurUrl(pizza.publicUrl)}
+              blurDataURL={generateBlurUrl(pizza.image.publicUrl)}
               className="object-cover select-none pointer-events-none"
               sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
             />

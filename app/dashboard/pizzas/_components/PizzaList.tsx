@@ -1,48 +1,45 @@
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Pizza } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import { getAllPizzaAction } from "../_actions/getAllPizzaAction";
 import ChangePizzaMenuStateBtn from "./ChangePizzaMenuStateBtn";
 import DeletePizzaBtn from "@/app/dashboard/pizzas/_components/DeletePizzaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 import { generateBlurUrl } from "@/lib/generateBlurUrl";
+import ServerError from "@/shared/Components/ServerError";
+import EmptyList from "@/shared/Components/EmptyList";
 
 export default async function PizzaList() {
   const response = await getAllPizzaAction();
 
-  if (!response.success)
+  if (!response.success || !response.data)
     return (
-      <div>Hiba történt a pizzák lekérése során! Próbáld újra később.</div>
+      <ServerError
+        errorMsg={response.message}
+        path="/dashboard"
+        title="Vissza a dashboardra"
+      />
     );
 
-  const pizzasArray = response.data || [];
-
-  if (pizzasArray.length === 0)
-    return <div>Jelenleg nincs elérhető pizza.</div>;
+  if (response.data.length === 0)
+    return <EmptyList text="Jelenleg nincs elérhető pizza!" />;
 
   return (
-    <ul className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 gap-4">
-      {pizzasArray.map((pizza) => (
+    <ul className="menu-grid">
+      {response.data.map((pizza) => (
         <li key={pizza.id}>
           <Card className="h-full w-full">
             <CardHeader className="w-full flex flex-row justify-between px-4">
               <CardContent className="flex items-center justify-center h-30 w-30 lg:w-50 lg:h-50 p-0">
-                {pizza.publicUrl ? (
+                {pizza.image?.publicUrl ? (
                   <div className="relative w-full h-full">
                     <Image
-                      src={pizza.publicUrl}
+                      src={pizza.image.publicUrl}
                       alt={pizza.pizzaName}
                       fill
                       placeholder="blur"
-                      blurDataURL={generateBlurUrl(pizza.publicUrl)}
+                      blurDataURL={generateBlurUrl(pizza.image.publicUrl)}
                       className="rounded-xl object-cover select-none pointer-events-none"
                       sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                     />
@@ -65,8 +62,8 @@ export default async function PizzaList() {
                 />
 
                 <MenuNavLink
-                  href={`/dashboard/pizzas/image/upload/${pizza.pizzaId ? pizza.pizzaId : pizza.id}`}
-                  title={pizza.pizzaId ? "Kép frissítése" : "Kép feltöltése"}
+                  href={`/dashboard/pizzas/image/upload/${pizza.id}`}
+                  title={pizza.image?.publicId ? "Kép frissítése" : "Kép feltöltése"}
                 />
 
                 <MenuNavLink
@@ -74,7 +71,7 @@ export default async function PizzaList() {
                   title="Pizza szerkesztése"
                 />
 
-                <DeletePizzaBtn id={pizza.id} publicId={pizza.publicId} />
+                <DeletePizzaBtn id={pizza.id} publicId={pizza.image?.publicId ?? null} />
               </CardContent>
             </CardHeader>
 

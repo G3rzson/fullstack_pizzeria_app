@@ -22,7 +22,7 @@ export default async function EditPastaPage({
   }
 
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <DrinkForm drinkObject={response.data} />
     </div>
   );

@@ -1,22 +1,20 @@
 "use server";
 
 import { Prisma } from "@prisma/client";
-import { REGISTER_INFO } from "../_constants/info";
 import { registerDal } from "../_dal/registerDal";
 import { registerSchema } from "../_validation/registerSchema";
 import bcrypt from "bcrypt";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
-export async function registerAction(formData: unknown) {
+export async function registerAction(data: unknown) {
   try {
-    const result = await registerSchema.safeParseAsync(formData);
+    const result = await registerSchema.safeParseAsync(data);
 
-    // validációs hiba kezelése, ha a bemeneti adatok nem felelnek meg a sémának
-    if (!result.success) {
-      await errorLogger(result.error, "registerAction - validation error");
-      return handleResponse(false, REGISTER_INFO.validationError);
-    }
+    if (!result.success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const hashedPassword = await bcrypt.hash(result.data.password, 10);
 
@@ -28,19 +26,18 @@ export async function registerAction(formData: unknown) {
 
     await registerDal(newUser);
 
-    return handleResponse(true, REGISTER_INFO.success);
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
     // Prisma specifikus hiba kezelés, ha a email vagy username már létezik
     if (
       error instanceof Prisma.PrismaClientKnownRequestError &&
       error.code === "P2002"
-    ) {
-      await errorLogger(error, "registerAction - db duplicate error");
-      return handleResponse(false, REGISTER_INFO.duplicateError);
-    }
+    )
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.DUPLICATE_ERROR);
 
-    // Általános hiba kezelés
-    await errorLogger(error, "registerAction - server error");
-    return handleResponse(false, REGISTER_INFO.serverError);
+    isDev()
+      ? await errorLogger(error, "server error - registerAction")
+      : console.error("Error registering user:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

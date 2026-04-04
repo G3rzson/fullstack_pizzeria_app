@@ -4,7 +4,7 @@ import { getPastaByIdAction } from "../../../_actions/getPastaByIdAction";
 import { updatePastaImageAction } from "../../../_actions/updatePastaImageAction";
 import ServerError from "@/shared/Components/ServerError";
 
-export default async function UploadImagePage({
+export default async function UploadPastaImagePage({
   params,
 }: {
   params: Promise<{ pastaId: string }>;
@@ -24,7 +24,7 @@ export default async function UploadImagePage({
   }
 
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <ImageForm
         returnUrl={"/dashboard/pastas"}
         menuObject={response.data}

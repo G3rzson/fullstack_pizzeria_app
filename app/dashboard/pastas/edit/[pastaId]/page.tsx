@@ -21,7 +21,7 @@ export default async function EditPastaPage({
     );
   }
   return (
-    <div className="flex grow items-center justify-center">
+    <div className="centered-container">
       <PastaForm pastaObject={response.data} />
     </div>
   );

@@ -5,7 +5,7 @@ import DrinkList from "./_components/DrinkList";
 export default function DrinkPage() {
   return (
     <div className="flex grow flex-col gap-4">
-      <h1 className="text-4xl">Italok</h1>
+      <h1 className="page-title">Italok</h1>
 
       <Suspense fallback={<Loading />}>
         <DrinkList />

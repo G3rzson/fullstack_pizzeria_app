@@ -4,27 +4,23 @@ import { revalidatePath } from "next/cache";
 import { createPizzaDal } from "../_dal/pizzaDal";
 import { pizzaSchema } from "../_validation/pizzaSchema";
 import { hasPermission } from "@/shared/Functions/hasPermission";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import isDev from "@/shared/Functions/isDev";
+import { errorLogger } from "@/shared/Functions/errorLogger";
 
 export async function createPizzaAction(pizza: unknown) {
-  const { data, success } = await pizzaSchema.safeParseAsync(pizza);
-
-  if (!success) {
-    return {
-      success: false,
-      message: "Érvénytelen adatok!",
-    };
-  }
-
-  const permissionResult = await hasPermission();
-
-  if (!permissionResult) {
-    return {
-      success: false,
-      message: "Nincs jogosultságod új pizza létrehozásához!",
-    };
-  }
-
   try {
+    const permissionResult = await hasPermission();
+
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
+
+    const { data, success } = await pizzaSchema.safeParseAsync(pizza);
+
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
+
     const newPizza = {
       ...data,
       category: "pizzák",
@@ -35,12 +31,11 @@ export async function createPizzaAction(pizza: unknown) {
 
     revalidatePath(`/pizzas`);
     revalidatePath(`/dashboard/pizzas`);
-    return { success: true, message: "Pizza sikeresen létrehozva!" };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    console.error("Error creating pizza:", error);
-    return {
-      success: false,
-      message: "Hiba történt a pizza létrehozása során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - createPizzaAction")
+      : console.error("Error creating pizza:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

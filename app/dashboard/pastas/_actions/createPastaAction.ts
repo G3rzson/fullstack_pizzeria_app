@@ -4,27 +4,23 @@ import { revalidatePath } from "next/cache";
 import { pastaSchema } from "../_validation/pastaSchema";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { createPastaDal } from "../_dal/pastaDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
 export async function createPastaAction(pasta: unknown) {
-  const { data, success } = await pastaSchema.safeParseAsync(pasta);
-
-  if (!success) {
-    return {
-      success: false,
-      message: "Érvénytelen adatok!",
-    };
-  }
-
-  const permissionResult = await hasPermission();
-
-  if (!permissionResult) {
-    return {
-      success: false,
-      message: "Nincs jogosultságod új pasta létrehozásához!",
-    };
-  }
-
   try {
+    const permissionResult = await hasPermission();
+
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
+
+    const { data, success } = await pastaSchema.safeParseAsync(pasta);
+
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
+
     const newPasta = {
       ...data,
       category: "pasták",
@@ -35,12 +31,11 @@ export async function createPastaAction(pasta: unknown) {
 
     revalidatePath(`/pastas`);
     revalidatePath(`/dashboard/pastas`);
-    return { success: true, message: "Pasta sikeresen létrehozva!" };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    console.error("Error creating pasta:", error);
-    return {
-      success: false,
-      message: "Hiba történt a pasta létrehozása során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - createPastaAction")
+      : console.error("Error creating pasta:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

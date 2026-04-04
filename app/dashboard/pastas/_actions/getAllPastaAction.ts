@@ -1,54 +1,46 @@
 "use server";
 
+import { type AdminPastaDtoType } from "@/shared/Types/types";
 import { getAllPastaDal } from "../_dal/pastaDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
-type FormattedPastaType = {
-  id: string;
-  pastaName: string;
-  pastaPrice: number;
-  pastaDescription: string;
-  isAvailableOnMenu: boolean;
-  pastaId: string | null;
-  publicId: string | null;
-  originalName: string | null;
-  publicUrl: string | null;
-};
-
-type ResponseType =
-  | {
-      success: true;
-      data: FormattedPastaType[];
-    }
-  | {
-      success: false;
-      message: string;
-    };
-
-export async function getAllPastaAction(): Promise<ResponseType> {
+export async function getAllPastaAction(): Promise<{
+  success: boolean;
+  message: string;
+  data?: AdminPastaDtoType[];
+}> {
   try {
     const pastasArray = await getAllPastaDal();
 
-    const formattedPastas: FormattedPastaType[] = pastasArray.map((pasta) => ({
+    const AdminPastaDto: AdminPastaDtoType[] = pastasArray.map((pasta) => ({
       id: pasta.id,
       pastaName: pasta.pastaName,
       pastaPrice: pasta.pastaPrice,
       pastaDescription: pasta.pastaDescription,
       isAvailableOnMenu: pasta.isAvailableOnMenu,
-      pastaId: pasta.image?.pastaId || null,
-      publicId: pasta.image?.publicId || null,
-      originalName: pasta.image?.originalName || null,
-      publicUrl: pasta.image?.publicUrl || null,
+      image: pasta.image
+        ? {
+            id: pasta.image.id,
+            pastaId: pasta.image.pastaId,
+            publicId: pasta.image.publicId,
+            publicUrl: pasta.image.publicUrl,
+            originalName: pasta.image.originalName,
+          }
+        : null,
     }));
 
-    return {
-      success: true,
-      data: formattedPastas,
-    };
+    return handleResponse(
+      true,
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+      AdminPastaDto,
+    );
   } catch (error) {
-    console.error("Error fetching pastas:", error);
-    return {
-      success: false,
-      message: "Hiba történt a pasták lekérése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - getAllAvailablePastaAction")
+      : console.error("Error fetching pastas:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

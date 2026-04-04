@@ -57,10 +57,10 @@ export default function CartItemCard({ item }: Props) {
     toast.success("Eltávolítva a kosárból!");
   }
 
-  const imageUrl = item.product.publicUrl;
+  const imageUrl = item.product.image?.publicUrl;
 
   return (
-    <Card className="px-4">
+    <Card className="bg-gradient px-4">
       <div className="flex w-full flex-col md:flex-row gap-4 md:gap-0 items-center justify-between">
         <div className="flex w-full items-center md:justify-start justify-between gap-4">
           {/* Kép */}
@@ -84,11 +84,11 @@ export default function CartItemCard({ item }: Props) {
           <div className="flex-1 gap-1 flex flex-col text-end md:text-center">
             <h3 className="font-semibold">{textFormatter(productName)}</h3>
             {item.type === "pizza" && (
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-accent-foreground">
                 Méret: {item.size} cm
               </p>
             )}
-            <p className="text-sm text-green-500 font-semibold">
+            <p className="text-sm text-success font-semibold">
               {priceFormatter(price)}
             </p>
           </div>
@@ -99,7 +99,7 @@ export default function CartItemCard({ item }: Props) {
           <div className="flex items-center gap-1">
             <Button
               size="icon"
-              variant="outline"
+              variant="secondary"
               onClick={handleDecrease}
               className="h-8 w-8"
             >
@@ -110,7 +110,7 @@ export default function CartItemCard({ item }: Props) {
             </span>
             <Button
               size="icon"
-              variant="outline"
+              variant="secondary"
               onClick={handleIncrease}
               className="h-8 w-8"
             >
@@ -119,14 +119,14 @@ export default function CartItemCard({ item }: Props) {
           </div>
 
           {/* Részösszeg */}
-          <p className="font-semibold text-center w-20 text-green-500">
+          <p className="font-semibold text-center w-20 text-success">
             {priceFormatter(subtotal)}
           </p>
 
           {/* Törlés gomb */}
           <Button
             size="icon"
-            variant="outline"
+            variant="secondary"
             onClick={handleRemove}
             className="h-8 w-8 text-destructive hover:text-destructive"
           >

@@ -4,6 +4,10 @@ import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { changeDrinkMenuDal } from "../_dal/drinkDal";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
 export async function changeDrinkMenuAction(
   drinkId: string,
@@ -12,34 +16,22 @@ export async function changeDrinkMenuAction(
   try {
     const permissionResult = await hasPermission();
 
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod az étlap státuszának megváltoztatásához!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
     const { success, data } = idValidator.safeParse({ id: drinkId });
-    if (!success) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    if (!success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     await changeDrinkMenuDal(data.id, !isAvailableOnMenu);
 
     revalidatePath("/drinks");
     revalidatePath("/dashboard/drinks");
-    return {
-      success: true,
-      message: "Az étlap státusza sikeresen megváltozott.",
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    console.error("Error changing menu status:", error);
-    return {
-      success: false,
-      message: "Hiba történt az étlap státuszának megváltoztatása során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - changeDrinkMenuAction")
+      : console.error("Error changing menu status:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

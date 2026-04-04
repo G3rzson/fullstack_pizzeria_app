@@ -1,47 +1,42 @@
-export type MenuType = "pizzas" | "pastas" | "drinks";
-
-export type pizzaDtoType = {
+export type BasePizzaDtoType = {
   id: string;
   pizzaName: string;
   pizzaPrice32: number;
   pizzaPrice45: number;
   pizzaDescription: string;
-  publicUrl: string | null;
 };
 
-export type MenuObjectType = PizzaType | PastaType | DrinkType;
+export type PizzaDtoType = BasePizzaDtoType & {
+  image: {
+    publicUrl: string;
+  } | null;
+};
 
-export type SimpleResponseType =
-  | { success: true; message: string }
-  | { success: false; message: string };
-
-export type ActionResponseType<T> =
-  | { success: true; message: string; data: T }
-  | { success: false; message: string };
-
-export type PizzaType = {
-  id: string;
-  pizzaName: string;
-  pizzaDescription: string;
-  pizzaPrice32: number;
-  pizzaPrice45: number;
+export type AdminPizzaDtoType = BasePizzaDtoType & {
   isAvailableOnMenu: boolean;
   image: {
     id: string;
     pizzaId: string | null;
     publicId: string;
-    publicUrl: string;
     originalName: string;
+    publicUrl: string;
   } | null;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type PastaType = {
+export type BasePastaDtoType = {
   id: string;
   pastaName: string;
-  pastaDescription: string;
   pastaPrice: number;
+  pastaDescription: string;
+};
+
+export type PastaDtoType = BasePastaDtoType & {
+  image: {
+    publicUrl: string;
+  } | null;
+};
+
+export type AdminPastaDtoType = BasePastaDtoType & {
   isAvailableOnMenu: boolean;
   image: {
     id: string;
@@ -50,14 +45,21 @@ export type PastaType = {
     publicUrl: string;
     originalName: string;
   } | null;
-  createdAt: string;
-  updatedAt: string;
 };
 
-export type DrinkType = {
+export type BaseDrinkDtoType = {
   id: string;
   drinkName: string;
   drinkPrice: number;
+};
+
+export type DrinkDtoType = BaseDrinkDtoType & {
+  image: {
+    publicUrl: string;
+  } | null;
+};
+
+export type AdminDrinkDtoType = BaseDrinkDtoType & {
   isAvailableOnMenu: boolean;
   image: {
     id: string;
@@ -66,6 +68,4 @@ export type DrinkType = {
     publicUrl: string;
     originalName: string;
   } | null;
-  createdAt: string;
-  updatedAt: string;
 };

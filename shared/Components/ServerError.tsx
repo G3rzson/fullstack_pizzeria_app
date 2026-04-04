@@ -2,6 +2,7 @@
 
 import { ArrowBigLeft } from "lucide-react";
 import Link from "next/link";
+import { BACKEND_RESPONSE_MESSAGES } from "../Constants/constants";
 
 type Props = {
   errorMsg: string;
@@ -13,7 +14,7 @@ export default function ServerError({ errorMsg, path, title }: Props) {
   return (
     <div className="centered-container flex-col gap-6">
       <p className="text-destructive text-xl sm:text-3xl text-center">
-        {errorMsg}
+        {errorMsg || BACKEND_RESPONSE_MESSAGES.SERVER_ERROR}
       </p>
       <Link
         href={path}

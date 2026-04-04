@@ -6,42 +6,35 @@ import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
 import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
-import { SimpleResponseType } from "@/shared/Types/types";
 import { uploadDrinkImageDal } from "../_dal/drinkDal";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { handleResponse } from "@/shared/Functions/handleResponse";
+import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 
 export async function uploadDrinkImageAction(
-  id: string,
+  drinkId: string,
   drinkImage: unknown,
-): Promise<SimpleResponseType> {
+) {
   let publicId: string | null = null;
   try {
     const permissionResult = await hasPermission();
 
-    if (!permissionResult) {
-      return {
-        success: false,
-        message: "Nincs jogosultságod a művelethez!",
-      };
-    }
+    if (!permissionResult)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
 
-    const { success: successId, data: idData } = idValidator.safeParse({ id });
-    if (!successId) {
-      return {
-        success: false,
-        message: "Érvénytelen azonosító!",
-      };
-    }
+    const { success: successId, data: idData } = idValidator.safeParse({
+      id: drinkId,
+    });
+    if (!successId)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     const { data, success } = await imageSchema.safeParseAsync({
       image: drinkImage,
     });
 
-    if (!success || !data.image) {
-      return {
-        success: false,
-        message: "Érvénytelen kép fájl!",
-      };
-    }
+    if (!success || !data.image)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const result = await uploadImageToCloudinary(data.image, "drinks");
 
@@ -56,18 +49,14 @@ export async function uploadDrinkImageAction(
     publicId = result.public_id; // Store the publicId for potential cleanup
     revalidatePath(`/drinks`);
     revalidatePath(`/dashboard/drinks`);
-    return {
-      success: true,
-      message: "Ital kép sikeresen feltöltve!",
-    };
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
     if (publicId) {
       await deleteCloudinaryImage(publicId);
     }
-    console.error("Error uploading image:", error);
-    return {
-      success: false,
-      message: "Hiba történt a kép feltöltése során.",
-    };
+    isDev()
+      ? errorLogger(error, "server error - uploadDrinkImageAction")
+      : console.error("Error uploading image:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }

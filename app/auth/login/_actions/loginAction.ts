@@ -3,7 +3,6 @@
 import { errorLogger } from "@/shared/Functions/errorLogger";
 import {
   ACCESS_TOKEN_MAX_AGE,
-  LOGIN_INFO,
   REFRESH_TOKEN_MAX_AGE,
 } from "../_constants/info";
 import { loginSchema } from "../_validation/loginSchema";
@@ -17,36 +16,29 @@ import {
   buildAuthCookieOptions,
 } from "@/shared/Functions/jwt";
 import { cookies } from "next/headers";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import isDev from "@/shared/Functions/isDev";
 
 export async function loginAction(formData: unknown) {
   try {
     const result = await loginSchema.safeParseAsync(formData);
-    if (!result.success) {
-      await errorLogger(result.error, "loginAction - validation error");
-      return handleResponse(false, LOGIN_INFO.validationError);
-    }
+    if (!result.success)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const userData = await getUserByUsername(result.data.username);
-    if (!userData) {
-      return handleResponse(false, LOGIN_INFO.userNotExist);
-    }
+    if (!userData)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.NOT_FOUND);
 
     const isPasswordValid = await bcrypt.compare(
       result.data.password,
       userData.password,
     );
-    if (!isPasswordValid) {
-      return handleResponse(false, LOGIN_INFO.userNotExist);
-    }
+    if (!isPasswordValid)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.NOT_FOUND);
 
     const jwtSecrets = getJwtSecrets();
-    if (!jwtSecrets) {
-      await errorLogger(
-        new Error("JWT secrets are not defined"),
-        "loginAction - JWT secrets error",
-      );
-      return handleResponse(false, LOGIN_INFO.serverError);
-    }
+    if (!jwtSecrets)
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
 
     const tokenPayload = {
       id: userData.id,
@@ -75,9 +67,11 @@ export async function loginAction(formData: unknown) {
       maxAge: REFRESH_TOKEN_MAX_AGE,
     });
 
-    return handleResponse(true, LOGIN_INFO.success);
+    return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);
   } catch (error) {
-    await errorLogger(error, "loginAction - server error");
-    return handleResponse(false, LOGIN_INFO.serverError);
+    isDev()
+      ? errorLogger(error, "server error - loginAction")
+      : console.error("Error logging in:", error);
+    return handleResponse(false, BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
   }
 }
