@@ -5,9 +5,8 @@
   "scripts": {
     "postinstall": "prisma generate",
     "dev": "next dev",
-    "build": "prisma migrate resolve --applied 20260407122744_init && prisma migrate deploy && next build",
+    "build": "prisma db push --accept-data-loss && next build",
     "build:migrate": "prisma migrate deploy && next build",
-    "build:fix": "prisma migrate resolve --applied 20260407121406_init && prisma migrate resolve --applied 20260407122744_init && prisma migrate deploy && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest",
