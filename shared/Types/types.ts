@@ -69,3 +69,28 @@ export type AdminDrinkDtoType = BaseDrinkDtoType & {
     originalName: string;
   } | null;
 };
+
+export type Role = "USER" | "ADMIN";
+
+export type BaseUserDtoType = {
+  id: string;
+  email: string;
+  username: string;
+  role: Role;
+};
+
+export type AddressDtoType = {
+  id: string;
+  fullName: string;
+  phoneNumber: string;
+  postalCode: string;
+  city: string;
+  street: string;
+  houseNumber: string;
+  floorAndDoor: string | null;
+  isSaved: boolean;
+};
+
+export type AdminUserDtoType = BaseUserDtoType & {
+  orderAddress: AddressDtoType | null;
+};

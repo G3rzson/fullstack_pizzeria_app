@@ -6,11 +6,13 @@ import CartItemCard from "./CartItemCard";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { getTotalPrice } from "@/shared/Functions/cartHelper";
 import { priceFormatter } from "@/shared/Functions/priceFormatter";
-import ActionModal from "@/shared/Components/ActionModal";
 import EmptyList from "@/shared/Components/EmptyList";
+import MenuNavLink from "@/shared/Components/MenuNavLink";
+import { useAuth } from "@/lib/auth/useAuth";
 
 export default function CartList() {
   const { cartItems, isLoading } = useCart();
+  const { user } = useAuth();
 
   if (isLoading) {
     return (
@@ -47,10 +49,9 @@ export default function CartList() {
           </div>
         </CardContent>
         <CardFooter>
-          <ActionModal
-            triggerTitle="Tovább a fizetéshez"
-            description="A fizetési rendszer fejlesztés alatt!"
-            action={() => {}}
+          <MenuNavLink
+            href={`/checkout${user ? `?user=${user.id}` : "?user=guest"}`}
+            title="Tovább a fizetéshez"
           />
         </CardFooter>
       </Card>

@@ -10,3 +10,5 @@
 
 **todo** pizzas - pizza skeleton a loading állapothoz
 **todo** pizzas - pizza képek a cloudinary-ből beállítani a default helyett ha van kép a list komponensben
+
+**todo** OrderAddress - change to Google Places API to form fill

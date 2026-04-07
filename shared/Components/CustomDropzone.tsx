@@ -2,17 +2,13 @@ import { useDropzone } from "react-dropzone";
 import { useCallback, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { MAX_FILE_SIZE } from "../Constants/constants";
+import { toSingleFile, toExistingImage } from "../Functions/fileHelpers";
 
 type Props = {
   value: unknown;
   onChange: (value: File | null) => void;
   onBlur: () => void;
   invalid: boolean;
-};
-
-type ExistingImageValue = {
-  name: string;
-  url: string;
 };
 
 export default function PizzaImageDropzone({
@@ -140,34 +136,4 @@ export default function PizzaImageDropzone({
       )}
     </div>
   );
-}
-
-function toSingleFile(value: unknown): File | null {
-  if (typeof File !== "undefined" && value instanceof File) {
-    if (value.size === 0 && value.name === "") return null;
-    return value;
-  }
-
-  if (typeof FileList !== "undefined" && value instanceof FileList) {
-    if (value.length === 0) return null;
-    return value.item(0);
-  }
-
-  return null;
-}
-
-function toExistingImage(value: unknown): ExistingImageValue | null {
-  if (!value || typeof value !== "object") return null;
-
-  const candidate = value as Partial<ExistingImageValue>;
-  if (typeof candidate.name !== "string" || typeof candidate.url !== "string") {
-    return null;
-  }
-
-  if (!candidate.url.trim()) return null;
-
-  return {
-    name: candidate.name.trim() || "pizza-image",
-    url: candidate.url,
-  };
 }

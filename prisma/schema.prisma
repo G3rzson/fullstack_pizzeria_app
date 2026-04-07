@@ -20,6 +20,25 @@ model User {
   updatedAt          DateTime @updatedAt
   role               Role     @default(USER)
   isStillWorkingHere Boolean  @default(true)
+
+  orderAddressId String?
+  orderAddress   OrderAddress? @relation(fields: [orderAddressId], references: [id])
+}
+
+model OrderAddress {
+  id           String   @id @default(uuid())
+  fullName     String
+  phoneNumber  String
+  street       String
+  city         String
+  postalCode   String
+  houseNumber  String
+  floorAndDoor String?
+  isSaved      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  users User[]
 }
 
 model Pizza {
