@@ -4,7 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 import { getAllDrinkAction } from "../_actions/getAllDrinkAction";
-import { generateBlurUrl } from "@/lib/generateBlurUrl";
+import { generateBlurUrl } from "@/lib/claudinary/generateBlurUrl";
 import ChangeDrinkMenuStateBtn from "./ChangeDrinkMenuStateBtn";
 import DeleteDrinkBtn from "./DeleteDrinkBtn";
 import ServerError from "@/shared/Components/ServerError";

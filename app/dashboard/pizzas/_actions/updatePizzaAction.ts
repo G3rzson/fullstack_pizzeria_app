@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { hasPermission } from "@/shared/Functions/hasPermission";
 import { updatePizzaDal } from "../_dal/pizzaDal";
 import { pizzaSchema } from "../_validation/pizzaSchema";
 import { idValidator } from "@/shared/Functions/idValidator";
@@ -9,6 +8,7 @@ import { handleResponse } from "@/shared/Functions/handleResponse";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 import isDev from "@/shared/Functions/isDev";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import { hasPermission } from "@/shared/Functions/hasPermission";
 
 export async function updatePizzaAction(pizzaId: string, pizza: unknown) {
   try {

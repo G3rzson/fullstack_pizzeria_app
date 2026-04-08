@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyAccessToken, getJwtSecrets } from "@/shared/Functions/jwt";
+import { verifyAccessToken, getJwtSecrets } from "@/lib/auth/jwt";
 
 // Védett route-ok, amikhez ADMIN role kell
 const ADMIN_PROTECTED_ROUTES = ["/dashboard"];

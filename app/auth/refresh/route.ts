@@ -4,7 +4,7 @@ import {
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
-} from "@/shared/Functions/jwt";
+} from "@/lib/auth/jwt";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserByUsername } from "../login/_dal/loginDal";

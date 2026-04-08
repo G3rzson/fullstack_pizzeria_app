@@ -19,7 +19,7 @@ vi.mock("@/shared/Functions/errorLogger", () => ({
 }));
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   getJwtSecrets: vi.fn(),
   signAccessToken: vi.fn(),
   signRefreshToken: vi.fn(),
@@ -47,7 +47,7 @@ import {
   signAccessToken,
   signRefreshToken,
   buildAuthCookieOptions,
-} from "@/shared/Functions/jwt";
+} from "@/lib/auth/jwt";
 import { cookies } from "next/headers";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";

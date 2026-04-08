@@ -13,7 +13,7 @@ import {
   type PastaDtoType,
   type DrinkDtoType,
 } from "@/shared/Types/types";
-import { loadFromLocalStorage } from "@/shared/Functions/localStorage";
+import { loadFromLocalStorage } from "@/lib/localStorage/localStorage";
 
 export type CartItem =
   | {

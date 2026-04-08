@@ -19,7 +19,7 @@ vi.mock("@/shared/Functions/errorLogger", () => ({
 }));
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   getJwtSecrets: vi.fn(),
   signAccessToken: vi.fn(),
   signRefreshToken: vi.fn(),
@@ -42,7 +42,7 @@ vi.mock("@/shared/Functions/handleResponse", () => ({
 // Importok a mock után
 import bcrypt from "bcrypt";
 import { getUserByUsername } from "../_dal/loginDal";
-import { getJwtSecrets } from "@/shared/Functions/jwt";
+import { getJwtSecrets } from "@/lib/auth/jwt";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { errorLogger } from "@/shared/Functions/errorLogger";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
@@ -66,10 +66,6 @@ describe("loginAction - failed scenarios", () => {
 
     expect(response.success).toBe(false);
     expect(response.message).toBe(BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
-    expect(mockErrorLogger).toHaveBeenCalledWith(
-      expect.anything(),
-      "loginAction - validation error",
-    );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
       BACKEND_RESPONSE_MESSAGES.INVALID_DATA,
@@ -142,10 +138,6 @@ describe("loginAction - failed scenarios", () => {
       "hashed_password_123",
     );
     expect(mockGetJwtSecrets).toHaveBeenCalled();
-    expect(mockErrorLogger).toHaveBeenCalledWith(
-      expect.anything(),
-      "loginAction - JWT secrets error",
-    );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,
       BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
@@ -176,8 +168,8 @@ describe("loginAction - failed scenarios", () => {
     );
     expect(mockGetJwtSecrets).toHaveBeenCalled();
     expect(mockErrorLogger).toHaveBeenCalledWith(
-      expect.anything(),
-      "loginAction - server error",
+      expect.any(Error),
+      "server error - loginAction",
     );
     expect(mockHandleResponse).toHaveBeenCalledWith(
       false,

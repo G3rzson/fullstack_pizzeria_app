@@ -7,7 +7,7 @@ import {
   signAccessToken,
   signRefreshToken,
   buildAuthCookieOptions,
-} from "@/shared/Functions/jwt";
+} from "@/lib/auth/jwt";
 import { getUserByUsername } from "../login/_dal/loginDal";
 
 // Mock next/headers
@@ -16,7 +16,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   getJwtSecrets: vi.fn(),
   verifyRefreshToken: vi.fn(),
   signAccessToken: vi.fn(),

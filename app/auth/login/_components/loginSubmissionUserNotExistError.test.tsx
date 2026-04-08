@@ -21,6 +21,9 @@ vi.mock("next/navigation", () => ({
 
   // loginForm password field uses it to determine the current path
   usePathname: vi.fn(() => "/auth/login"),
+  useSearchParams: vi.fn(() => ({
+    get: vi.fn(() => null),
+  })),
 }));
 
 // Mock useAuth

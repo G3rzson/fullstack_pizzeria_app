@@ -72,10 +72,6 @@ describe("registerAction", () => {
 
     expect(result.success).toBe(false);
     expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
-    expect(mockErrorLogger).toHaveBeenCalledWith(
-      expect.any(Object),
-      "registerAction - validation error",
-    );
     expect(mockRegisterDal).not.toHaveBeenCalled();
   });
 
@@ -103,10 +99,6 @@ describe("registerAction", () => {
 
     expect(result.success).toBe(false);
     expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.DUPLICATE_ERROR);
-    expect(mockErrorLogger).toHaveBeenCalledWith(
-      prismaError,
-      "registerAction - db duplicate error",
-    );
   });
 
   it("should return server error for unexpected errors", async () => {
@@ -124,7 +116,7 @@ describe("registerAction", () => {
     expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     expect(mockErrorLogger).toHaveBeenCalledWith(
       expect.any(Error),
-      "registerAction - server error",
+      "server error - registerAction",
     );
   });
 

@@ -8,6 +8,14 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/pizzas"),
 }));
 
+// Mock useAuth
+vi.mock("@/lib/auth/useAuth", () => ({
+  useAuth: vi.fn(() => ({
+    user: { id: "1", username: "admin", role: "ADMIN" },
+    isLoading: false,
+  })),
+}));
+
 import { usePathname } from "next/navigation";
 const mockUsePathname = usePathname as Mock;
 

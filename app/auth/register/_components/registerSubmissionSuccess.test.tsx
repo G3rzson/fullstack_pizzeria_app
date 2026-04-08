@@ -21,6 +21,9 @@ vi.mock("next/navigation", () => ({
 
   // registerForm password field uses it to determine the current path
   usePathname: vi.fn(() => "/auth/register"),
+  useSearchParams: vi.fn(() => ({
+    get: vi.fn(() => null),
+  })),
 }));
 
 // Mock toast

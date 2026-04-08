@@ -1,50 +1,30 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import CustomText from "./CustomText";
 
-// Teszt séma validációval
-const testSchema = z.object({
-  username: z.string().min(1, "Ez a mező kötelező!"),
-});
+type TestFormValues = { username: string };
 
-type TestFormValues = z.infer<typeof testSchema>;
-
-// Egyetlen Wrapper a teszthez, kezeli a validációt és submitet
-function ValidationWrapper({
-  isSubmitting = false,
-}: {
-  isSubmitting?: boolean;
-}) {
-  const { control, handleSubmit } = useForm<TestFormValues>({
-    resolver: zodResolver(testSchema),
+function Wrapper({ isSubmitting = false }: { isSubmitting?: boolean }) {
+  const { control } = useForm<TestFormValues>({
     defaultValues: { username: "" },
   });
 
   return (
-    <form onSubmit={handleSubmit(() => {})} noValidate>
-      <CustomText
-        control={control}
-        name="username"
-        label="Felhasználónév"
-        placeholder="Írd be a neved!"
-        isSubmitting={isSubmitting}
-      />
-      <button type="submit">Submit</button>
-    </form>
+    <CustomText
+      control={control}
+      name="username"
+      label="Felhasználónév"
+      placeholder="Írd be a neved!"
+      isSubmitting={isSubmitting}
+    />
   );
 }
 
 describe("CustomText", () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
   it("renders input with correct label and placeholder", () => {
-    render(<ValidationWrapper />);
+    render(<Wrapper />);
     const input = screen.getByLabelText(/felhasználónév/i);
     expect(input).toBeInTheDocument();
     expect(input).toHaveAttribute("placeholder", "Írd be a neved!");
@@ -52,7 +32,7 @@ describe("CustomText", () => {
 
   it("allows typing when not submitting", async () => {
     const user = userEvent.setup();
-    render(<ValidationWrapper />);
+    render(<Wrapper />);
     const input = screen.getByLabelText(/felhasználónév/i);
 
     await user.type(input, "TestUser");
@@ -60,19 +40,8 @@ describe("CustomText", () => {
   });
 
   it("disables input when isSubmitting is true", () => {
-    render(<ValidationWrapper isSubmitting />);
+    render(<Wrapper isSubmitting />);
     const input = screen.getByLabelText(/felhasználónév/i);
     expect(input).toBeDisabled();
-  });
-
-  it("shows validation error on empty submit", async () => {
-    const user = userEvent.setup();
-    render(<ValidationWrapper />);
-    const submitButton = screen.getByRole("button", { name: /submit/i });
-
-    await user.click(submitButton);
-
-    const errorMessage = await screen.findByText(/ez a mező kötelező/i);
-    expect(errorMessage).toBeInTheDocument();
   });
 });

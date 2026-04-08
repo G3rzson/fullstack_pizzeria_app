@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { GET } from "./route";
 import { cookies } from "next/headers";
-import { getJwtSecrets, verifyAccessToken } from "@/shared/Functions/jwt";
+import { getJwtSecrets, verifyAccessToken } from "@/lib/auth/jwt";
 
 // Mock next/headers
 vi.mock("next/headers", () => ({
@@ -9,7 +9,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   getJwtSecrets: vi.fn(),
   verifyAccessToken: vi.fn(),
 }));

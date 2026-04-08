@@ -5,10 +5,8 @@ type Props = { href: string; title: string };
 
 export default function MenuNavLink({ href, title }: Props) {
   return (
-    <Link href={href} className="w-full">
-      <Button variant="outline" className="w-full cursor-pointer">
-        {title}
-      </Button>
-    </Link>
+    <Button asChild variant="outline" className="w-full cursor-pointer">
+      <Link href={href}>{title}</Link>
+    </Button>
   );
 }

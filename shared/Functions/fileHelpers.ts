@@ -3,7 +3,7 @@ type FileListLike = {
   item: (index: number) => File | null;
 };
 
-function isFileListLike(value: unknown): value is FileListLike {
+export function isFileListLike(value: unknown): value is FileListLike {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<FileListLike>;
   return (

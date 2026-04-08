@@ -13,7 +13,6 @@ export function createPassword() {
     numbers[Math.floor(Math.random() * numbers.length)],
   ];
 
-  // maradék karakterek
   for (let i = passwordArray.length; i < length; i++) {
     const randomIndex = Math.floor(Math.random() * allChars.length);
     passwordArray.push(allChars[randomIndex]);

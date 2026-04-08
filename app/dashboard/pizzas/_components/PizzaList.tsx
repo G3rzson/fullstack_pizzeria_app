@@ -6,7 +6,7 @@ import { getAllPizzaAction } from "../_actions/getAllPizzaAction";
 import ChangePizzaMenuStateBtn from "./ChangePizzaMenuStateBtn";
 import DeletePizzaBtn from "@/app/dashboard/pizzas/_components/DeletePizzaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
-import { generateBlurUrl } from "@/lib/generateBlurUrl";
+import { generateBlurUrl } from "@/lib/claudinary/generateBlurUrl";
 import ServerError from "@/shared/Components/ServerError";
 import EmptyList from "@/shared/Components/EmptyList";
 
@@ -63,7 +63,9 @@ export default async function PizzaList() {
 
                 <MenuNavLink
                   href={`/dashboard/pizzas/image/upload/${pizza.id}`}
-                  title={pizza.image?.publicId ? "Kép frissítése" : "Kép feltöltése"}
+                  title={
+                    pizza.image?.publicId ? "Kép frissítése" : "Kép feltöltése"
+                  }
                 />
 
                 <MenuNavLink
@@ -71,7 +73,10 @@ export default async function PizzaList() {
                   title="Pizza szerkesztése"
                 />
 
-                <DeletePizzaBtn id={pizza.id} publicId={pizza.image?.publicId ?? null} />
+                <DeletePizzaBtn
+                  id={pizza.id}
+                  publicId={pizza.image?.publicId ?? null}
+                />
               </CardContent>
             </CardHeader>
 

@@ -1,9 +1,8 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { hasPermission } from "@/shared/Functions/hasPermission";
-import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
-import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
+import { deleteCloudinaryImage } from "@/lib/claudinary/deleteCloudinaryImage";
+import { uploadImageToCloudinary } from "@/lib/claudinary/uploadImageToCloudinary";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { updatePizzaImageDal } from "@/app/dashboard/pizzas/_dal/pizzaDal";
@@ -11,6 +10,7 @@ import { handleResponse } from "@/shared/Functions/handleResponse";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 import isDev from "@/shared/Functions/isDev";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import { hasPermission } from "@/shared/Functions/hasPermission";
 
 export async function updatePizzaImageAction(
   pizzaId: string,

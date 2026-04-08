@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { errorLogger } from "./errorLogger";
 import fs from "fs/promises";
 
-// Mock fs/promises
 vi.mock("fs/promises", () => ({
   default: {
     mkdir: vi.fn().mockResolvedValue(undefined),
@@ -10,9 +9,8 @@ vi.mock("fs/promises", () => ({
   },
 }));
 
-// Tipushelyes mock
-const mockMkdir = fs.mkdir as unknown as Mock;
-const mockAppendFile = fs.appendFile as unknown as Mock;
+const mockMkdir = fs.mkdir as Mock;
+const mockAppendFile = fs.appendFile as Mock;
 
 describe("errorLogger with fs mock", () => {
   beforeEach(() => {

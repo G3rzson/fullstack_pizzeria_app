@@ -6,7 +6,7 @@ import { getAllPastaAction } from "../_actions/getAllPastaAction";
 import DeletePastaBtn from "./DeletePastaBtn";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 import ChangePastaMenuStateBtn from "./ChangePastaMenuStateBtn";
-import { generateBlurUrl } from "@/lib/generateBlurUrl";
+import { generateBlurUrl } from "@/lib/claudinary/generateBlurUrl";
 import ServerError from "@/shared/Components/ServerError";
 import EmptyList from "@/shared/Components/EmptyList";
 
