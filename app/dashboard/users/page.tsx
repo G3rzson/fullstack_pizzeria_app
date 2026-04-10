@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import Loading from "@/app/loading";
 import UserList from "./_components/UserList";
 
+export const dynamic = "force-dynamic";
+
 export default async function UsersPage() {
   return (
     <div className="flex grow flex-col gap-4">

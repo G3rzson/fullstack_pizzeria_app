@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import PastaList from "./_components/PastaList";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardPastasPage() {
   return (
     <div className="flex grow flex-col gap-4">

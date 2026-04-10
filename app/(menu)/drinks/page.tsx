@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import Loading from "../../loading";
 import DrinkList from "./_components/DrinkList";
 
+export const dynamic = "force-dynamic";
+
 export default function DrinkPage() {
   return (
     <div className="flex grow flex-col gap-4">

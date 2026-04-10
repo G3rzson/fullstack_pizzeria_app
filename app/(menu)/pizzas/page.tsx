@@ -2,6 +2,8 @@ import { Suspense } from "react";
 import Loading from "../../loading";
 import PizzaList from "./_components/PizzaList";
 
+export const dynamic = "force-dynamic";
+
 export default function PizzaPage() {
   return (
     <div className="flex grow flex-col gap-4">
