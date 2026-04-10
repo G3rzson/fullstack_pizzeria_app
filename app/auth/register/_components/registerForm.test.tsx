@@ -156,9 +156,9 @@ describe("RegisterForm component", () => {
       BACKEND_RESPONSE_MESSAGES.SUCCESS,
     );
     expect(mockPush).toHaveBeenCalledWith("/auth/login");
-    expect(usernameInput).toHaveValue("");
-    expect(emailInput).toHaveValue("");
-    expect(passwordInput).toHaveValue("");
+    expect(usernameInput).toHaveValue("TestUser");
+    expect(emailInput).toHaveValue("test@example.com");
+    expect(passwordInput).toHaveValue("Password123");
   });
 
   it("shows validation error response from action", async () => {

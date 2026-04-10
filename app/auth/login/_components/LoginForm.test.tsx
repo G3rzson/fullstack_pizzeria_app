@@ -147,8 +147,8 @@ describe("LoginForm component", () => {
       BACKEND_RESPONSE_MESSAGES.SUCCESS,
     );
     expect(mockPush).toHaveBeenCalledWith("/");
-    expect(usernameInput).toHaveValue("");
-    expect(passwordInput).toHaveValue("");
+    expect(usernameInput).toHaveValue("TestUser");
+    expect(passwordInput).toHaveValue("Password123");
   });
 
   it("redirects to callbackUrl from search params on successful login", async () => {

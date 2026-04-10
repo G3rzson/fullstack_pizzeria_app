@@ -22,7 +22,7 @@ import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { type PastaFormType, pastaSchema } from "../_validation/pastaSchema";
 import { createPastaAction } from "../_actions/createPastaAction";
 import { updatePastaAction } from "../_actions/updatePastaAction";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { type AdminPastaDtoType } from "@/shared/Types/types";
 
 export default function PastaForm({
@@ -45,6 +45,8 @@ export default function PastaForm({
     },
   });
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   useEffect(() => {
     if (pastaObject) {
@@ -70,8 +72,7 @@ export default function PastaForm({
       }
 
       toast.success(response.message || "Tészta sikeresen frissítve!");
-
-      reset();
+      setIsRedirecting(true);
       router.push("/dashboard/pastas");
     } else {
       // create
@@ -85,7 +86,7 @@ export default function PastaForm({
       }
 
       toast.success(response.message || "Tészta sikeresen létrehozva!");
-      reset();
+      setIsRedirecting(true);
       router.push("/dashboard/pastas");
     }
   }
@@ -107,7 +108,7 @@ export default function PastaForm({
               name="pastaName"
               label="Tészta neve *"
               placeholder="Spaghetti, Penne etc."
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomNumber
@@ -115,7 +116,7 @@ export default function PastaForm({
               name="pastaPrice"
               label="Tészta ára *"
               placeholder="1190"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomTextarea
@@ -123,14 +124,14 @@ export default function PastaForm({
               name="pastaDescription"
               label="Tészta leírása *"
               placeholder="Rövid leírás az alapanyagokról és ízvilágról"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomCheckbox
               control={control}
               name="isAvailableOnMenu"
               label="Elérhető legyen az étlapon ?"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
           </FieldGroup>
         </form>
@@ -140,9 +141,9 @@ export default function PastaForm({
           type="submit"
           className="w-full cursor-pointer"
           form="pasta-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
         >
-          {isSubmitting ? (
+          {isFormPending ? (
             <CustomLoader />
           ) : pastaObject ? (
             "Tészta frissítése"

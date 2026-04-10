@@ -26,6 +26,7 @@ import {
   type AdminPastaDtoType,
   type AdminPizzaDtoType,
 } from "../Types/types";
+import { useState } from "react";
 
 type Props = {
   returnUrl: string;
@@ -72,7 +73,6 @@ export default function ImageForm({
   const {
     handleSubmit,
     control,
-    reset,
     formState: { isSubmitting },
   } = useForm<ImageFormInputType, unknown, ImageFormOutputType>({
     resolver: zodResolver(imageSchema),
@@ -81,6 +81,8 @@ export default function ImageForm({
     },
   });
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   async function onSubmit(data: ImageFormOutputType) {
     if (menuObject.image) {
@@ -97,7 +99,7 @@ export default function ImageForm({
       }
 
       toast.success(response.message);
-      reset();
+      setIsRedirecting(true);
       router.push(returnUrl);
     } else {
       // create
@@ -109,7 +111,7 @@ export default function ImageForm({
       }
 
       toast.success(response.message);
-      reset();
+      setIsRedirecting(true);
       router.push(returnUrl);
     }
   }
@@ -135,9 +137,9 @@ export default function ImageForm({
           type="submit"
           className="w-full cursor-pointer"
           form="image-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
         >
-          {isSubmitting ? (
+          {isFormPending ? (
             <CustomLoader />
           ) : menuObject.image ? (
             "Kép frissítése"

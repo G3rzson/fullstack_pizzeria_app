@@ -23,7 +23,7 @@ export default function CartList() {
   return (
     <div className="space-y-4 my-6">
       {/* Cart items lista */}
-      <ul className="space-y-3">
+      <ul className="grid xl:grid-cols-2 gap-4">
         {cartItems.map((item, index) => (
           <li
             key={`${item.product.id}-${item.type}-${item.type === "pizza" ? item.size : ""}-${index}`}

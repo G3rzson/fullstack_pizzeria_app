@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -46,6 +46,8 @@ export default function PizzaForm({
     },
   });
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   useEffect(() => {
     if (pizzaObject) {
@@ -72,8 +74,7 @@ export default function PizzaForm({
       }
 
       toast.success(response.message || "Pizza sikeresen frissítve!");
-
-      reset();
+      setIsRedirecting(true);
       router.push("/dashboard/pizzas");
     } else {
       // create
@@ -87,7 +88,7 @@ export default function PizzaForm({
       }
 
       toast.success(response.message || "Pizza sikeresen létrehozva!");
-      reset();
+      setIsRedirecting(true);
       router.push("/dashboard/pizzas");
     }
   }
@@ -107,7 +108,7 @@ export default function PizzaForm({
               name="pizzaName"
               label="Pizza neve *"
               placeholder="Margherita, Pepperoni etc."
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomNumber
@@ -115,14 +116,14 @@ export default function PizzaForm({
               name="pizzaPrice32"
               label="32 cm-es pizza ára *"
               placeholder="1190"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
             <CustomNumber
               control={control}
               name="pizzaPrice45"
               label="45 cm-es pizza ára *"
               placeholder="1590"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomTextarea
@@ -130,14 +131,14 @@ export default function PizzaForm({
               name="pizzaDescription"
               label="Pizza leírása *"
               placeholder="Rövid leírás az alapanyagokról és ízvilágról"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomCheckbox
               control={control}
               name="isAvailableOnMenu"
               label="Elérhető legyen az étlapon ?"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
           </FieldGroup>
         </form>
@@ -147,9 +148,9 @@ export default function PizzaForm({
           type="submit"
           className="w-full cursor-pointer"
           form="pizza-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
         >
-          {isSubmitting ? (
+          {isFormPending ? (
             <CustomLoader />
           ) : pizzaObject ? (
             "Pizza frissítése"

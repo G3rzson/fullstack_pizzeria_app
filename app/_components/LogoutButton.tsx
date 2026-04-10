@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/useAuth";
+import { useCart } from "@/lib/cart/useCart";
+import { clearLocalStorage } from "@/lib/localStorage/localStorage";
 
 type Props = {
   onBeforeLogout?: () => void;
@@ -12,6 +14,7 @@ type Props = {
 export function LogoutButton({ onBeforeLogout }: Props) {
   const router = useRouter();
   const { logout } = useAuth();
+  const { setCartItems } = useCart();
 
   async function handleLogout() {
     onBeforeLogout?.();
@@ -26,6 +29,8 @@ export function LogoutButton({ onBeforeLogout }: Props) {
 
       const data = await response.json();
       toast.success(data.message);
+      clearLocalStorage();
+      setCartItems([]);
       logout();
       router.push("/");
     } catch {

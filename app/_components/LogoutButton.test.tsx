@@ -11,6 +11,14 @@ vi.mock("@/lib/auth/useAuth", () => ({
   useAuth: vi.fn(),
 }));
 
+vi.mock("@/lib/cart/useCart", () => ({
+  useCart: vi.fn(),
+}));
+
+vi.mock("@/lib/localStorage/localStorage", () => ({
+  clearLocalStorage: vi.fn(),
+}));
+
 vi.mock("sonner", () => ({
   toast: {
     success: vi.fn(),
@@ -20,14 +28,18 @@ vi.mock("sonner", () => ({
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth/useAuth";
+import { useCart } from "@/lib/cart/useCart";
+import { clearLocalStorage } from "@/lib/localStorage/localStorage";
 import { toast } from "sonner";
 
 const mockUseRouter = useRouter as unknown as Mock;
 const mockUseAuth = useAuth as unknown as Mock;
+const mockUseCart = useCart as unknown as Mock;
 
 describe("LogoutButton component", () => {
   const push = vi.fn();
   const logout = vi.fn();
+  const setCartItems = vi.fn();
   const onBeforeLogout = vi.fn();
 
   beforeEach(() => {
@@ -35,6 +47,7 @@ describe("LogoutButton component", () => {
 
     mockUseRouter.mockReturnValue({ push });
     mockUseAuth.mockReturnValue({ logout });
+    mockUseCart.mockReturnValue({ setCartItems });
     onBeforeLogout.mockReset();
 
     vi.stubGlobal("fetch", vi.fn());
@@ -55,6 +68,8 @@ describe("LogoutButton component", () => {
       expect(onBeforeLogout).toHaveBeenCalledTimes(1);
       expect(fetch).toHaveBeenCalledWith("/auth/logout", { method: "POST" });
       expect(toast.success).toHaveBeenCalledWith("Sikeres kijelentkezés");
+      expect(clearLocalStorage).toHaveBeenCalledTimes(1);
+      expect(setCartItems).toHaveBeenCalledWith([]);
       expect(logout).toHaveBeenCalledTimes(1);
       expect(push).toHaveBeenCalledWith("/");
     });
@@ -78,6 +93,8 @@ describe("LogoutButton component", () => {
       expect(toast.error).toHaveBeenCalledWith(
         "Hiba történt a kijelentkezés során",
       );
+      expect(clearLocalStorage).not.toHaveBeenCalled();
+      expect(setCartItems).not.toHaveBeenCalled();
       expect(logout).not.toHaveBeenCalled();
       expect(push).not.toHaveBeenCalled();
 
@@ -116,6 +133,8 @@ describe("LogoutButton component", () => {
       expect(toast.error).toHaveBeenCalledWith(
         "Hiba történt a kijelentkezés során",
       );
+      expect(clearLocalStorage).not.toHaveBeenCalled();
+      expect(setCartItems).not.toHaveBeenCalled();
       expect(logout).not.toHaveBeenCalled();
       expect(push).not.toHaveBeenCalled();
 
