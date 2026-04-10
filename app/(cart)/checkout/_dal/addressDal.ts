@@ -5,7 +5,7 @@ import { Prisma } from "@prisma/client";
 
 export async function saveAddressDal(
   userId: string,
-  data: Omit<Prisma.OrderAddressCreateInput, "users">,
+  data: Omit<Prisma.OrderAddressCreateInput, "user">,
 ) {
   return await prisma.user.update({
     where: { id: userId },
@@ -33,7 +33,7 @@ export async function getAddressByUserIdDal(userId: string) {
 
 export async function updateAddressDal(
   userId: string,
-  data: Omit<Prisma.OrderAddressUpdateInput, "users">,
+  data: Omit<Prisma.OrderAddressUpdateInput, "user">,
 ) {
   return await prisma.user.update({
     where: { id: userId },
