@@ -1,2 +1,0 @@
--- AlterTable
-ALTER TABLE `user` ADD COLUMN `isStillWorkingHere` BOOLEAN NOT NULL DEFAULT true;
