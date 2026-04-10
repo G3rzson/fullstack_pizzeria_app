@@ -21,7 +21,7 @@ import { CustomLoader } from "@/shared/Components/CustomLoader";
 import { createDrinkAction } from "../_actions/createDrinkAction";
 import { updateDrinkAction } from "../_actions/updateDrinkAction";
 import { type DrinkFormType, drinkSchema } from "../_validation/drinkSchema";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { type AdminDrinkDtoType } from "@/shared/Types/types";
 
 export default function DrinkForm({
@@ -43,6 +43,8 @@ export default function DrinkForm({
     },
   });
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   useEffect(() => {
     if (drinkObject) {
@@ -67,8 +69,7 @@ export default function DrinkForm({
       }
 
       toast.success(response.message || "Ital sikeresen frissítve!");
-
-      reset();
+      setIsRedirecting(true);
       router.push("/dashboard/drinks");
     } else {
       // create
@@ -82,7 +83,7 @@ export default function DrinkForm({
       }
 
       toast.success(response.message || "Ital sikeresen létrehozva!");
-      reset();
+      setIsRedirecting(true);
       router.push("/dashboard/drinks");
     }
   }
@@ -102,7 +103,7 @@ export default function DrinkForm({
               name="drinkName"
               label="Ital neve *"
               placeholder="Cola, Fanta etc."
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomNumber
@@ -110,14 +111,14 @@ export default function DrinkForm({
               name="drinkPrice"
               label="Ital ára *"
               placeholder="1190"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomCheckbox
               control={control}
               name="isAvailableOnMenu"
               label="Elérhető legyen az étlapon ?"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
           </FieldGroup>
         </form>
@@ -127,9 +128,9 @@ export default function DrinkForm({
           type="submit"
           className="w-full cursor-pointer"
           form="drink-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
         >
-          {isSubmitting ? (
+          {isFormPending ? (
             <CustomLoader />
           ) : drinkObject ? (
             "Ital frissítése"

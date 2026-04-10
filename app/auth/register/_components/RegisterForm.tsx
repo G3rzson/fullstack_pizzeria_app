@@ -22,12 +22,12 @@ import {
 import { registerAction } from "../_actions/registerAction";
 import { toast } from "sonner";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { useState } from "react";
 
 export default function RegisterForm() {
   const {
     handleSubmit,
     control,
-    reset,
     formState: { isSubmitting },
   } = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
@@ -38,6 +38,8 @@ export default function RegisterForm() {
     },
   });
   const router = useRouter();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   async function onSubmit(data: RegisterSchemaType) {
     try {
@@ -49,8 +51,8 @@ export default function RegisterForm() {
       }
 
       toast.success(response.message);
+      setIsRedirecting(true);
       router.push("/auth/login");
-      reset();
     } catch (err) {
       toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
       console.error(err);
@@ -77,7 +79,7 @@ export default function RegisterForm() {
             name="username"
             placeholder="Írd be a neved!"
             control={control}
-            isSubmitting={isSubmitting}
+            isSubmitting={isFormPending}
           />
 
           <CustomEmail
@@ -85,7 +87,7 @@ export default function RegisterForm() {
             name="email"
             placeholder="Írd be az email címed!"
             control={control}
-            isSubmitting={isSubmitting}
+            isSubmitting={isFormPending}
           />
 
           <CustomPassword
@@ -93,7 +95,7 @@ export default function RegisterForm() {
             name="password"
             placeholder="Írd be a jelszavad!"
             control={control}
-            isSubmitting={isSubmitting}
+            isSubmitting={isFormPending}
           />
         </form>
 
@@ -112,7 +114,7 @@ export default function RegisterForm() {
           type="submit"
           variant="outline"
           form="register-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
           className="w-full"
         >
           Regisztráció

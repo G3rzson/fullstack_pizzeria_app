@@ -23,7 +23,7 @@ import {
 import { saveAddressAction } from "../_actions/saveAddressAction";
 import { useRouter } from "next/navigation";
 import { AddressDtoType } from "@/shared/Types/types";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { updateAddressAction } from "../_actions/updateAddressAction";
 import { useCart } from "@/lib/cart/useCart";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
@@ -55,6 +55,8 @@ export default function CheckoutForm({
   });
   const router = useRouter();
   const { setCartItems } = useCart();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   useEffect(() => {
     if (address) {
@@ -91,11 +93,10 @@ export default function CheckoutForm({
         }
       }
 
-      router.push("/payment");
       toast.success(BACKEND_RESPONSE_MESSAGES.SUCCESS);
-
-      reset();
+      setIsRedirecting(true);
       setCartItems([]);
+      router.push("/payment");
     } catch (err) {
       toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     }
@@ -118,7 +119,7 @@ export default function CheckoutForm({
               name="fullName"
               label="Teljes név *"
               placeholder="Kovács János"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <CustomText
@@ -126,7 +127,7 @@ export default function CheckoutForm({
               name="phoneNumber"
               label="Telefonszám *"
               placeholder="+36-30-123-4567"
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -135,7 +136,7 @@ export default function CheckoutForm({
                 name="postalCode"
                 label="Irányítószám *"
                 placeholder="1234"
-                isSubmitting={isSubmitting}
+                isSubmitting={isFormPending}
               />
 
               <CustomText
@@ -143,7 +144,7 @@ export default function CheckoutForm({
                 name="city"
                 label="Város *"
                 placeholder="Budapest"
-                isSubmitting={isSubmitting}
+                isSubmitting={isFormPending}
               />
             </div>
 
@@ -153,7 +154,7 @@ export default function CheckoutForm({
                 name="street"
                 label="Utca *"
                 placeholder="Fő utca"
-                isSubmitting={isSubmitting}
+                isSubmitting={isFormPending}
               />
 
               <CustomText
@@ -161,7 +162,7 @@ export default function CheckoutForm({
                 name="houseNumber"
                 label="Házszám *"
                 placeholder="12"
-                isSubmitting={isSubmitting}
+                isSubmitting={isFormPending}
               />
             </div>
 
@@ -170,7 +171,7 @@ export default function CheckoutForm({
               name="floor"
               label="Emelet/ajtó (opcionális)"
               placeholder="3. emelet 12."
-              isSubmitting={isSubmitting}
+              isSubmitting={isFormPending}
             />
 
             {userId && (
@@ -178,7 +179,7 @@ export default function CheckoutForm({
                 control={control}
                 name="saveAddress"
                 label="Mentsd el ezeket az adatokat a gyorsabb rendeléshez"
-                isSubmitting={isSubmitting}
+                isSubmitting={isFormPending}
               />
             )}
           </FieldGroup>
@@ -190,9 +191,9 @@ export default function CheckoutForm({
           variant={"outline"}
           className="w-full cursor-pointer"
           form="checkout-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
         >
-          {isSubmitting ? <CustomLoader /> : "Rendelés leadása"}
+          {isFormPending ? <CustomLoader /> : "Rendelés leadása"}
         </Button>
       </CardFooter>
     </Card>

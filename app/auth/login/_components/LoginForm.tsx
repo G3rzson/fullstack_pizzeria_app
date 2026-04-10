@@ -19,6 +19,7 @@ import { loginSchema, type LoginSchemaType } from "../_validation/loginSchema";
 import { loginAction } from "../_actions/loginAction";
 import { useAuth } from "@/lib/auth/useAuth";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
+import { useState } from "react";
 
 function normalizeCallbackUrl(callbackUrl: string | null) {
   if (!callbackUrl || !callbackUrl.startsWith("/")) {
@@ -32,7 +33,6 @@ export default function LoginForm() {
   const {
     handleSubmit,
     control,
-    reset,
     formState: { isSubmitting },
   } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
@@ -44,6 +44,8 @@ export default function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refreshUser } = useAuth();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const isFormPending = isSubmitting || isRedirecting;
 
   async function onSubmit(data: LoginSchemaType) {
     try {
@@ -60,8 +62,8 @@ export default function LoginForm() {
       const callbackUrl = normalizeCallbackUrl(searchParams.get("callbackUrl"));
 
       toast.success(response.message);
+      setIsRedirecting(true);
       router.push(callbackUrl);
-      reset();
     } catch (err) {
       toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
       console.error(err);
@@ -88,7 +90,7 @@ export default function LoginForm() {
             name="username"
             placeholder="Írd be a neved!"
             control={control}
-            isSubmitting={isSubmitting}
+            isSubmitting={isFormPending}
           />
 
           <CustomPassword
@@ -96,7 +98,7 @@ export default function LoginForm() {
             name="password"
             placeholder="Írd be a jelszavad!"
             control={control}
-            isSubmitting={isSubmitting}
+            isSubmitting={isFormPending}
           />
         </form>
 
@@ -115,7 +117,7 @@ export default function LoginForm() {
           type="submit"
           variant="outline"
           form="login-form"
-          disabled={isSubmitting}
+          disabled={isFormPending}
           className="w-full"
         >
           Bejelentkezés
