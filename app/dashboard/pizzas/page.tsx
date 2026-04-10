@@ -3,6 +3,8 @@ import Loading from "@/app/loading";
 import PizzaList from "./_components/PizzaList";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardPizzasPage() {
   return (
     <div className="flex grow flex-col gap-4">

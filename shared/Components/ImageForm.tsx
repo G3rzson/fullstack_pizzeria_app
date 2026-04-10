@@ -126,7 +126,7 @@ export default function ImageForm({
       <CardContent>
         <form id="image-form" onSubmit={handleSubmit(onSubmit)}>
           <FieldGroup>
-            <CustomImage control={control} name="image" label="Pizza kép *" />
+            <CustomImage control={control} name="image" label="Kép *" />
           </FieldGroup>
         </form>
       </CardContent>

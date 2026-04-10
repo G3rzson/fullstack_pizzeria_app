@@ -3,6 +3,8 @@ import { Suspense } from "react";
 import DrinkList from "./_components/DrinkList";
 import MenuNavLink from "@/shared/Components/MenuNavLink";
 
+export const dynamic = "force-dynamic";
+
 export default function DashboardDrinksPage() {
   return (
     <div className="flex grow flex-col gap-4">
