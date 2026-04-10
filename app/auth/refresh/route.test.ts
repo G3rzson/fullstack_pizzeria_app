@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { POST } from "./route";
+import { NextRequest } from "next/server";
+import { GET, POST } from "./route";
 import { cookies } from "next/headers";
 import {
   getJwtSecrets,
@@ -7,7 +8,7 @@ import {
   signAccessToken,
   signRefreshToken,
   buildAuthCookieOptions,
-} from "@/shared/Functions/jwt";
+} from "@/lib/auth/jwt";
 import { getUserByUsername } from "../login/_dal/loginDal";
 
 // Mock next/headers
@@ -16,7 +17,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   getJwtSecrets: vi.fn(),
   verifyRefreshToken: vi.fn(),
   signAccessToken: vi.fn(),
@@ -151,5 +152,150 @@ describe("/auth/refresh route", () => {
     expect(response.status).toBe(401);
     expect(data.user).toBeNull();
     expect(data.error).toBe("Invalid token");
+    expect(mockCookieStore.delete).toHaveBeenCalledWith("access_token");
+    expect(mockCookieStore.delete).toHaveBeenCalledWith("refresh_token");
+  });
+
+  it("should return 500 when jwt secrets are missing", async () => {
+    const mockCookieStore = {
+      get: vi.fn((name: string) => {
+        if (name === "refresh_token") {
+          return { value: "valid-refresh-token" };
+        }
+        return undefined;
+      }),
+    };
+
+    mockCookies.mockResolvedValue(mockCookieStore);
+    mockGetJwtSecrets.mockReturnValue(null);
+
+    const response = await POST(
+      new Request("http://localhost:3000/auth/refresh", { method: "POST" }),
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.user).toBeNull();
+    expect(data.error).toBe("JWT secrets missing");
+    expect(mockVerifyRefreshToken).not.toHaveBeenCalled();
+  });
+
+  it("should return 401 when user does not exist", async () => {
+    const mockCookieStore = {
+      get: vi.fn((name: string) => {
+        if (name === "refresh_token") {
+          return { value: "valid-refresh-token" };
+        }
+        return undefined;
+      }),
+      set: vi.fn(),
+      delete: vi.fn(),
+    };
+
+    mockCookies.mockResolvedValue(mockCookieStore);
+    mockGetJwtSecrets.mockReturnValue({
+      accessTokenSecret: "test-access-secret",
+      refreshTokenSecret: "test-refresh-secret",
+    });
+    mockVerifyRefreshToken.mockReturnValue({
+      id: "user-123",
+      username: "missing-user",
+      role: "USER",
+    });
+    mockGetUserByUsername.mockResolvedValue(null);
+
+    const response = await POST(
+      new Request("http://localhost:3000/auth/refresh", { method: "POST" }),
+    );
+    const data = await response.json();
+
+    expect(response.status).toBe(401);
+    expect(data.user).toBeNull();
+    expect(data.error).toBe("User not found");
+    expect(mockCookieStore.set).not.toHaveBeenCalled();
+  });
+
+  it("GET should redirect back to returnTo on successful refresh", async () => {
+    const mockCookieStore = {
+      get: vi.fn((name: string) => {
+        if (name === "refresh_token") {
+          return { value: "valid-refresh-token" };
+        }
+        return undefined;
+      }),
+      set: vi.fn(),
+    };
+
+    mockCookies.mockResolvedValue(mockCookieStore);
+    mockGetJwtSecrets.mockReturnValue({
+      accessTokenSecret: "test-access-secret",
+      refreshTokenSecret: "test-refresh-secret",
+    });
+    mockVerifyRefreshToken.mockReturnValue({
+      id: "user-123",
+      username: "testuser",
+      role: "USER",
+    });
+    mockGetUserByUsername.mockResolvedValue({
+      id: "user-123",
+      username: "testuser",
+      role: "USER",
+    });
+    mockSignAccessToken.mockReturnValue("new-access-token");
+    mockSignRefreshToken.mockReturnValue("new-refresh-token");
+    mockBuildAuthCookieOptions.mockReturnValue({
+      httpOnly: true,
+      secure: true,
+      sameSite: "lax",
+    });
+
+    const response = await GET(
+      new NextRequest(
+        "http://localhost:3000/auth/refresh?returnTo=%2Fdashboard",
+      ),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/dashboard",
+    );
+  });
+
+  it("GET should redirect to login with callbackUrl when refresh fails", async () => {
+    const mockCookieStore = {
+      get: vi.fn(() => undefined),
+    };
+
+    mockCookies.mockResolvedValue(mockCookieStore);
+
+    const response = await GET(
+      new NextRequest(
+        "http://localhost:3000/auth/refresh?returnTo=%2Fdashboard",
+      ),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/auth/login?callbackUrl=%2Fdashboard",
+    );
+  });
+
+  it("GET should sanitize external returnTo values", async () => {
+    const mockCookieStore = {
+      get: vi.fn(() => undefined),
+    };
+
+    mockCookies.mockResolvedValue(mockCookieStore);
+
+    const response = await GET(
+      new NextRequest(
+        "http://localhost:3000/auth/refresh?returnTo=https%3A%2F%2Fevil.example",
+      ),
+    );
+
+    expect(response.status).toBe(307);
+    expect(response.headers.get("location")).toBe(
+      "http://localhost:3000/auth/login?callbackUrl=%2F",
+    );
   });
 });

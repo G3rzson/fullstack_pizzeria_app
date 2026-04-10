@@ -1,16 +1,16 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { imageSchema } from "@/shared/Validation/ImageSchema";
-import { uploadImageToCloudinary } from "@/shared/Functions/uploadImageToCloudinary";
-import { deleteCloudinaryImage } from "@/shared/Functions/deleteCloudinaryImage";
+import { uploadImageToCloudinary } from "@/lib/claudinary/uploadImageToCloudinary";
+import { deleteCloudinaryImage } from "@/lib/claudinary/deleteCloudinaryImage";
 import { uploadDrinkImageDal } from "../_dal/drinkDal";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { errorLogger } from "@/shared/Functions/errorLogger";
 import isDev from "@/shared/Functions/isDev";
+import { hasPermission } from "@/shared/Functions/hasPermission";
 
 export async function uploadDrinkImageAction(
   drinkId: string,
@@ -37,6 +37,7 @@ export async function uploadDrinkImageAction(
       return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const result = await uploadImageToCloudinary(data.image, "drinks");
+    publicId = result.public_id; // Store publicId to delete image if database update fails
 
     const imageData = {
       publicId: result.public_id,
@@ -46,7 +47,6 @@ export async function uploadDrinkImageAction(
 
     await uploadDrinkImageDal(idData.id, imageData);
 
-    publicId = result.public_id; // Store the publicId for potential cleanup
     revalidatePath(`/drinks`);
     revalidatePath(`/dashboard/drinks`);
     return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);

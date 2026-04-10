@@ -2,7 +2,7 @@ import ServerError from "@/shared/Components/ServerError";
 import { getDrinkByIdAction } from "../../_actions/getDrinkByIdAction";
 import DrinkForm from "../../_components/DrinkForm";
 
-export default async function EditPastaPage({
+export default async function EditDrinkPage({
   params,
 }: {
   params: Promise<{ drinkId: string }>;

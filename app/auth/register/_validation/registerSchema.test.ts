@@ -1,7 +1,7 @@
 import { describe, it, expect } from "vitest";
 import { registerSchema, type RegisterSchemaType } from "./registerSchema";
 
-describe("registerSchema", () => {
+describe("registerSchema schema", () => {
   it("accepts valid data", () => {
     const data: RegisterSchemaType = {
       username: "validusername",

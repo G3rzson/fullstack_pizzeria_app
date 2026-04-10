@@ -13,9 +13,9 @@ import {
   type PastaDtoType,
   type DrinkDtoType,
 } from "@/shared/Types/types";
-import { loadFromLocalStorage } from "@/shared/Functions/localStorage";
+import { loadFromLocalStorage } from "@/lib/localStorage/localStorage";
 
-export type CartItem =
+export type CartItemType =
   | {
       type: "pizza";
       product: PizzaDtoType;
@@ -26,8 +26,8 @@ export type CartItem =
   | { type: "drink"; product: DrinkDtoType; quantity: number };
 
 type CartContextType = {
-  cartItems: CartItem[];
-  setCartItems: Dispatch<SetStateAction<CartItem[]>>;
+  cartItems: CartItemType[];
+  setCartItems: Dispatch<SetStateAction<CartItemType[]>>;
   isLoading: boolean;
   setIsLoading: Dispatch<SetStateAction<boolean>>;
 };
@@ -37,7 +37,7 @@ export const CartContext = createContext<CartContextType | undefined>(
 );
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {

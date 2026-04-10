@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { GET } from "./route";
 import { cookies } from "next/headers";
-import { getJwtSecrets, verifyAccessToken } from "@/shared/Functions/jwt";
+import { getJwtSecrets, verifyAccessToken } from "@/lib/auth/jwt";
 
 // Mock next/headers
 vi.mock("next/headers", () => ({
@@ -9,7 +9,7 @@ vi.mock("next/headers", () => ({
 }));
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   getJwtSecrets: vi.fn(),
   verifyAccessToken: vi.fn(),
 }));
@@ -47,11 +47,13 @@ describe("/auth/me route", () => {
     const response = await GET();
     const data = await response.json();
 
+    expect(response.status).toBe(200);
     expect(data.user).toEqual({
       id: "user-123",
       username: "testuser",
       role: "USER",
     });
+    expect(mockGetJwtSecrets).toHaveBeenCalled();
     expect(mockVerifyAccessToken).toHaveBeenCalledWith(
       "valid-token",
       "test-secret",
@@ -72,6 +74,28 @@ describe("/auth/me route", () => {
     expect(data.user).toBeNull();
     expect(data.error).toBe("No access token");
     expect(mockGetJwtSecrets).not.toHaveBeenCalled();
+    expect(mockVerifyAccessToken).not.toHaveBeenCalled();
+  });
+
+  it("should return 500 when jwt secrets are missing", async () => {
+    const mockCookieStore = {
+      get: vi.fn((name: string) => {
+        if (name === "access_token") {
+          return { value: "valid-token" };
+        }
+        return undefined;
+      }),
+    };
+
+    mockCookies.mockResolvedValue(mockCookieStore);
+    mockGetJwtSecrets.mockReturnValue(null);
+
+    const response = await GET();
+    const data = await response.json();
+
+    expect(response.status).toBe(500);
+    expect(data.user).toBeNull();
+    expect(data.error).toBe("JWT secrets missing");
     expect(mockVerifyAccessToken).not.toHaveBeenCalled();
   });
 

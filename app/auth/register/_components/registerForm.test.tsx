@@ -1,34 +1,44 @@
-import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
+import { beforeEach, describe, expect, it, vi, type Mock } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import RegisterForm from "../_components/RegisterForm";
 import userEvent from "@testing-library/user-event";
+import { toast } from "sonner";
+import RegisterForm from "../_components/RegisterForm";
 import { registerAction } from "../_actions/registerAction";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
-// Mock registerAction
 vi.mock("../_actions/registerAction", () => ({
   registerAction: vi.fn(),
 }));
 
-// Mock next/navigation
+const mockPush = vi.fn();
 vi.mock("next/navigation", () => ({
-  // registerForm uses router.push to navigate after successful registration
   useRouter: vi.fn(() => ({
-    push: vi.fn(),
+    push: mockPush,
   })),
 
-  // registerForm password field uses it to determine the current path
   usePathname: vi.fn(() => "/auth/register"),
+  useSearchParams: vi.fn(() => ({
+    get: vi.fn(() => null),
+  })),
+}));
+
+vi.mock("sonner", () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+  },
 }));
 
 const mockRegisterAction = registerAction as Mock;
+const mockToastSuccess = toast.success as Mock;
+const mockToastError = toast.error as Mock;
 
-describe("Register Form Render", () => {
+describe("RegisterForm component", () => {
   beforeEach(() => {
-    // Clear all mocks before each test to ensure test isolation
     vi.clearAllMocks();
   });
 
-  it("should render the registration form", () => {
+  it("renders the registration form", () => {
     render(<RegisterForm />);
 
     expect(
@@ -36,7 +46,7 @@ describe("Register Form Render", () => {
     ).toBeInTheDocument();
   });
 
-  it("should render username input with correct type", () => {
+  it("renders username input with correct type", () => {
     render(<RegisterForm />);
 
     const usernameInput = screen.getByRole("textbox", {
@@ -46,7 +56,7 @@ describe("Register Form Render", () => {
     expect(usernameInput).toHaveAttribute("type", "text");
   });
 
-  it("should render email input with correct type", () => {
+  it("renders email input with correct type", () => {
     render(<RegisterForm />);
 
     const emailInput = screen.getByRole("textbox", { name: /email/i });
@@ -54,7 +64,7 @@ describe("Register Form Render", () => {
     expect(emailInput).toHaveAttribute("type", "email");
   });
 
-  it("should render password input with correct type", () => {
+  it("renders password input with correct type", () => {
     render(<RegisterForm />);
 
     const passwordInput = screen.getByLabelText(/jelszó/i);
@@ -62,7 +72,7 @@ describe("Register Form Render", () => {
     expect(passwordInput).toHaveAttribute("type", "password");
   });
 
-  it("should render password offer button", () => {
+  it("renders password offer button", () => {
     render(<RegisterForm />);
 
     const passwordOfferButton = screen.getByRole("button", {
@@ -71,7 +81,7 @@ describe("Register Form Render", () => {
     expect(passwordOfferButton).toBeInTheDocument();
   });
 
-  it("should render login link", () => {
+  it("renders login link", () => {
     render(<RegisterForm />);
 
     const loginLink = screen.getByRole("link", { name: /jelentkezz be/i });
@@ -79,17 +89,7 @@ describe("Register Form Render", () => {
     expect(loginLink).toHaveAttribute("href", "/auth/login");
   });
 
-  it("should allow user to click login link", async () => {
-    const user = userEvent.setup();
-    render(<RegisterForm />);
-
-    const loginLink = screen.getByRole("link", { name: /jelentkezz be/i });
-    await user.click(loginLink);
-
-    expect(loginLink).toHaveAttribute("href", "/auth/login");
-  });
-
-  it("should render registration button", () => {
+  it("renders registration button", () => {
     render(<RegisterForm />);
 
     expect(
@@ -97,10 +97,10 @@ describe("Register Form Render", () => {
     ).toBeInTheDocument();
   });
 
-  it("should disable inputs and buttons during submission", async () => {
+  it("disables inputs and buttons during submission", async () => {
     const user = userEvent.setup();
 
-    mockRegisterAction.mockImplementation(() => new Promise(() => {})); // soha nem resolve
+    mockRegisterAction.mockImplementation(() => new Promise(() => {}));
     render(<RegisterForm />);
 
     const usernameInput = screen.getByLabelText(/felhasználónév/i);
@@ -111,15 +111,12 @@ describe("Register Form Render", () => {
     });
     const submitButton = screen.getByRole("button", { name: /regisztráció/i });
 
-    // Fill in the form with valid data so validation passes
     await user.type(usernameInput, "TestUser");
     await user.type(emailInput, "test@example.com");
     await user.type(passwordInput, "ValidPass123");
 
-    // Simulate form submission by clicking the submit button
     await user.click(submitButton);
 
-    // After clicking the submit button, all inputs and buttons should be disabled
     await waitFor(() => {
       expect(usernameInput).toBeDisabled();
       expect(emailInput).toBeDisabled();
@@ -127,5 +124,160 @@ describe("Register Form Render", () => {
       expect(passwordOfferButton).toBeDisabled();
       expect(submitButton).toBeDisabled();
     });
+  });
+
+  it("submits successfully and redirects to login", async () => {
+    const user = userEvent.setup();
+    mockRegisterAction.mockResolvedValue({
+      success: true,
+      message: BACKEND_RESPONSE_MESSAGES.SUCCESS,
+    });
+
+    render(<RegisterForm />);
+
+    const usernameInput = screen.getByLabelText(/felhasználónév/i);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/jelszó/i);
+
+    await user.type(usernameInput, "TestUser");
+    await user.type(emailInput, "test@example.com");
+    await user.type(passwordInput, "Password123");
+    await user.click(screen.getByRole("button", { name: /regisztráció/i }));
+
+    await waitFor(() => {
+      expect(mockRegisterAction).toHaveBeenCalledWith({
+        username: "TestUser",
+        email: "test@example.com",
+        password: "Password123",
+      });
+    });
+
+    expect(mockToastSuccess).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SUCCESS,
+    );
+    expect(mockPush).toHaveBeenCalledWith("/auth/login");
+    expect(usernameInput).toHaveValue("");
+    expect(emailInput).toHaveValue("");
+    expect(passwordInput).toHaveValue("");
+  });
+
+  it("shows validation error response from action", async () => {
+    const user = userEvent.setup();
+    mockRegisterAction.mockResolvedValue({
+      success: false,
+      message: BACKEND_RESPONSE_MESSAGES.INVALID_DATA,
+    });
+
+    render(<RegisterForm />);
+
+    const usernameInput = screen.getByLabelText(/felhasználónév/i);
+    const emailInput = screen.getByLabelText(/email/i);
+    const passwordInput = screen.getByLabelText(/jelszó/i);
+
+    await user.type(usernameInput, "InvalidUser");
+    await user.type(emailInput, "invalid@example.com");
+    await user.type(passwordInput, "InvalidPassword123");
+    await user.click(screen.getByRole("button", { name: /regisztráció/i }));
+
+    await waitFor(() => {
+      expect(mockRegisterAction).toHaveBeenCalledWith({
+        username: "InvalidUser",
+        email: "invalid@example.com",
+        password: "InvalidPassword123",
+      });
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.INVALID_DATA,
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(usernameInput).not.toHaveValue("");
+    expect(emailInput).not.toHaveValue("");
+    expect(passwordInput).not.toHaveValue("");
+  });
+
+  it("shows duplicate error response from action", async () => {
+    const user = userEvent.setup();
+    mockRegisterAction.mockResolvedValue({
+      success: false,
+      message: BACKEND_RESPONSE_MESSAGES.DUPLICATE_ERROR,
+    });
+
+    render(<RegisterForm />);
+
+    await user.type(screen.getByLabelText(/felhasználónév/i), "ExistingUser");
+    await user.type(screen.getByLabelText(/email/i), "existing@example.com");
+    await user.type(screen.getByLabelText(/jelszó/i), "Password123");
+    await user.click(screen.getByRole("button", { name: /regisztráció/i }));
+
+    await waitFor(() => {
+      expect(mockRegisterAction).toHaveBeenCalledWith({
+        username: "ExistingUser",
+        email: "existing@example.com",
+        password: "Password123",
+      });
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.DUPLICATE_ERROR,
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("shows server error response from action", async () => {
+    const user = userEvent.setup();
+    mockRegisterAction.mockResolvedValue({
+      success: false,
+      message: BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
+    });
+
+    render(<RegisterForm />);
+
+    await user.type(screen.getByLabelText(/felhasználónév/i), "TestUser");
+    await user.type(screen.getByLabelText(/email/i), "test@example.com");
+    await user.type(screen.getByLabelText(/jelszó/i), "Password123");
+    await user.click(screen.getByRole("button", { name: /regisztráció/i }));
+
+    await waitFor(() => {
+      expect(mockRegisterAction).toHaveBeenCalledWith({
+        username: "TestUser",
+        email: "test@example.com",
+        password: "Password123",
+      });
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+  });
+
+  it("shows generic server error when registerAction throws", async () => {
+    const user = userEvent.setup();
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    mockRegisterAction.mockRejectedValue(new Error("network failed"));
+
+    render(<RegisterForm />);
+
+    await user.type(screen.getByLabelText(/felhasználónév/i), "CrashUser");
+    await user.type(screen.getByLabelText(/email/i), "crash@example.com");
+    await user.type(screen.getByLabelText(/jelszó/i), "CrashPassword1");
+    await user.click(screen.getByRole("button", { name: /regisztráció/i }));
+
+    await waitFor(() => {
+      expect(mockRegisterAction).toHaveBeenCalledWith({
+        username: "CrashUser",
+        email: "crash@example.com",
+        password: "CrashPassword1",
+      });
+    });
+
+    expect(mockToastError).toHaveBeenCalledWith(
+      BACKEND_RESPONSE_MESSAGES.SERVER_ERROR,
+    );
+    expect(mockPush).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
   });
 });

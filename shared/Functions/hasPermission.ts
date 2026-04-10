@@ -1,7 +1,7 @@
 "use server";
 
 import { getUserDal } from "@/app/auth/_dal/userDal";
-import { getUserFromCookie } from "./getUserFromCookie";
+import { getUserFromCookie } from "../../lib/auth/getUserFromCookie";
 
 export async function hasPermission() {
   const userDataFromCookie = await getUserFromCookie();

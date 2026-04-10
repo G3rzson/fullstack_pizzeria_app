@@ -1,13 +1,13 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { deleteDrinkDal } from "../_dal/drinkDal";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 import { errorLogger } from "@/shared/Functions/errorLogger";
 import isDev from "@/shared/Functions/isDev";
+import { hasPermission } from "@/shared/Functions/hasPermission";
 
 export async function deleteDrinkAction(
   drinkId: string,
@@ -21,13 +21,13 @@ export async function deleteDrinkAction(
 
     const { success, data } = idValidator.safeParse({ id: drinkId });
     if (!success)
-      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     await deleteDrinkDal(data.id);
 
     if (publicId) {
       const { deleteCloudinaryImage } =
-        await import("@/shared/Functions/deleteCloudinaryImage");
+        await import("@/lib/claudinary/deleteCloudinaryImage");
       await deleteCloudinaryImage(publicId);
     }
 

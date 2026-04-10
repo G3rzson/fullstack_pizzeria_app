@@ -18,13 +18,29 @@ export function ThemeSwitcher() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  const currentThemeLabel =
+    theme === "light" ? "Világos" : theme === "dark" ? "Sötét" : "Rendszer";
+
+  const currentThemeIcon =
+    theme === "light" ? (
+      <Sun />
+    ) : theme === "dark" ? (
+      <Moon />
+    ) : (
+      <LaptopMinimalCheck />
+    );
+
   useEffect(() => {
     setMounted(true);
   }, []);
 
   if (!mounted) {
     return (
-      <Button variant="outline" title="Téma kiválasztása">
+      <Button
+        variant="outline"
+        aria-label="loading theme"
+        title="Téma kiválasztása"
+      >
         <Spinner />
       </Button>
     );
@@ -33,14 +49,13 @@ export function ThemeSwitcher() {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="outline" title="Téma kiválasztása">
-          {theme === "light" ? (
-            <Sun />
-          ) : theme === "dark" ? (
-            <Moon />
-          ) : (
-            <LaptopMinimalCheck />
-          )}
+        <Button
+          variant="outline"
+          aria-label={`Aktív téma: ${currentThemeLabel}`}
+          title="Téma kiválasztása"
+          className="cursor-pointer"
+        >
+          {currentThemeIcon}
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-40 p-2">

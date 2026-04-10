@@ -17,7 +17,7 @@ export default function DashboardHeader() {
   return (
     <>
       {/* Desktop Nav*/}
-      <ul className="hidden md:flex flex-row items-center justify-center">
+      <ul className="hidden md:flex flex-row items-center justify-center gap-4">
         {DASHBOARD_NAV_LINKS.map((link) => (
           <li key={link.href}>
             <Link
@@ -25,9 +25,9 @@ export default function DashboardHeader() {
               className={`
               ${
                 pathname === link.href
-                  ? "nav-link desktop active bg-secondary"
+                  ? "nav-link desktop active"
                   : "nav-link desktop"
-              } p-4 text-xl hover:bg-secondary transition-colors duration-300`}
+              } text-xl transition-colors duration-300`}
             >
               {link.title}
             </Link>

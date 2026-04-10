@@ -19,7 +19,26 @@ model User {
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
   role               Role     @default(USER)
-  isStillWorkingHere Boolean  @default(true)
+  isStillWorkingHere Boolean  @default(false)
+
+  orderAddress OrderAddress?
+}
+
+model OrderAddress {
+  id           String   @id @default(uuid())
+  fullName     String
+  phoneNumber  String
+  street       String
+  city         String
+  postalCode   String
+  houseNumber  String
+  floorAndDoor String?
+  isSaved      Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model Pizza {

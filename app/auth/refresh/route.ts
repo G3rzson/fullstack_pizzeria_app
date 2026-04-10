@@ -4,7 +4,7 @@ import {
   signAccessToken,
   signRefreshToken,
   verifyRefreshToken,
-} from "@/shared/Functions/jwt";
+} from "@/lib/auth/jwt";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { getUserByUsername } from "../login/_dal/loginDal";
@@ -12,6 +12,14 @@ import {
   ACCESS_TOKEN_MAX_AGE,
   REFRESH_TOKEN_MAX_AGE,
 } from "../login/_constants/info";
+
+function normalizeReturnPath(returnTo: string | null) {
+  if (!returnTo || !returnTo.startsWith("/")) {
+    return "/";
+  }
+
+  return returnTo;
+}
 
 /**
  * Shared refresh logic used by both POST and GET handlers
@@ -86,7 +94,7 @@ async function refreshTokens() {
  * Client-side API endpoint - returns JSON
  * Used by fetchWrapper for API calls
  */
-export async function POST(request: Request) {
+export async function POST(_request: Request) {
   const result = await refreshTokens();
 
   if (!result.success) {
@@ -106,7 +114,7 @@ export async function POST(request: Request) {
  */
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
-  const returnTo = searchParams.get("returnTo") || "/";
+  const returnTo = normalizeReturnPath(searchParams.get("returnTo"));
 
   const result = await refreshTokens();
 

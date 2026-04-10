@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { proxy } from "./proxy";
 import { NextRequest } from "next/server";
-import { verifyAccessToken, getJwtSecrets } from "@/shared/Functions/jwt";
+import { verifyAccessToken, getJwtSecrets } from "@/lib/auth/jwt";
 
 // Mock jwt functions
-vi.mock("@/shared/Functions/jwt", () => ({
+vi.mock("@/lib/auth/jwt", () => ({
   verifyAccessToken: vi.fn(),
   getJwtSecrets: vi.fn(),
 }));
 
-const mockVerifyAccessToken = verifyAccessToken as unknown as Mock;
-const mockGetJwtSecrets = getJwtSecrets as unknown as Mock;
+const mockVerifyAccessToken = verifyAccessToken as Mock;
+const mockGetJwtSecrets = getJwtSecrets as Mock;
 
 describe("Middleware - ADMIN Protection", () => {
   beforeEach(() => {

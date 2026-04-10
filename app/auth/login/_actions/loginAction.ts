@@ -14,7 +14,7 @@ import {
   signRefreshToken,
   signAccessToken,
   buildAuthCookieOptions,
-} from "@/shared/Functions/jwt";
+} from "@/lib/auth/jwt";
 import { cookies } from "next/headers";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 import isDev from "@/shared/Functions/isDev";

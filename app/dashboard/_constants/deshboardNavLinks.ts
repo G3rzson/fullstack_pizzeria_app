@@ -11,4 +11,8 @@ export const DASHBOARD_NAV_LINKS = [
     href: "/dashboard/drinks",
     title: "Üdítők",
   },
+  {
+    href: "/dashboard/users",
+    title: "Felhasználók",
+  },
 ];

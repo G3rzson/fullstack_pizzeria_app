@@ -2,12 +2,12 @@
 
 import { revalidatePath } from "next/cache";
 import { deletePizzaDal } from "../_dal/pizzaDal";
-import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
 import { handleResponse } from "@/shared/Functions/handleResponse";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 import isDev from "@/shared/Functions/isDev";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import { hasPermission } from "@/shared/Functions/hasPermission";
 
 export async function deletePizzaAction(
   pizzaId: string,
@@ -27,7 +27,7 @@ export async function deletePizzaAction(
 
     if (publicId) {
       const { deleteCloudinaryImage } =
-        await import("@/shared/Functions/deleteCloudinaryImage");
+        await import("@/lib/claudinary/deleteCloudinaryImage");
       await deleteCloudinaryImage(publicId);
     }
 

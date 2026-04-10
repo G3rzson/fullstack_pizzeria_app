@@ -8,7 +8,7 @@ describe("/auth/logout route", () => {
     vi.clearAllMocks();
   });
 
-  it("should successfully logout and return logged out message", async () => {
+  it("should successfully logout, clear auth cookies and return message", async () => {
     const mockRequest = new Request("http://localhost:3000/auth/logout", {
       method: "POST",
     });
@@ -16,7 +16,19 @@ describe("/auth/logout route", () => {
     const response = await POST(mockRequest);
     const data = await response.json();
 
+    const headersWithGetSetCookie = response.headers as Headers & {
+      getSetCookie?: () => string[];
+    };
+    const setCookieValues =
+      typeof headersWithGetSetCookie.getSetCookie === "function"
+        ? headersWithGetSetCookie.getSetCookie()
+        : [response.headers.get("set-cookie") ?? ""];
+    const allSetCookies = setCookieValues.join(";");
+
     expect(data.message).toBe("Sikeres kijelentkezés!");
     expect(response.status).toBe(200);
+    expect(allSetCookies).toContain("access_token=");
+    expect(allSetCookies).toContain("refresh_token=");
+    expect(allSetCookies).toContain("Expires=Thu, 01 Jan 1970 00:00:00 GMT");
   });
 });
