@@ -8,14 +8,14 @@ import {
   type DrinkDtoType,
 } from "@/shared/Types/types";
 import { toast } from "sonner";
-import { type CartItem } from "@/lib/cart/CartContext";
+import { type CartItemType } from "@/lib/cart/CartContext";
 import { saveToLocalStorage } from "../../lib/localStorage/localStorage";
 import {
   addToMenuArray,
   createCartItem,
   isMenuItemInCart,
-  removeFromMenuArray,
 } from "@/shared/Functions/cartHelper";
+import { removeFromCart } from "@/app/(cart)/cart/_functions/removeFromCart";
 
 type Props = {
   menu: DrinkDtoType | PastaDtoType | PizzaDtoType;
@@ -31,10 +31,10 @@ export default function AddToCartBtn({ menu, type, size }: Props) {
   function handleAddToCart() {
     try {
       setIsLoading(true);
-      let newMenuArray: CartItem[];
+      let newMenuArray: CartItemType[];
 
       if (isAlreadyInCart) {
-        newMenuArray = removeFromMenuArray(cartItems, newMenuItem);
+        newMenuArray = removeFromCart(cartItems, newMenuItem);
         saveToLocalStorage(newMenuArray);
         setCartItems(newMenuArray);
         toast.success("Sikeresen eltávolítva a kosárból!");

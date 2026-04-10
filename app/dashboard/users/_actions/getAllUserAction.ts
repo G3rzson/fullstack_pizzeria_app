@@ -20,6 +20,7 @@ export async function getAllUserAction(): Promise<{
       email: user.email,
       username: user.username,
       role: user.role,
+      isStillWorkingHere: user.isStillWorkingHere,
       orderAddress: user.orderAddress
         ? {
             id: user.orderAddress.id,

@@ -7,3 +7,11 @@ export async function getAllUserDal() {
     },
   });
 }
+
+export async function deleteUserDal(userId: string) {
+  await prisma.user.delete({
+    where: {
+      id: userId,
+    },
+  });
+}

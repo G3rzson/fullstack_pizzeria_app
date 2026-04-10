@@ -9,9 +9,9 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
   return (
-    <Card className="bg-gradient">
+    <Card>
       <CardHeader>
-        <h1 className="text-3xl font-bold">Adatvédelmi Tájékoztató</h1>
+        <h1 className="page-title">Adatvédelmi Tájékoztató</h1>
         <p className="text-muted-foreground mt-2">
           Utoljára frissítve: 2026. április
         </p>

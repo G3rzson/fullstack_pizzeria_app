@@ -172,4 +172,96 @@ describe("AuthProvider", () => {
 
     consoleSpy.mockRestore();
   });
+
+  it("should update user when refreshUser is called manually", async () => {
+    mockFetchWithAuth
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            user: {
+              id: "user-1",
+              username: "first",
+              role: "USER",
+            },
+          }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            user: {
+              id: "user-2",
+              username: "second",
+              role: "ADMIN",
+            },
+          }),
+      } as Response);
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    await waitFor(() => {
+      expect(result.current.user).toEqual({
+        id: "user-1",
+        username: "first",
+        role: "USER",
+      });
+    });
+
+    await act(async () => {
+      await result.current.refreshUser();
+    });
+
+    expect(result.current.user).toEqual({
+      id: "user-2",
+      username: "second",
+      role: "ADMIN",
+    });
+    expect(mockFetchWithAuth).toHaveBeenCalledTimes(2);
+  });
+
+  it("should clear user when manual refreshUser gets non-ok response", async () => {
+    mockFetchWithAuth
+      .mockResolvedValueOnce({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            user: {
+              id: "user-1",
+              username: "first",
+              role: "USER",
+            },
+          }),
+      } as Response)
+      .mockResolvedValueOnce({
+        ok: false,
+        json: () => Promise.resolve({ user: null }),
+      } as Response);
+
+    const { result } = renderHook(() => useAuth(), {
+      wrapper: AuthProvider,
+    });
+
+    await waitFor(() => {
+      expect(result.current.user).toEqual({
+        id: "user-1",
+        username: "first",
+        role: "USER",
+      });
+    });
+
+    await act(async () => {
+      await result.current.refreshUser();
+    });
+
+    expect(result.current.user).toBeNull();
+  });
+
+  it("should throw when useAuth is used outside AuthProvider", () => {
+    expect(() => renderHook(() => useAuth())).toThrow(
+      "useAuth must be used within an AuthProvider",
+    );
+  });
 });

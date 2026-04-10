@@ -11,7 +11,10 @@ vi.mock("@/shared/Functions/cartHelper", () => ({
   createCartItem: vi.fn(),
   isMenuItemInCart: vi.fn(),
   addToMenuArray: vi.fn(),
-  removeFromMenuArray: vi.fn(),
+}));
+
+vi.mock("@/app/(cart)/cart/_functions/removeFromCart", () => ({
+  removeFromCart: vi.fn(),
 }));
 
 vi.mock("@/lib/localStorage/localStorage", () => ({
@@ -30,10 +33,10 @@ import {
   createCartItem,
   isMenuItemInCart,
   addToMenuArray,
-  removeFromMenuArray,
 } from "@/shared/Functions/cartHelper";
 import { saveToLocalStorage } from "@/lib/localStorage/localStorage";
 import { toast } from "sonner";
+import { removeFromCart } from "@/app/(cart)/cart/_functions/removeFromCart";
 
 const menu = {
   id: "p1",
@@ -66,7 +69,7 @@ describe("AddToCartBtn", () => {
     vi.mocked(addToMenuArray).mockReturnValue([
       { type: "pizza", product: menu, size: 32, quantity: 1 },
     ]);
-    vi.mocked(removeFromMenuArray).mockReturnValue([]);
+    vi.mocked(removeFromCart).mockReturnValue([]);
   });
 
   it("renders add label when item is not in cart", () => {
@@ -100,7 +103,7 @@ describe("AddToCartBtn", () => {
       screen.getByRole("button", { name: /eltávolítás a kosárból/i }),
     );
 
-    expect(removeFromMenuArray).toHaveBeenCalled();
+    expect(removeFromCart).toHaveBeenCalled();
     expect(saveToLocalStorage).toHaveBeenCalled();
     expect(setCartItems).toHaveBeenCalled();
     expect(toast.success).toHaveBeenCalledWith(

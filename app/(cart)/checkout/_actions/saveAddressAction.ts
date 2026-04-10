@@ -10,7 +10,7 @@ import { idValidator } from "@/shared/Functions/idValidator";
 
 export async function saveAddressAction(userId: string, data: unknown) {
   try {
-    const validatedId = idValidator.safeParse({ id: userId });
+    const validatedId = await idValidator.safeParseAsync({ id: userId });
 
     if (!validatedId.success) {
       return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);

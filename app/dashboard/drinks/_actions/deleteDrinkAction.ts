@@ -21,7 +21,7 @@ export async function deleteDrinkAction(
 
     const { success, data } = idValidator.safeParse({ id: drinkId });
     if (!success)
-      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     await deleteDrinkDal(data.id);
 

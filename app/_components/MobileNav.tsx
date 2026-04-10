@@ -24,6 +24,7 @@ export default function MobileNav() {
     <Drawer direction="left">
       <DrawerTrigger asChild>
         <Button
+          aria-label="Open menu"
           variant="outline"
           className="capitalize md:hidden"
           onClick={(e) => e.currentTarget.blur()}
@@ -33,9 +34,9 @@ export default function MobileNav() {
       </DrawerTrigger>
       <DrawerContent
         autoFocus
-        className="data-[vaul-drawer-direction=bottom]:max-h-[50vh] data-[vaul-drawer-direction=top]:max-h-[50vh]"
+        className="data-[vaul-drawer-direction=bottom]:max-h-[50vh] data-[vaul-drawer-direction=top]:max-h-[50vh] flex flex-col h-full"
       >
-        <DrawerHeader className="p-0">
+        <DrawerHeader className="p-0 flex flex-col flex-1 min-h-0">
           <DrawerClose asChild>
             <Link href="/" className="mr-auto ml-4">
               <Image
@@ -48,27 +49,28 @@ export default function MobileNav() {
               />
             </Link>
           </DrawerClose>
-          <div className="no-scrollbar overflow-y-auto">
-            <ul className="flex flex-col items-start">
-              {NAV_LINKS.map((link) => {
-                if (link.href === "/dashboard" && user?.role !== "ADMIN") {
-                  return null; // Skip rendering the dashboard link in the desktop nav if user is not an admin
-                }
-                return (
-                  <li key={link.href} className="w-full">
-                    <DrawerClose asChild>
-                      <Link
-                        className={`${pathname === link.href ? "active" : ""} nav-link mobile text-xl w-full p-4 block`}
-                        href={link.href}
-                      >
-                        {link.title}
-                      </Link>
-                    </DrawerClose>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
+
+          <ul className="flex-1 overflow-y-auto flex flex-col min-h-0">
+            {NAV_LINKS.map((link) => {
+              // Skip rendering the dashboard link in the mobile nav if user is not an admin
+              if (link.href === "/dashboard" && user?.role !== "ADMIN") {
+                return null;
+              }
+              return (
+                <li key={link.href} className="w-full">
+                  <DrawerClose asChild>
+                    <Link
+                      className={`${pathname === link.href ? "active" : ""} nav-link mobile text-xl w-full p-4 block`}
+                      href={link.href}
+                    >
+                      {link.title}
+                    </Link>
+                  </DrawerClose>
+                </li>
+              );
+            })}
+          </ul>
+
           <DrawerTitle className="sr-only">Navigációs menü</DrawerTitle>
           <DrawerDescription className="sr-only">
             A weboldal fő navigációs linkjei
@@ -76,7 +78,11 @@ export default function MobileNav() {
         </DrawerHeader>
         <DrawerFooter className="border-t">
           <DrawerClose asChild>
-            <Button variant="outline" className="cursor-pointer">
+            <Button
+              variant="outline"
+              className="cursor-pointer"
+              aria-label="Close menu"
+            >
               <X />
             </Button>
           </DrawerClose>

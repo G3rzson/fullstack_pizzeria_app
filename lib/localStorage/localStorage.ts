@@ -1,12 +1,20 @@
-import { CartItem } from "@/lib/cart/CartContext";
+import { CartItemType } from "@/lib/cart/CartContext";
 
-export function saveToLocalStorage(cartItems: CartItem[]) {
+export function saveToLocalStorage(cartItems: CartItemType[]) {
   localStorage.setItem("cartItems", JSON.stringify(cartItems));
 }
 
-export function loadFromLocalStorage(): CartItem[] {
+export function loadFromLocalStorage(): CartItemType[] {
   const data = localStorage.getItem("cartItems");
-  return data ? JSON.parse(data) : [];
+  if (!data) return [];
+
+  try {
+    return JSON.parse(data);
+  } catch (error) {
+    console.warn("Invalid cart data in localStorage, resetting cart.");
+    localStorage.removeItem("cartItems");
+    return [];
+  }
 }
 
 export function clearLocalStorage() {

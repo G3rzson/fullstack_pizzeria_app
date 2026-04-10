@@ -32,6 +32,7 @@ export async function uploadPizzaImageAction(id: string, pizzaImage: unknown) {
       return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const result = await uploadImageToCloudinary(data.image, "pizzas");
+    publicId = result.public_id;
 
     const imageData = {
       publicId: result.public_id,
@@ -40,8 +41,6 @@ export async function uploadPizzaImageAction(id: string, pizzaImage: unknown) {
     };
 
     await uploadPizzaImageDal(idData.id, imageData);
-
-    publicId = result.public_id; // Store the publicId for potential cleanup
 
     revalidatePath(`/pizzas`);
     revalidatePath(`/dashboard/pizzas`);

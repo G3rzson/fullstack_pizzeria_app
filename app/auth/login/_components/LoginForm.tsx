@@ -20,13 +20,21 @@ import { loginAction } from "../_actions/loginAction";
 import { useAuth } from "@/lib/auth/useAuth";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
+function normalizeCallbackUrl(callbackUrl: string | null) {
+  if (!callbackUrl || !callbackUrl.startsWith("/")) {
+    return "/";
+  }
+
+  return callbackUrl;
+}
+
 export default function LoginForm() {
   const {
     handleSubmit,
     control,
     reset,
     formState: { isSubmitting },
-  } = useForm<LoginSchemaType, unknown, LoginSchemaType>({
+  } = useForm<LoginSchemaType>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
@@ -34,9 +42,8 @@ export default function LoginForm() {
     },
   });
   const router = useRouter();
-  const { refreshUser } = useAuth();
   const searchParams = useSearchParams();
-  const callbackUrl = searchParams.get("callbackUrl");
+  const { refreshUser } = useAuth();
 
   async function onSubmit(data: LoginSchemaType) {
     try {
@@ -50,8 +57,10 @@ export default function LoginForm() {
       // Fetch user data after successful login
       await refreshUser();
 
+      const callbackUrl = normalizeCallbackUrl(searchParams.get("callbackUrl"));
+
       toast.success(response.message);
-      router.push(callbackUrl || "/");
+      router.push(callbackUrl);
       reset();
     } catch (err) {
       toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);

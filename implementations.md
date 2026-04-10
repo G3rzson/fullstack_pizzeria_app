@@ -12,3 +12,7 @@
 **todo** pizzas - pizza képek a cloudinary-ből beállítani a default helyett ha van kép a list komponensben
 
 **todo** OrderAddress - change to Google Places API to form fill
+
+**todo** prisma séma - összekötni hogy amikor a user törölve van ne maradjon árván a db-ben a cím
+
+**todo** prisma séma - isStillWorkingHere Boolean @default(true) legyen false hogy a frissen regisztrált user ne legyen egyből dolgozó

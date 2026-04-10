@@ -19,20 +19,27 @@ vi.mock("@/shared/Functions/errorLogger", () => ({
   errorLogger: vi.fn(),
 }));
 
+vi.mock("@/shared/Functions/isDev", () => ({
+  default: vi.fn(),
+}));
+
 // Importok a mock után
 import bcrypt from "bcrypt";
 import { registerDal } from "../_dal/registerDal";
 import { errorLogger } from "@/shared/Functions/errorLogger";
+import isDev from "@/shared/Functions/isDev";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 // típusok a mockokhoz
 const mockBcryptHash = bcrypt.hash as unknown as Mock;
 const mockRegisterDal = registerDal as unknown as Mock;
 const mockErrorLogger = errorLogger as unknown as Mock;
+const mockIsDev = isDev as unknown as Mock;
 
-describe("registerAction", () => {
+describe("registerAction action", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockIsDev.mockReturnValue(true);
   });
 
   it("should successfully register a new user with valid data", async () => {
@@ -101,7 +108,7 @@ describe("registerAction", () => {
     expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.DUPLICATE_ERROR);
   });
 
-  it("should return server error for unexpected errors", async () => {
+  it("should log with errorLogger in dev mode and return server error", async () => {
     const mockData = {
       username: "TestUser",
       email: "test@example.com",
@@ -118,6 +125,28 @@ describe("registerAction", () => {
       expect.any(Error),
       "server error - registerAction",
     );
+  });
+
+  it("should log with console.error in non-dev mode and return server error", async () => {
+    const mockData = {
+      username: "TestUser",
+      email: "test@example.com",
+      password: "Password123",
+    };
+    const error = new Error("Bcrypt failed");
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    mockIsDev.mockReturnValue(false);
+    mockBcryptHash.mockRejectedValue(error);
+
+    const result = await registerAction(mockData);
+
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
+    expect(mockErrorLogger).not.toHaveBeenCalled();
+    expect(consoleSpy).toHaveBeenCalledWith("Error registering user:", error);
+
+    consoleSpy.mockRestore();
   });
 
   it("should hash password with bcrypt salt 10", async () => {

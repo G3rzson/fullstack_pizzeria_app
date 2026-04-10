@@ -1,121 +1,109 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
-// Mock next-themes
-const mockSetTheme = vi.fn();
+// Mock next-themes dependency
 vi.mock("next-themes", () => ({
-  useTheme: vi.fn(() => ({
-    theme: "light",
-    setTheme: mockSetTheme,
-  })),
+  useTheme: vi.fn(),
 }));
 
+// Import the mocked useTheme function
 import { useTheme } from "next-themes";
-const mockUseTheme = useTheme as Mock;
 
-describe("ThemeSwitcher", () => {
+// Typecast the mocked useTheme function to Mock
+const mockUseTheme = useTheme as unknown as Mock;
+
+describe("ThemeSwitcher component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
 
-  it("should render spinner initially before mounted", () => {
+  it("shows loading state when mount effect is suppressed", async () => {
+    vi.resetModules();
+
+    vi.doMock("react", async (importOriginal) => {
+      const actual = await importOriginal<typeof import("react")>();
+      return {
+        ...actual,
+        useEffect: vi.fn(),
+      };
+    });
+
+    vi.doMock("next-themes", () => ({
+      useTheme: () => ({
+        theme: "light",
+        setTheme: vi.fn(),
+        themes: ["light", "dark", "system"],
+        forcedTheme: undefined,
+        resolvedTheme: "light",
+        systemTheme: "light",
+      }),
+    }));
+
+    const { ThemeSwitcher: ThemeSwitcherWithSuppressedEffect } =
+      await import("./ThemeSwitcher");
+
+    render(<ThemeSwitcherWithSuppressedEffect />);
+
+    expect(
+      screen.getByRole("button", {
+        name: /loading theme/i,
+      }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", {
+        name: /aktív téma:/i,
+      }),
+    ).not.toBeInTheDocument();
+
+    vi.doUnmock("react");
+    vi.doUnmock("next-themes");
+    vi.resetModules();
+  });
+
+  it("renders active theme button with current theme aria-label", async () => {
     mockUseTheme.mockReturnValue({
       theme: "light",
-      setTheme: mockSetTheme,
+      setTheme: vi.fn(),
+      themes: ["light", "dark", "system"],
+      forcedTheme: undefined,
+      resolvedTheme: "light",
+      systemTheme: "light",
     });
 
     render(<ThemeSwitcher />);
 
-    // Spinner látható mount előtt
-    expect(screen.getByTitle("Téma kiválasztása")).toBeInTheDocument();
+    const activeThemeButton = await screen.findByRole("button", {
+      name: /aktív téma:\s*világos/i,
+    });
+
+    expect(activeThemeButton).toBeInTheDocument();
   });
 
-  it("should render correct icon for light theme", async () => {
-    mockUseTheme.mockReturnValue({
-      theme: "light",
-      setTheme: mockSetTheme,
-    });
-
-    const { rerender } = render(<ThemeSwitcher />);
-
-    // Re-render után a Sun ikon jelenik meg
-    rerender(<ThemeSwitcher />);
-
-    await waitFor(() => {
-      const button = screen.getByRole("button", { name: /téma kiválasztása/i });
-      expect(button).toBeInTheDocument();
-    });
-  });
-
-  it("should render correct icon for dark theme", async () => {
-    mockUseTheme.mockReturnValue({
-      theme: "dark",
-      setTheme: mockSetTheme,
-    });
-
-    const { rerender } = render(<ThemeSwitcher />);
-    rerender(<ThemeSwitcher />);
-
-    await waitFor(() => {
-      const button = screen.getByRole("button", { name: /téma kiválasztása/i });
-      expect(button).toBeInTheDocument();
-    });
-  });
-
-  it("should open dropdown and show theme options", async () => {
+  it("calls setTheme when user selects another theme", async () => {
     const user = userEvent.setup();
+    const setTheme = vi.fn();
+
     mockUseTheme.mockReturnValue({
       theme: "light",
-      setTheme: mockSetTheme,
+      setTheme,
+      themes: ["light", "dark", "system"],
+      forcedTheme: undefined,
+      resolvedTheme: "light",
+      systemTheme: "light",
     });
 
-    const { rerender } = render(<ThemeSwitcher />);
-    rerender(<ThemeSwitcher />);
+    render(<ThemeSwitcher />);
 
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /téma kiválasztása/i }),
-      ).toBeInTheDocument();
+    const activeThemeButton = await screen.findByRole("button", {
+      name: /aktív téma:\s*világos/i,
     });
+    await user.click(activeThemeButton);
 
-    const button = screen.getByRole("button", { name: /téma kiválasztása/i });
-    await user.click(button);
-
-    await waitFor(() => {
-      expect(screen.getByText("Világos")).toBeInTheDocument();
-      expect(screen.getByText("Sötét")).toBeInTheDocument();
-      expect(screen.getByText("Rendszer")).toBeInTheDocument();
-    });
-  });
-
-  it("should call setTheme when selecting a theme", async () => {
-    const user = userEvent.setup();
-    mockUseTheme.mockReturnValue({
-      theme: "light",
-      setTheme: mockSetTheme,
-    });
-
-    const { rerender } = render(<ThemeSwitcher />);
-    rerender(<ThemeSwitcher />);
-
-    await waitFor(() => {
-      expect(
-        screen.getByRole("button", { name: /téma kiválasztása/i }),
-      ).toBeInTheDocument();
-    });
-
-    const button = screen.getByRole("button", { name: /téma kiválasztása/i });
-    await user.click(button);
-
-    await waitFor(() => {
-      expect(screen.getByText("Sötét")).toBeInTheDocument();
-    });
-
-    const darkOption = screen.getByText("Sötét");
+    const darkOption = await screen.findByText("Sötét");
     await user.click(darkOption);
 
-    expect(mockSetTheme).toHaveBeenCalledWith("dark");
+    expect(setTheme).toHaveBeenCalledWith("dark");
   });
 });

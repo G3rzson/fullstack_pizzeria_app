@@ -37,6 +37,7 @@ export async function uploadDrinkImageAction(
       return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
 
     const result = await uploadImageToCloudinary(data.image, "drinks");
+    publicId = result.public_id; // Store publicId to delete image if database update fails
 
     const imageData = {
       publicId: result.public_id,
@@ -46,7 +47,6 @@ export async function uploadDrinkImageAction(
 
     await uploadDrinkImageDal(idData.id, imageData);
 
-    publicId = result.public_id; // Store the publicId for potential cleanup
     revalidatePath(`/drinks`);
     revalidatePath(`/dashboard/drinks`);
     return handleResponse(true, BACKEND_RESPONSE_MESSAGES.SUCCESS);

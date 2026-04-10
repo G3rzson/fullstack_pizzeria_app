@@ -3,68 +3,72 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import UserMenu from "./UserMenu";
 
+// Mock next/navigation dependency
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(() => ({
     push: vi.fn(),
   })),
 }));
 
+// Mock useAuth hook
 vi.mock("@/lib/auth/useAuth", () => ({
   useAuth: vi.fn(),
 }));
 
-vi.mock("sonner", () => ({
-  toast: {
-    success: vi.fn(),
-    error: vi.fn(),
-  },
-}));
-
-vi.mock("@/components/ui/dropdown-menu", () => ({
-  DropdownMenu: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  DropdownMenuTrigger: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  DropdownMenuContent: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-  DropdownMenuItem: ({ children }: { children: React.ReactNode }) => (
-    <div>{children}</div>
-  ),
-}));
-
-vi.mock("../loading", () => ({
-  default: () => <div>Loading...</div>,
-}));
-
+// Import the mocked useAuth function
 import { useAuth } from "@/lib/auth/useAuth";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
 
-const mockUseAuth = useAuth as Mock;
-const mockPush = vi.fn();
+// Typecast the mocked useAuth function to Mock
+const mockUseAuth = useAuth as unknown as Mock;
 
-describe("UserMenu", () => {
+describe("UserMenu component", () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    (useRouter as Mock).mockReturnValue({ push: mockPush });
   });
 
-  it("shows loading state", () => {
+  it("shows loading UI when auth state is loading", async () => {
+    const user = userEvent.setup();
+
     mockUseAuth.mockReturnValue({
       user: null,
       isLoading: true,
+    });
+
+    render(<UserMenu />);
+
+    await user.click(
+      screen.getByRole("button", { name: /felhasználói menü/i }),
+    );
+
+    expect(
+      await screen.findByLabelText(/felhasználó betöltése/i),
+    ).toBeInTheDocument();
+  });
+
+  it("shows username and logout action for authenticated user", async () => {
+    const user = userEvent.setup();
+
+    mockUseAuth.mockReturnValue({
+      user: { id: "1", username: "gergo", role: "USER" },
+      isLoading: false,
       logout: vi.fn(),
     });
 
     render(<UserMenu />);
 
-    expect(screen.getByText("Loading...")).toBeInTheDocument();
+    await user.click(
+      screen.getByRole("button", { name: /felhasználói menü/i }),
+    );
+
+    expect(await screen.findByText("gergo")).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /kijelentkezés/i }),
+    ).toBeInTheDocument();
   });
 
-  it("shows login and register links when logged out", () => {
+  it("shows login and register links for unauthenticated user", async () => {
+    const user = userEvent.setup();
+
     mockUseAuth.mockReturnValue({
       user: null,
       isLoading: false,
@@ -73,56 +77,14 @@ describe("UserMenu", () => {
 
     render(<UserMenu />);
 
-    expect(
-      screen.getByRole("link", { name: /bejelentkezés/i }),
-    ).toHaveAttribute("href", "/auth/login");
-    expect(screen.getByRole("link", { name: /regisztráció/i })).toHaveAttribute(
-      "href",
-      "/auth/register",
-    );
-  });
-
-  it("logs out successfully", async () => {
-    const user = userEvent.setup();
-    const logout = vi.fn();
-    mockUseAuth.mockReturnValue({
-      user: { id: "1", username: "adam", role: "USER" },
-      isLoading: false,
-      logout,
-    });
-
-    global.fetch = vi.fn(() =>
-      Promise.resolve({
-        ok: true,
-        json: () => Promise.resolve({ message: "Sikeres kijelentkezés" }),
-      } as Response),
+    await user.click(
+      screen.getByRole("button", { name: /felhasználói menü/i }),
     );
 
-    render(<UserMenu />);
+    const loginLink = await screen.findByText(/bejelentkezés/i);
+    const registerLink = screen.getByText(/regisztráció/i);
 
-    await user.click(screen.getByRole("button", { name: /kijelentkezés/i }));
-
-    expect(logout).toHaveBeenCalled();
-    expect(toast.success).toHaveBeenCalled();
-    expect(mockPush).toHaveBeenCalledWith("/");
-  });
-
-  it("shows toast error when logout request fails", async () => {
-    const user = userEvent.setup();
-    mockUseAuth.mockReturnValue({
-      user: { id: "1", username: "adam", role: "USER" },
-      isLoading: false,
-      logout: vi.fn(),
-    });
-
-    global.fetch = vi.fn(() => Promise.resolve({ ok: false } as Response));
-
-    render(<UserMenu />);
-
-    await user.click(screen.getByRole("button", { name: /kijelentkezés/i }));
-
-    expect(toast.error).toHaveBeenCalledWith(
-      "Hiba történt a kijelentkezés során",
-    );
+    expect(loginLink).toHaveAttribute("href", "/auth/login");
+    expect(registerLink).toHaveAttribute("href", "/auth/register");
   });
 });

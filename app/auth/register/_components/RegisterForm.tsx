@@ -29,7 +29,7 @@ export default function RegisterForm() {
     control,
     reset,
     formState: { isSubmitting },
-  } = useForm<RegisterSchemaType, unknown, RegisterSchemaType>({
+  } = useForm<RegisterSchemaType>({
     resolver: zodResolver(registerSchema),
     defaultValues: {
       username: "",

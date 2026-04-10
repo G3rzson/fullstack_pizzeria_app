@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import CookieConsent from "react-cookie-consent";
 
 export default function CookieConsentBanner() {
@@ -29,19 +30,13 @@ export default function CookieConsentBanner() {
         borderRadius: "6px",
         padding: "8px 16px",
       }}
-      expires={1}
+      expires={1} // Cookie expires in 1 day
     >
       <span style={{ fontSize: "14px", color: "var(--foreground)" }}>
         Ez az oldal sütiket használ a jobb felhasználói élmény érdekében.{" "}
-        <a
-          href="/privacy"
-          style={{
-            textDecoration: "underline",
-            color: "var(--primary)",
-          }}
-        >
+        <Link href="/privacy" className="underline text-primary">
           További információ
-        </a>
+        </Link>
       </span>
     </CookieConsent>
   );

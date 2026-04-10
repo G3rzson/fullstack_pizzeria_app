@@ -1,5 +1,9 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
-import { updatePastaImageAction } from "./updatePastaImageAction";
+
+const { mockIsDev } = vi.hoisted(() => {
+  const mockIsDev = vi.fn();
+  return { mockIsDev };
+});
 
 vi.mock("next/cache", () => ({ revalidatePath: vi.fn() }));
 vi.mock("@/shared/Functions/hasPermission", () => ({ hasPermission: vi.fn() }));
@@ -16,7 +20,10 @@ vi.mock("@/lib/claudinary/deleteCloudinaryImage", () => ({
   deleteCloudinaryImage: vi.fn(),
 }));
 vi.mock("../_dal/pastaDal", () => ({ updatePastaImageDal: vi.fn() }));
+vi.mock("@/shared/Functions/isDev", () => ({ default: mockIsDev }));
+vi.mock("@/shared/Functions/errorLogger", () => ({ errorLogger: vi.fn() }));
 
+import { updatePastaImageAction } from "./updatePastaImageAction";
 import { revalidatePath } from "next/cache";
 import { hasPermission } from "@/shared/Functions/hasPermission";
 import { idValidator } from "@/shared/Functions/idValidator";
@@ -24,18 +31,46 @@ import { imageSchema } from "@/shared/Validation/ImageSchema";
 import { uploadImageToCloudinary } from "@/lib/claudinary/uploadImageToCloudinary";
 import { deleteCloudinaryImage } from "@/lib/claudinary/deleteCloudinaryImage";
 import { updatePastaImageDal } from "../_dal/pastaDal";
+import { errorLogger } from "@/shared/Functions/errorLogger";
 import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 describe("updatePastaImageAction", () => {
-  beforeEach(() => vi.clearAllMocks());
+  beforeEach(() => {
+    vi.clearAllMocks();
+    mockIsDev.mockReturnValue(true);
+  });
 
-  it("returns unauthorized when permission is missing", async () => {
+  it("returns unauthorized when permission check fails", async () => {
     (hasPermission as Mock).mockResolvedValue(false);
 
     const result = await updatePastaImageAction("t1", {}, "old-id");
 
     expect(result.success).toBe(false);
     expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.UNAUTHORIZED);
+  });
+
+  it("returns invalid id when id validation fails", async () => {
+    (hasPermission as Mock).mockResolvedValue({ username: "admin" });
+    (idValidator.safeParse as Mock).mockReturnValue({ success: false });
+
+    const result = await updatePastaImageAction("bad", {}, "old-id");
+
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.INVALID_ID);
+  });
+
+  it("returns invalid data when image schema fails", async () => {
+    (hasPermission as Mock).mockResolvedValue({ username: "admin" });
+    (idValidator.safeParse as Mock).mockReturnValue({
+      success: true,
+      data: { id: "t1" },
+    });
+    (imageSchema.safeParseAsync as Mock).mockResolvedValue({ success: false });
+
+    const result = await updatePastaImageAction("t1", {}, "old-id");
+
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
   });
 
   it("updates pasta image, deletes old image, and revalidates", async () => {
@@ -57,6 +92,7 @@ describe("updatePastaImageAction", () => {
     const result = await updatePastaImageAction("t1", file, "old-cloud-id");
 
     expect(result.success).toBe(true);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SUCCESS);
     expect(updatePastaImageDal).toHaveBeenCalledWith("t1", {
       publicId: "new-cloud-id",
       publicUrl: "https://img.url/new-pasta.png",
@@ -65,5 +101,49 @@ describe("updatePastaImageAction", () => {
     expect(deleteCloudinaryImage).toHaveBeenCalledWith("old-cloud-id");
     expect(revalidatePath).toHaveBeenCalledWith("/pastas");
     expect(revalidatePath).toHaveBeenCalledWith("/dashboard/pastas");
+  });
+
+  it("cleans up new cloudinary image when dal throws after upload", async () => {
+    const file = { name: "new-pasta.png" } as File;
+    (hasPermission as Mock).mockResolvedValue({ username: "admin" });
+    (idValidator.safeParse as Mock).mockReturnValue({
+      success: true,
+      data: { id: "t1" },
+    });
+    (imageSchema.safeParseAsync as Mock).mockResolvedValue({
+      success: true,
+      data: { image: file },
+    });
+    (uploadImageToCloudinary as Mock).mockResolvedValue({
+      public_id: "new-cloud-id",
+      secure_url: "https://img.url/new-pasta.png",
+    });
+    (updatePastaImageDal as Mock).mockRejectedValue(new Error("db error"));
+
+    const result = await updatePastaImageAction("t1", file, "old-cloud-id");
+
+    expect(result.success).toBe(false);
+    expect(deleteCloudinaryImage).toHaveBeenCalledWith("new-cloud-id");
+  });
+
+  it("logs with errorLogger in dev mode on error", async () => {
+    (hasPermission as Mock).mockRejectedValue(new Error("db error"));
+
+    await updatePastaImageAction("t1", {}, "old-id");
+
+    expect(errorLogger).toHaveBeenCalled();
+  });
+
+  it("logs with console.error in non-dev mode on error", async () => {
+    mockIsDev.mockReturnValue(false);
+    const consoleSpy = vi.spyOn(console, "error").mockImplementation(() => {});
+    (hasPermission as Mock).mockRejectedValue(new Error("db error"));
+
+    const result = await updatePastaImageAction("t1", {}, "old-id");
+
+    expect(consoleSpy).toHaveBeenCalled();
+    expect(result.success).toBe(false);
+    expect(result.message).toBe(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
+    consoleSpy.mockRestore();
   });
 });

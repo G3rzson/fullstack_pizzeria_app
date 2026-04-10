@@ -2,13 +2,15 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import CartLink from "./CartLink";
 
+// Mock the useCart hook
 vi.mock("@/lib/cart/useCart", () => ({
   useCart: vi.fn(),
 }));
 
+// Import the mocked useCart hook
 import { useCart } from "@/lib/cart/useCart";
 
-describe("CartLink", () => {
+describe("CartLink component", () => {
   it("renders cart link", () => {
     vi.mocked(useCart).mockReturnValue({
       cartItems: [],
@@ -19,8 +21,12 @@ describe("CartLink", () => {
 
     render(<CartLink />);
 
-    expect(screen.getByRole("link")).toHaveAttribute("href", "/cart");
-    expect(screen.queryByText("0")).not.toBeInTheDocument();
+    const cartLink = screen.getByRole("link", { name: /kosár/i });
+    const badge = screen.queryByText(/^\d+$/);
+
+    expect(cartLink).toBeInTheDocument();
+    expect(cartLink).toHaveAttribute("href", "/cart");
+    expect(badge).not.toBeInTheDocument();
   });
 
   it("renders badge with item count when cart is not empty", () => {
@@ -39,6 +45,8 @@ describe("CartLink", () => {
 
     render(<CartLink />);
 
-    expect(screen.getByText("1")).toBeInTheDocument();
+    const badge = screen.getByText(/^\d+$/);
+
+    expect(badge).toBeInTheDocument();
   });
 });

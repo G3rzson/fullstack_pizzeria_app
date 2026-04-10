@@ -77,6 +77,7 @@ export type BaseUserDtoType = {
   email: string;
   username: string;
   role: Role;
+  isStillWorkingHere: boolean;
 };
 
 export type AddressDtoType = {

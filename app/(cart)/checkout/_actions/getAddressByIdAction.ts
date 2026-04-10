@@ -12,7 +12,7 @@ export async function getAddressByIdAction(userId: string): Promise<{
   data?: AddressDtoType;
 }> {
   try {
-    const validatedId = idValidator.safeParse({ id: userId });
+    const validatedId = await idValidator.safeParseAsync({ id: userId });
     if (!validatedId.success)
       return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 

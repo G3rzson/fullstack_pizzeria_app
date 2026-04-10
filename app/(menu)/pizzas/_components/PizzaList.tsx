@@ -1,7 +1,7 @@
 import ServerError from "@/shared/Components/ServerError";
 import { getAllAvailablePizzaAction } from "../_actions/getAllAvailablePizzaAction";
-import PizzaCard from "./PizzaCard";
 import EmptyList from "@/shared/Components/EmptyList";
+import MenuListItem from "@/shared/Components/MenuListItem";
 
 export default async function PizzaList() {
   const response = await getAllAvailablePizzaAction();
@@ -21,9 +21,7 @@ export default async function PizzaList() {
   return (
     <ul className="menu-grid">
       {response.data.map((pizza) => (
-        <li key={pizza.id}>
-          <PizzaCard pizza={pizza} />
-        </li>
+        <MenuListItem key={pizza.id} menuArray={pizza} />
       ))}
     </ul>
   );

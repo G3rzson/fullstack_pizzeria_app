@@ -21,7 +21,7 @@ export async function deletePastaAction(
 
     const { success, data } = idValidator.safeParse({ id: pastaId });
     if (!success)
-      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_DATA);
+      return handleResponse(false, BACKEND_RESPONSE_MESSAGES.INVALID_ID);
 
     await deletePastaDal(data.id);
 

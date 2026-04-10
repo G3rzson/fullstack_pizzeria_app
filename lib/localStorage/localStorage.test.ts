@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from "vitest";
+import { describe, it, expect, beforeEach, vi } from "vitest";
 import {
   saveToLocalStorage,
   loadFromLocalStorage,
   clearLocalStorage,
 } from "./localStorage";
-import type { CartItem } from "@/lib/cart/CartContext";
+import type { CartItemType } from "@/lib/cart/CartContext";
 
-const mockItem: CartItem = {
+const mockItem: CartItemType = {
   type: "drink",
   product: { id: "1", drinkName: "Cola", drinkPrice: 300, image: null },
   quantity: 1,
@@ -35,5 +35,18 @@ describe("localStorage utils", () => {
     saveToLocalStorage([mockItem]);
     clearLocalStorage();
     expect(loadFromLocalStorage()).toEqual([]);
+  });
+
+  it("loadFromLocalStorage returns empty array and clears storage when json is invalid", () => {
+    const warnSpy = vi.spyOn(console, "warn").mockImplementation(() => {});
+    localStorage.setItem("cartItems", "{invalid-json");
+
+    expect(loadFromLocalStorage()).toEqual([]);
+    expect(localStorage.getItem("cartItems")).toBeNull();
+    expect(warnSpy).toHaveBeenCalledWith(
+      "Invalid cart data in localStorage, resetting cart.",
+    );
+
+    warnSpy.mockRestore();
   });
 });

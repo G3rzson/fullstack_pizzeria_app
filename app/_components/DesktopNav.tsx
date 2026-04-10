@@ -12,8 +12,9 @@ export default function DesktopNav() {
   return (
     <ul className="hidden md:flex flex-row items-center justify-end gap-4">
       {NAV_LINKS.map((link) => {
+        // Skip rendering the dashboard link in the desktop nav if user is not an admin
         if (link.href === "/dashboard" && user?.role !== "ADMIN") {
-          return null; // Skip rendering the dashboard link in the desktop nav if user is not an admin
+          return null;
         }
 
         return (

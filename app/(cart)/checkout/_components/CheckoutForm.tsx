@@ -26,6 +26,7 @@ import { AddressDtoType } from "@/shared/Types/types";
 import { useEffect } from "react";
 import { updateAddressAction } from "../_actions/updateAddressAction";
 import { useCart } from "@/lib/cart/useCart";
+import { BACKEND_RESPONSE_MESSAGES } from "@/shared/Constants/constants";
 
 export default function CheckoutForm({
   address,
@@ -75,28 +76,28 @@ export default function CheckoutForm({
       if (data.saveAddress && address === null && userId) {
         try {
           // create new address
-          await saveAddressAction(userId, data);
-          toast.success("Rendelési adatok sikeresen elmentve!");
+          const response = await saveAddressAction(userId, data);
+          toast.success(response.message);
         } catch (error) {
-          toast.error("Hiba történt az adatok mentése során!");
+          toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
         }
       } else if (data.saveAddress && address && userId) {
         try {
           // update existing address
-          await updateAddressAction(userId, data);
-          toast.success("Rendelési adatok sikeresen frissítve!");
+          const response = await updateAddressAction(userId, data);
+          toast.success(response.message);
         } catch (error) {
-          toast.error("Hiba történt az adatok frissítése során!");
+          toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
         }
       }
 
       router.push("/payment");
-      toast.success("Rendelés sikeresen leadva!");
+      toast.success(BACKEND_RESPONSE_MESSAGES.SUCCESS);
 
       reset();
       setCartItems([]);
     } catch (err) {
-      toast.error("Hiba történt a rendelés leadása során!");
+      toast.error(BACKEND_RESPONSE_MESSAGES.SERVER_ERROR);
     }
   }
 
@@ -172,18 +173,21 @@ export default function CheckoutForm({
               isSubmitting={isSubmitting}
             />
 
-            <CustomCheckbox
-              control={control}
-              name="saveAddress"
-              label="Mentsd el ezeket az adatokat a gyorsabb rendeléshez"
-              isSubmitting={isSubmitting}
-            />
+            {userId && (
+              <CustomCheckbox
+                control={control}
+                name="saveAddress"
+                label="Mentsd el ezeket az adatokat a gyorsabb rendeléshez"
+                isSubmitting={isSubmitting}
+              />
+            )}
           </FieldGroup>
         </form>
       </CardContent>
       <CardFooter>
         <Button
           type="submit"
+          variant={"outline"}
           className="w-full cursor-pointer"
           form="checkout-form"
           disabled={isSubmitting}
