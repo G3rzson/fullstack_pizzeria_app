@@ -58,33 +58,12 @@ The application includes:
 - Debugging real production issues such as caching and migration conflicts
 - Structuring code for maintainability with tests around key business logic
 
-## Local Setup
-
-```bash
-npm install
-npm run db:generate
-npm run dev
-```
-
-For schema changes in development:
-
-```bash
-npx prisma migrate dev --name your_migration_name
-```
-
-For production deployments:
-
-```bash
-npm run build
-```
-
-The production build runs Prisma migrations before the Next.js build step.
-
 ## License
 
 This project was created for learning and portfolio purposes.
 
-## Creator
+## 👤 Author
 
-- G3rzson
-- GitHub: https://github.com/G3rzson
+**G3rzson**
+
+- GitHub: [@G3rzson](https://github.com/G3rzson)
