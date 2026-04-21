@@ -26,7 +26,7 @@ The application includes:
 - User authentication with register, login, logout, refresh, and current-user endpoints
 - Admin dashboard for CRUD operations on menu items and users
 - Image upload flow with Cloudinary integration
-- Prisma + MySQL data layer with migrations
+- Prisma + Postgres data layer with migrations
 - Automated tests for actions, components, auth, cart, utilities, and validation logic
 
 ## Engineering Highlights
@@ -44,7 +44,7 @@ The application includes:
 - React 19
 - TypeScript
 - Prisma ORM
-- MySQL
+- Postgres
 - Tailwind CSS
 - Shadcn/UI
 - Vitest + Testing Library
