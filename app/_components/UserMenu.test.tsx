@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, type Mock } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { CartProvider } from "@/lib/cart/CartContext";
 import userEvent from "@testing-library/user-event";
 import UserMenu from "./UserMenu";
 
@@ -34,7 +35,11 @@ describe("UserMenu component", () => {
       isLoading: true,
     });
 
-    render(<UserMenu />);
+    render(
+      <CartProvider>
+        <UserMenu />
+      </CartProvider>,
+    );
 
     await user.click(
       screen.getByRole("button", { name: /felhasználói menü/i }),
@@ -54,7 +59,11 @@ describe("UserMenu component", () => {
       logout: vi.fn(),
     });
 
-    render(<UserMenu />);
+    render(
+      <CartProvider>
+        <UserMenu />
+      </CartProvider>,
+    );
 
     await user.click(
       screen.getByRole("button", { name: /felhasználói menü/i }),
@@ -75,7 +84,11 @@ describe("UserMenu component", () => {
       logout: vi.fn(),
     });
 
-    render(<UserMenu />);
+    render(
+      <CartProvider>
+        <UserMenu />
+      </CartProvider>,
+    );
 
     await user.click(
       screen.getByRole("button", { name: /felhasználói menü/i }),

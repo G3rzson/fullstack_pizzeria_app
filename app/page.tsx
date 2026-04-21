@@ -6,7 +6,7 @@ export default function Home() {
   return (
     <div className="centered-container">
       <Card className="bg-gradient p-4">
-        <div className="relative mx-auto w-70 md:w-100 h-70 md:h-100">
+        <div className="relative mx-auto w-70 md:w-90 h-70 md:h-90">
           <Image
             src={logo_lg}
             alt="Logo"
